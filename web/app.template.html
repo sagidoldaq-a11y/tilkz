@@ -683,9 +683,14 @@ function renderResults(){
   const qlegend=`<div class="lgd"><span><i class="sw good"></i>✓ ${ru?"верно с первого раза":"бір реттен дұрыс"}</span><span><i class="sw mid"></i>~ ${ru?"верно со второй попытки":"екінші мүмкіндіктен дұрыс"}</span><span><i class="sw weak"></i>✗ ${ru?"неверный ответ":"қате жауап"}</span></div>`;
   // Топтар мен дағдылар
   const groups={}; for(const c of Object.keys(BANK.skills)) (groups[c[0]] ||= []).push(c);
-  const gbars=Object.keys(groups).map(g=>{ const sg=statOf(items.filter(x=>x.skill[0]===g)); return hbar(esc(L.groups[g]), sg, `${L.groups[g]}: ${sg.g}/${sg.n}`); }).join("");
+  // Әлсізі жоғарыда: алдымен бір реттен дұрыс үлесі, тең болса екінші мүмкіндік ескеріледі; сұрағы жоқтар ең төменде
+  const withSc = (st_, its) => Object.assign(st_, {sc: st_.n ? (st_.g + 0.5*its.filter(isSecond).length)/st_.n : 0});
+  const byWeak = (a,b) => ((a.p===null)-(b.p===null)) || ((a.p??0)-(b.p??0)) || (a.sc-b.sc);
+  const gbars=Object.keys(groups).map(key=>{ const its=items.filter(x=>x.skill[0]===key); return Object.assign(withSc(statOf(its), its), {key}); })
+    .sort(byWeak).map(sg=>hbar(esc(L.groups[sg.key]), sg, `${L.groups[sg.key]}: ${sg.g}/${sg.n}`)).join("");
   const skillStats=Object.keys(BANK.skills).map(c=>({c,...statOf(items.filter(x=>x.skill===c))}));
-  const sbars=skillStats.map(x=>hbar(esc(skillName(x.c)), x, `${skillName(x.c)}: ${x.g}/${x.n}`)).join("");
+  skillStats.forEach(x=>withSc(x, items.filter(i=>i.skill===x.c)));
+  const sbars=[...skillStats].sort(byWeak).map(x=>hbar(esc(skillName(x.c)), x, `${skillName(x.c)}: ${x.g}/${x.n}`)).join("");
   // Әр дағды бойынша екінші әрекеттегі дұрыс жауаптар да есептеледі
   for(const x of skillStats){ const its=items.filter(i=>i.skill===x.c); x.s2=its.filter(isSecond).length; x.score=x.n?(x.g+0.5*x.s2)/x.n:0; }
   const present=skillStats.filter(x=>x.p!==null);
