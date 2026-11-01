@@ -246,7 +246,7 @@ const UI = {
   kk:{tagline:"Оқу сауаттылығы · НЗМ, БИЛ · 1-нұсқа", text:"Мәтін", qs:"Сұрақтар", results:"Нәтиже", back:"Жаттығуға оралу",
       score:(a,b,c)=>`Бір реттен дұрыс: <b>${a}</b> / ${b} · жауап берілді: ${c}`, check:"Тексеру", show:"Жауапты көрсету",
       helper:"Көмекші", hideHelper:"Көмекшіні жабу", inText:"Мәтіннен көрсету", reset:"Қайта орындау", qcount:n=>`${n} сұрақ`, done:"орындалды",
-      level:n=>`${n}-деңгей`, neg:"Болымсыз сұрақ", ok:"Дұрыс!", bad:"Бұл жауап дұрыс емес", why:"Неліктен:",
+      level:n=>`${n}-деңгей`, neg:"Болымсыз сұрақ", ok:"Дұрыс!", bad:"Бұл жауап дұрыс емес", why:"Неліктен?", because:"Себебі ",
       tryAgain:"", second:"Екінші мүмкіндікті пайдаланамын", secondNow:"Екінші мүмкіндік: мәтінге қайта қарап, қалған 3 жауаптың бірін таңда. Бұл соңғы мүмкіндік.",
       revealH:"Дұрыс жауап", evidence:"Мәтіндегі дәлел:", others:"Қалған нұсқалар неге қате:", ownWords:"Енді неге дұрыс екенін өз сөзіңмен көмекшіге түсіндіріп көр.",
       quick:["Қайдан бастаймын?","Сұрақты түсінбедім","Мына сөздің мағынасы не?"], quickAfter:["Неге менің жауабым қате?","Неге дұрыс екенін түсіндіріп берейін"],
@@ -259,7 +259,7 @@ const UI = {
   ru:{tagline:"Читательская грамотность · НИШ, БИЛ · вариант 1", text:"Текст", qs:"Вопросы", results:"Результаты", back:"Вернуться к заданиям",
       score:(a,b,c)=>`Верно с первого раза: <b>${a}</b> / ${b} · отвечено: ${c}`, check:"Проверить", show:"Показать ответ",
       helper:"Помощник", hideHelper:"Закрыть помощника", inText:"Показать в тексте", reset:"Пройти заново", qcount:n=>`${n} вопр.`, done:"выполнено",
-      level:n=>`Уровень ${n}`, neg:"Отрицательный вопрос", ok:"Верно!", bad:"Ответ неверный", why:"Почему:",
+      level:n=>`Уровень ${n}`, neg:"Отрицательный вопрос", ok:"Верно!", bad:"Ответ неверный", why:"Почему?", because:"",
       tryAgain:"", second:"Использую вторую попытку", secondNow:"Вторая попытка: перечитай текст и выбери один из оставшихся 3 ответов. Это последняя попытка.",
       revealH:"Правильный ответ", evidence:"Доказательство в тексте:", others:"Почему остальные варианты неверны:", ownWords:"Теперь объясни помощнику своими словами, почему этот ответ верный.",
       quick:["С чего начать?","Не понимаю вопрос","Что значит это слово?"], quickAfter:["Почему мой ответ неверный?","Хочу объяснить, почему ответ верный"],
@@ -363,7 +363,21 @@ function orderOf(it){
 const shownLetter = (it,orig) => "ABCD"[orderOf(it).indexOf(orig)];
 
 /* ---------- Көмекші құралдар ---------- */
-const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* Үзіндіні мәтіндегі толық сөйлемге дейін кеңейтеді */
+function fullSentence(textId, frag){
+  const tx=BANK.texts.find(x=>x.id===textId);
+  for(const raw of tx.paragraphs){
+    const p=raw.replace(/\*\*/g,""), i=p.indexOf(frag); if(i<0) continue;
+    let a=i; while(a>0 && !/[.!?]/.test(p[a-1])) a--;
+    let b=i+frag.length; while(b<p.length && !/[.!?]/.test(p[b])) b++;
+    if(b<p.length) b++;
+    return p.slice(a,b).trim();
+  }
+  return frag;
+}
+const devOf = (it, o) => ((it.distractor_evidence||{})[o]||[]).map(e=>fullSentence(it.text_id,e));
+const cap = t => t ? t[0].toUpperCase()+t.slice(1) : t;
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])).replace(/(\d)-(?=[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])/g,"$1\u2011");
 const stripLoc = e => e.replace(/\s*\([^)]*азатжол[^)]*\)$/,"");
 const frags = e => stripLoc(e).split("...").map(f=>f.trim().replace(/^[.\s]+|[.\s]+$/g,"")).filter(Boolean);
 function stemHTML(s){ return esc(s).replace(/(^|[\s«(])([А-ЯӘҒҚҢӨҰҮҺІ]{3,})(?=[\s?.,!»)]|$)/g,(m,a,w)=>`${a}<span class="neg">${w}</span>`); }
@@ -414,13 +428,15 @@ function cardHTML(it){
   let fb="";
   if(s.status==="wrong1"){
     const last=s.tries[s.tries.length-1];
-    fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${esc(it.distractor_notes[last])}</p></div>`;
+    const note=it.distractor_notes[last], dev=devOf(it,last);
+    fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${L.because?L.because+esc(note):esc(cap(note))}</p>
+      ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>`<blockquote>${esc(e)}</blockquote>`).join("")}`:""}</div>`;
   } else if(s.status==="retry"){
     fb=`<div class="fb second" role="status"><p>${L.secondNow}</p></div>`;
   } else if(fin){
     const good = s.status==="ok";
-    const wrongs = s.tries.map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(it.distractor_notes[o])}</li>`).join("");
-    const rest = Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o)).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(it.distractor_notes[o])}</li>`).join("");
+    const wrongs = s.tries.map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(it.distractor_notes[o]))}</li>`).join("");
+    const rest = Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o)).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(it.distractor_notes[o]))}</li>`).join("");
     fb=`<div class="fb ${good?"ok":"bad"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)}</h4>
       <p>${esc(it.explanation)}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>`<blockquote>${esc(e)}</blockquote>`).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
@@ -583,6 +599,8 @@ document.addEventListener("change",e=>{
   else { s.tries.push(el.value); s.status = s.tries.length>=2 ? "revealed" : "wrong1"; }
   s.sel=null; save(); rerenderCard(id);
   if(s.status==="ok"||s.status==="revealed") markEvidence(it);
+  else { const dev=devOf(it,el.value); marks=dev; renderPaper();
+    if(dev.length && !matchMedia("(max-width:880px)").matches) document.querySelector("#paper mark")?.scrollIntoView({behavior:"smooth",block:"center"}); }
 });
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]"); if(!b||b.tagName==="INPUT") return;

@@ -223,6 +223,19 @@ q(20, "v1-t4", "Автор күнделік жүргізген болса, кү�
   {"A": "Автор өзін бірінші америкалық деп ойлаған, бірақ Пампелли одан бұрын болған. Соңғы сапар туралы да айтылмайды.", "C": "Әйелі – археолог, яғни бұл салаға қызығушылығы бар.", "D": "Пампелли автордан 100 жыл бұрын өмір сүрген, олар бірге жұмыс істемеген."},
   "Өзгеріс жоқ.")
 
+# Дистрактор түсініктемелері мен дәлелдері (distractors_v1.py)
+import sys as _sys; _sys.path.insert(0, str(OUT))
+from distractors_v1 import NOTES
+for x in Q:
+    n = NOTES[x["number"]]
+    assert set(n) == set(x["distractor_notes"]), (x["id"], set(n), set(x["distractor_notes"]))
+    x["distractor_notes"] = {k: v[0] for k, v in n.items()}
+    x["distractor_evidence"] = {k: v[1] for k, v in n.items()}
+    for k, (note, evs) in n.items():
+        body = " ".join(next(t for t in texts if t["id"] == x["text_id"])["paragraphs"]).replace("**", "")
+        for e in evs:
+            if e not in body: print("ДИСТРАКТОР ДӘЛЕЛІ ТАБЫЛМАДЫ:", x["id"], k, "|", e)
+
 # Нұсқалары реттілікпен берілген тапсырмалар араластырылмайды
 for x in Q:
     x["fixed_order"] = x["number"] in (4, 14)
@@ -264,7 +277,7 @@ for t in texts:
         md += ["", f"*Дағды:* {x['skill']} – {x['skill_name']} · *Деңгей:* {x['level']}" + (" · *Болымсыз сұрақ*" if x["negative"] else ""), "",
                "**Мәтіннен дәлел:**"] + [f"> {e}" for e in x["evidence"]] + ["",
                f"**Түсіндірме:** {x['explanation']}", "", "**Қалған нұсқалар неге қате:**"]
-        md += [f"- {k}) {v}" for k, v in sorted(x["distractor_notes"].items())]
+        md += [f"- {k}) {v[:1].upper()+v[1:]}" + (" Дәлел: «" + "», «".join(x["distractor_evidence"][k]) + "»" if x["distractor_evidence"][k] else "") for k, v in sorted(x["distractor_notes"].items())]
         md += ["", f"*Редактор өзгерісі:* {x['editor_changes']}", "", "---", ""]
 (OUT.parent / "docs" / "1-nusqa-tekseru.md").write_text("\n".join(md), encoding="utf-8")
 
