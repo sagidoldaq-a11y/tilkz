@@ -189,6 +189,22 @@ b.kw{font-weight:800}
   .kpi{flex-direction:row;align-items:center;gap:10px}
   .ring{width:140px;height:140px}
 }
+.landing{padding-block:28px 48px;max-width:760px}
+.land-head .eyebrow{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.land-head h1{font-family:var(--f-text);font-size:clamp(28px,4vw,40px);margin:6px 0 10px}
+.land-head p{color:var(--muted);margin:0 0 22px;max-width:62ch}
+.variants{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.variant{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:6px}
+.variant h2{font-family:var(--f-text);font-size:24px;margin:0}
+.vmeta{margin:0;color:var(--muted);font-size:14px}
+.vprog{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.vprog i{display:block;height:100%;background:var(--accent)}
+.vstatus{margin:4px 0 0;font-size:14px}
+.variant .actions{margin-top:10px}
+.tabsrow{display:flex;align-items:center;gap:8px;min-width:0}
+.tabsrow .texttabs{flex:1;min-width:0}
+.tolanding{flex:0 0 auto;padding-inline:4px}
+.texttabs button{min-width:110px}
 .results{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-block:16px 40px}
 .results h2{font-family:var(--f-text);margin:0 0 4px}
 .results .sub{color:var(--muted);margin:0 0 16px;font-size:14px}
@@ -239,7 +255,7 @@ b.kw{font-weight:800}
 }
 @media (prefers-reduced-motion:no-preference){ mark{transition:background .3s} .card{transition:border-color .2s} }
 .brand a.home{font-family:var(--f-text);font-weight:700;font-size:22px;letter-spacing:.2px;text-decoration:none;color:var(--ink)}
-.brand a.home .ai{color:var(--accent);font-family:var(--f-ui);font-weight:700;letter-spacing:.5px}
+.brand a.home .ai{color:var(--accent);font-family:var(--f-ui);font-weight:700;letter-spacing:.5px;font-size:inherit}
 @media (max-width:880px){.brand a.home{font-size:19px}}
 </style>
 
@@ -257,8 +273,9 @@ b.kw{font-weight:800}
 
 <main class="wrap">
   <div class="banner" id="banner" hidden></div>
+  <section id="landing" class="landing" hidden></section>
   <section id="practice">
-    <nav class="texttabs" id="texttabs" role="tablist"></nav>
+    <div class="tabsrow"><button type="button" class="btn ghost tolanding" id="toLanding"></button><nav class="texttabs" id="texttabs" role="tablist"></nav></div>
     <div class="seg mobswitch" role="group" id="mobswitch">
       <button type="button" data-v="text" aria-pressed="true"></button>
       <button type="button" data-v="qs" aria-pressed="false"></button>
@@ -732,8 +749,8 @@ function renderTabs(){
   const L=t();
   document.getElementById("texttabs").innerHTML = BANK.texts.map((tx,i)=>{
     const its=itemsOf(tx.id), done=its.filter(x=>["ok","revealed"].includes(st(x.id).status)).length;
-    return `<button role="tab" type="button" aria-selected="${i===S.text}" data-tab="${i}">${esc(tx.title)}
-      <small>${textLabel(i)} · ${L.qcount(its.length)} ${done===its.length?`· <span class="done">✓ ${L.done}</span>`:done?`· ${done}/${its.length}`:""}</small></button>`;
+    return `<button role="tab" type="button" aria-selected="${i===S.text}" data-tab="${i}">${textLabel(i)}
+      <small>${L.qcount(its.length)} ${done===its.length?`· <span class="done">✓ ${L.done}</span>`:done?`· ${done}/${its.length}`:""}</small></button>`;
   }).join("");
 }
 document.getElementById("texttabs").addEventListener("click",e=>{
@@ -819,7 +836,7 @@ function renderResults(){
   const kpis=[[first,ru?"Верно с первого раза":"Бір реттен дұрыс","good","✓"],[second,ru?"Верно со второй попытки":"Екінші мүмкіндіктен дұрыс","mid","~"],[miss,ru?"Неверный ответ":"Қате жауап","weak","✗"]]
     .map(([v,l,c,i])=>`<div class="kpi ${c}"><span class="ki" aria-hidden="true">${i}</span><b>${v}</b><span>${l}</span></div>`).join("");
   // Сұрақтар картасы
-  const qmap=BANK.texts.map(tx=>`<div class="qm-row"><span class="qm-t">${esc(tx.title)}</span><div class="qm-cells">${itemsOf(tx.id).map(x=>{
+  const qmap=BANK.texts.map(tx=>`<div class="qm-row"><span class="qm-t">${textLabel(BANK.texts.indexOf(tx))}</span><div class="qm-cells">${itemsOf(tx.id).map(x=>{
       const c=isFirst(x)?"good":isSecond(x)?"mid":"weak", i=isFirst(x)?"✓":isSecond(x)?"~":"✗";
       const tip=`${x.number}. ${skillName(x.skill)} — ${c==="good"?(ru?"верно с первого раза":"бір реттен дұрыс"):c==="mid"?(ru?"верно со второй попытки":"екінші мүмкіндіктен дұрыс"):(ru?"неверный ответ":"қате жауап")}`;
       return `<span class="qm ${c}" title="${esc(tip)}" aria-label="${esc(tip)}"><b>${x.number}</b><i aria-hidden="true">${i}</i></span>`;}).join("")}</div></div>`).join("");
@@ -888,6 +905,37 @@ function setLang(l){ S.lang=l; save(); renderAll(); }
 document.getElementById("langKk").onclick=()=>setLang("kk");
 document.getElementById("langRu").onclick=()=>setLang("ru");
 
+let view="landing";
+function landingHTML(){
+  const ru=S.lang==="ru", N=BANK.items.length, nT=BANK.texts.length, done=BANK.items.filter(isAnswered).length;
+  const finished=BANK.items.every(isDone), first=BANK.items.filter(isFirst).length;
+  let status="", btns="";
+  if(finished){
+    status=ru?`Выполнено. Результат: <b>${first} из ${N}</b> баллов.`:`Орындалды. Нәтиже: <b>${kkAbl(N)} ${first} ұпай</b>.`;
+    btns=`<button class="btn primary" type="button" data-land="report">${ru?"Посмотреть отчёт":"Есепті көру"}</button>
+          <button class="btn" type="button" data-land="restart">${ru?"Пройти заново":"Қайта орындау"}</button>`;
+  } else if(done>0){
+    status=ru?`Отвечено ${done} из ${N} вопросов.`:`${N} сұрақтың ${kkDat(done)} жауап бердің.`;
+    btns=`<button class="btn primary" type="button" data-land="start">${ru?"Продолжить":"Жалғастыру"}</button>`;
+  } else {
+    btns=`<button class="btn primary" type="button" data-land="start">${ru?"Начать":"Бастау"}</button>`;
+  }
+  return `<div class="land-head"><span class="eyebrow">${ru?"Читательская грамотность":"Оқу сауаттылығы"}</span>
+      <h1>НЗМ, БИЛ. Қазақ тілі</h1>
+      <p>${ru?"Выберите вариант. В каждом варианте — тексты и вопросы в формате экзамена. После каждого ответа — объяснение и доказательство из текста, в конце — отчёт по навыкам.":"Нұсқаны таңдаңыз. Әр нұсқада емтихан форматындағы мәтіндер мен сұрақтар бар. Әр жауаптан кейін түсініктеме мен мәтіннен дәлел беріледі, соңында дағдылар бойынша есеп шығады."}</p></div>
+    <div class="variants"><article class="variant">
+      <h2>${ru?"Вариант 1":"1-нұсқа"}</h2>
+      <p class="vmeta">${ru?`${nT} текста · ${N} вопросов`:`${nT} мәтін · ${N} сұрақ`}</p>
+      ${status?`<div class="vprog"><i style="width:${Math.round(100*(finished?N:done)/N)}%"></i></div><p class="vstatus">${status}</p>`:""}
+      <div class="actions">${btns}</div></article></div>`;
+}
+document.getElementById("landing").addEventListener("click",e=>{
+  const b=e.target.closest("[data-land]"); if(!b) return;
+  if(b.dataset.land==="start"){ view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.land==="report"){ showingResults=true; view="practice"; renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.land==="restart"){ S.items={}; S.order={}; S.cur={}; S.text=0; marks=[]; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
+});
+document.getElementById("toLanding").addEventListener("click",()=>{ view="landing"; showingResults=false; renderAll(); window.scrollTo({top:0}); });
 function renderAll(){
   const L=t();
   document.documentElement.lang = S.lang==="ru"?"ru":"kk";
@@ -900,8 +948,13 @@ function renderAll(){
   const rb=document.getElementById("resultsBtn"), ad=allDone();
   rb.textContent = showingResults ? L.back : (ad ? (BANK.items.every(isDone)?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")) : (S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isAnswered).length}/${BANK.items.length}`);
   rb.disabled = !showingResults && !ad; rb.classList.toggle("primary", ad && !showingResults);
-  document.getElementById("practice").hidden=showingResults;
+  const onLanding = view==="landing" && !showingResults;
+  document.getElementById("landing").hidden=!onLanding;
+  if(onLanding) document.getElementById("landing").innerHTML=landingHTML();
+  document.getElementById("practice").hidden=showingResults || onLanding;
   document.getElementById("results").hidden=!showingResults;
+  rb.hidden=onLanding; document.getElementById("score").hidden=onLanding;
+  document.getElementById("toLanding").textContent = S.lang==="ru"?"← Варианты":"← Нұсқалар";
   if(showingResults) renderResults();
   renderPaper(); renderQs(); renderTop(); setView(S.view||"text"); requestAnimationFrame(fitGrid);
 }

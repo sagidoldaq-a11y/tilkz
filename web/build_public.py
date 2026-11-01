@@ -17,7 +17,7 @@ brand_old = '<div class="brand"><b>TilKz <span class="ai">AI</span></b>'
 assert brand_old in body
 body = body.replace(brand_old, '<div class="brand"><a href="../" class="home" title="Басты бет">TilKz <span class="ai">AI</span></a>')
 body = body.replace("</style>", ".brand a.home{font-family:var(--f-text);font-weight:700;font-size:22px;letter-spacing:.2px;text-decoration:none;color:var(--ink)}\n"
-                                 ".brand a.home .ai{color:var(--accent);font-family:var(--f-ui);font-weight:700;letter-spacing:.5px}\n"
+                                 ".brand a.home .ai{color:var(--accent);font-family:var(--f-ui);font-weight:700;letter-spacing:.5px;font-size:inherit}\n"
                                  "@media (max-width:880px){.brand a.home{font-size:19px}}\n</style>", 1)
 body = body.replace("<title>TilKz AI</title>", "<title>НЗМ, БИЛ. Қазақ тілі – TilKz AI</title>", 1)
 head = ('<!doctype html><html lang="kk"><head><meta charset="utf-8">'
