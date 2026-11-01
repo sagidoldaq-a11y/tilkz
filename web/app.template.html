@@ -71,6 +71,20 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
 .qnum{font-weight:700;font-size:13px;color:var(--muted)}
 .chip{font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--accent-soft);color:var(--accent)}
+.skillchip{border:0;cursor:pointer}
+.skillchip:hover{text-decoration:underline}
+.skillbox{background:var(--accent-soft);border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:14px}
+.skillbox p{margin:4px 0 0}
+.skillbox .g{color:var(--muted)}
+.legend{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+.legend summary{font-family:var(--f-text);font-size:19px;font-weight:700;cursor:pointer}
+.legend .lg{margin-top:14px}
+.legend h3{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0}
+.legend .sub{margin:4px 0 8px}
+.legend dl{display:grid;grid-template-columns:minmax(0,15em) minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
+.legend dt{font-weight:600}
+.legend dd{margin:0;color:var(--ink)}
+@media (max-width:880px){.legend dl{grid-template-columns:minmax(0,1fr)} .legend dd{margin-bottom:6px;color:var(--muted)}}
 .chip.lvl{background:transparent;border:1px solid var(--line);color:var(--muted)}
 .stem{font-size:16px;font-weight:600;margin:0 0 12px;text-wrap:pretty}
 .stem .neg{font-weight:800;letter-spacing:.3px;text-decoration:underline;text-underline-offset:3px}
@@ -198,6 +212,59 @@ const UI = {
 };
 const SKILL_RU = {"А1":"Поиск конкретного факта","А2":"Причина и следствие","А3":"Где находится информация","Ә1":"Определение отсылки","Ә2":"Значение слова в тексте","Ә3":"Сверка утверждения с текстом","Ә4":"Чувства и характер героя","Б1":"Основная мысль, тема, заголовок","Б2":"Скрытый смысл","Б3":"Вывод, совет, мораль","Б4":"Структура и логика текста","В1":"Тип и жанр текста","В2":"Цель и позиция автора"};
 
+/* Дағдылар анықтамасы: топ және әр дағды не білдіреді */
+const GROUP_INFO = {
+  kk:{"А":"Жауап мәтінде ашық жазылып тұр, оқушы тек тауып алуы керек.",
+      "Ә":"Жауап мәтінде дәл сол сөзбен жазылмаған: оқушы бір-екі сөйлемге сүйеніп, өзі қорытынды шығарады.",
+      "Б":"Оқушы бір сөйлемге емес, бүкіл мәтінге немесе абзацқа қарап, ойды жинақтайды.",
+      "В":"Оқушы мәтінге сырттан қарап, оны кім, не үшін, қалай жазғанын бағалайды."},
+  ru:{"А":"Ответ прямо написан в тексте, его нужно только найти.",
+      "Ә":"Ответ не написан теми же словами: ученик сам делает вывод по одному-двум предложениям.",
+      "Б":"Ученик смотрит не на одно предложение, а на весь текст или абзац и обобщает мысль.",
+      "В":"Ученик смотрит на текст со стороны: кто, зачем и как его написал."}};
+const SKILL_INFO = {
+  kk:{"А1":"Мәтіндегі нақты деректі табады: кім, не, қашан, қанша.",
+      "А2":"Себеп пен салдарды табады: неліктен, не себеп болды.",
+      "А3":"Ақпараттың қай абзацта, қай бөлімде тұрғанын анықтайды.",
+      "Ә1":"Есімдіктің немесе сөздің кімді/нені меңзейтінін анықтайды («оның» деп кімді айтады?).",
+      "Ә2":"Сөздің немесе тіркестің мәтіндегі мағынасын түсінеді.",
+      "Ә3":"Тұжырымды мәтінмен салыстырып, сәйкес келетін-келмейтінін анықтайды.",
+      "Ә4":"Кейіпкердің немесе автордың сезімі мен мінезін анықтайды.",
+      "Б1":"Мәтіннің немесе абзацтың негізгі ойын, тақырыбын, атауын анықтайды.",
+      "Б2":"Астарлы ойды түсінеді: «автор не айтқысы келді?».",
+      "Б3":"Мәтіннің түйінін, кеңесін, тағылымын анықтайды.",
+      "Б4":"Мәтіннің құрылымы мен логикасын түсінеді: оқиғаның реті, бос орынды толтыру, байланыстырушы сөз.",
+      "В1":"Мәтіннің үлгісін, жанрын анықтайды: сұхбат, мақала, әңгіме.",
+      "В2":"Автордың мақсатын, көзқарасын анықтайды."},
+  ru:{"А1":"Находит конкретный факт в тексте: кто, что, когда, сколько.",
+      "А2":"Находит причину и следствие: почему, что стало причиной.",
+      "А3":"Определяет, в каком абзаце или части находится информация.",
+      "Ә1":"Определяет, кого или что обозначает местоимение или слово («оның» — это кто?).",
+      "Ә2":"Понимает значение слова или выражения в тексте.",
+      "Ә3":"Сверяет утверждение с текстом: соответствует или нет.",
+      "Ә4":"Определяет чувства и характер героя или автора.",
+      "Б1":"Определяет основную мысль, тему, заголовок текста или абзаца.",
+      "Б2":"Понимает скрытый смысл: «что хотел сказать автор?».",
+      "Б3":"Определяет вывод, совет, мораль текста.",
+      "Б4":"Понимает структуру и логику текста: порядок событий, пропуск, связующее слово.",
+      "В1":"Определяет тип и жанр текста: интервью, статья, рассказ.",
+      "В2":"Определяет цель и позицию автора."}};
+const skillName = c => S.lang==="ru" ? SKILL_RU[c] : BANK.skills[c];
+const openSkill = {};
+function skillBox(c){
+  const L=t();
+  return `<div class="skillbox"><b>${c} · ${esc(skillName(c))}</b><p>${esc(SKILL_INFO[S.lang][c])}</p>
+    <p class="g"><b>${esc(L.groups[c[0]])}.</b> ${esc(GROUP_INFO[S.lang][c[0]])}</p></div>`;
+}
+function legendHTML(){
+  const L=t(), groups={};
+  for(const c of Object.keys(BANK.skills)) (groups[c[0]] ||= []).push(c);
+  return `<details class="legend" open><summary>${S.lang==="ru"?"Что означают коды навыков":"Дағды кодтары нені білдіреді"}</summary>
+    <p class="sub">${S.lang==="ru"?"Буква — группа навыков (от А, самой простой, до В, самой глубокой), цифра — конкретный навык. Например, Ә2 — второй навык группы Ә.":"Әріп – дағды тобы (А ең жеңіл, В ең терең), сан – сол топтағы нақты дағды. Мысалы, Ә2 – Ә тобындағы 2-дағды."}</p>
+    ${Object.entries(groups).map(([g,cs])=>`<div class="lg"><h3>${esc(L.groups[g])}</h3><p class="sub">${esc(GROUP_INFO[S.lang][g])}</p>
+      <dl>${cs.map(c=>`<dt>${c} · ${esc(skillName(c))}</dt><dd>${esc(SKILL_INFO[S.lang][c])}</dd>`).join("")}</dl></div>`).join("")}</details>`;
+}
+
 /* ---------- Күй ---------- */
 const KEY = "oqylym-v1-state";
 let S = load();
@@ -293,9 +360,9 @@ function cardHTML(it){
       <button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>
     </div>`;
   return `<article class="card ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
-    <div class="qhead"><span class="qnum">${it.number}</span><span class="chip">${it.skill} · ${esc(skillName)}</span>
+    <div class="qhead"><span class="qnum">${it.number}</span><button type="button" class="chip skillchip" data-act="skill" data-id="${it.id}" aria-expanded="${!!openSkill[it.id]}" title="${S.lang==="ru"?"Что это за навык?":"Бұл қандай дағды?"}">${it.skill} · ${esc(skillName)} <span aria-hidden="true">ⓘ</span></button>
       <span class="chip lvl">${L.level(it.level)}</span>${it.negative?`<span class="chip lvl">${L.neg}</span>`:""}</div>
-    <p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${actions}${openHelp[it.id]?assistHTML(it):""}</article>`;
+    ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${actions}${openHelp[it.id]?assistHTML(it):""}</article>`;
 }
 
 /* ---------- Көмекші (Claude) ---------- */
@@ -440,6 +507,7 @@ document.addEventListener("click",e=>{
       break;
     case "reveal": s.status="revealed"; save(); rerenderCard(id); markEvidence(it); break;
     case "mark": markEvidence(it,true); break;
+    case "skill": openSkill[id]=!openSkill[id]; rerenderCard(id); break;
     case "nexthint": hintStep[id]=(hintStep[id]||1)+1; rerenderCard(id); break;
     case "help": openHelp[id]=!openHelp[id]; if(openHelp[id]&&!hintStep[id]) hintStep[id]=1; rerenderCard(id); if(openHelp[id]) document.getElementById("in-"+id)?.focus(); break;
     case "quick": ask(id,b.textContent); break;
@@ -493,7 +561,7 @@ function renderResults(){
     const pct=done.length?Math.round(100*good/done.length):0;
     return `<div class="row ${done.length&&pct<50?"weak":""}"><span>${c} · ${esc(name)}</span><div class="bar"><i style="width:${pct}%"></i></div><span class="n">${good}/${done.length||its.length}</span></div>`;
   }).join("")}</div>`).join("");
-  document.getElementById("results").innerHTML=`<h2>${L.rTitle}</h2><p class="sub">${L.rSub}</p>${rows}
+  document.getElementById("results").innerHTML=`<h2>${L.rTitle}</h2><p class="sub">${L.rSub}</p>${rows}${legendHTML()}
     <div class="actions"><button class="btn primary" type="button" id="backBtn">${L.back}</button><button class="btn ghost" type="button" id="resetBtn">${L.reset}</button></div>`;
 }
 let showingResults=false;
