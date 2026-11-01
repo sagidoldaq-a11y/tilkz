@@ -254,7 +254,7 @@ const UI = {
       noAI:"Көмекші бұл көріністе қолжетімсіз. Платформаның толық нұсқасында ол әрдайым қосулы болады.",
       errAI:{not_granted:"Көмекшіге рұқсат берілмеді.",rate_limited:"Сұрақ тым жиі жіберілді. Біраз күтіп, қайта жазып көр.",refused:"Көмекші бұл сұраққа жауап бере алмады. Басқаша сұрап көр.",session_expired:"Қайта кіру қажет.",_:"Байланыс үзілді. Қайта жіберіп көр."},
       rTitle:"Дағдылар бойынша нәтиже", rSub:"Есеп бірінші әрекеттегі жауаптар бойынша жүргізіледі. Мұғалім осы кестеден оқушының әлсіз дағдыларын көреді.",
-      groups:{"A":"A. Ақпаратты табу","B":"B. Тікелей қорытынды жасау","C":"C. Түсіндіру және біріктіру","D":"D. Бағалау"}, notYet:"әлі жоқ",
+      groups:{"A":"Ақпаратты табу","B":"Тікелей қорытынды жасау","C":"Түсіндіру және біріктіру","D":"Бағалау"}, notYet:"әлі жоқ",
       banner:""},
   ru:{tagline:"Читательская грамотность · НИШ, БИЛ · вариант 1", text:"Текст", qs:"Вопросы", results:"Результаты", back:"Вернуться к заданиям",
       score:(a,b,c)=>`Верно с первой попытки: <b>${a}</b> / ${b} · отвечено: ${c}`, check:"Проверить", show:"Показать ответ",
@@ -267,7 +267,7 @@ const UI = {
       noAI:"Помощник недоступен в этом просмотре. В полной версии платформы он всегда включён.",
       errAI:{not_granted:"Доступ к помощнику не разрешён.",rate_limited:"Слишком частые запросы. Подожди немного и попробуй снова.",refused:"Помощник не смог ответить на этот вопрос. Попробуй спросить иначе.",session_expired:"Нужно войти заново.",_:"Связь прервалась. Попробуй отправить ещё раз."},
       rTitle:"Результаты по навыкам", rSub:"Учитываются ответы с первой попытки. По этой таблице учитель видит слабые навыки ученика.",
-      groups:{"A":"A. Поиск информации","B":"B. Прямые выводы","C":"C. Интерпретация и обобщение","D":"D. Оценка"}, notYet:"нет данных",
+      groups:{"A":"Поиск информации","B":"Прямые выводы","C":"Интерпретация и обобщение","D":"Оценка"}, notYet:"нет данных",
       banner:"Русский интерфейс по плану получает задания уровня «қазақ тілі — второй язык». Они ещё готовятся, поэтому здесь показаны задания первого языка. Тексты и вопросы остаются на казахском, помощник объясняет по-русски."}
 };
 const SKILL_RU = {"A1":"Поиск конкретного факта","A2":"Причина и следствие","A3":"Где находится информация","B1":"Определение отсылки","B2":"Значение слова в тексте","B3":"Сверка утверждения с текстом","B4":"Чувства и характер героя","C1":"Основная мысль, тема, заголовок","C2":"Скрытый смысл","C3":"Вывод, совет, мораль","C4":"Структура и логика текста","D1":"Тип и жанр текста","D2":"Цель и позиция автора"};
@@ -313,16 +313,15 @@ const skillName = c => S.lang==="ru" ? SKILL_RU[c] : BANK.skills[c];
 const openSkill = {};
 function skillBox(c){
   const L=t();
-  return `<div class="skillbox"><b>${c} · ${esc(skillName(c))}</b><p>${esc(SKILL_INFO[S.lang][c])}</p>
-    <p class="g"><b>${esc(L.groups[c[0]])}.</b> ${esc(GROUP_INFO[S.lang][c[0]])}</p></div>`;
+  return `<div class="skillbox"><b>${esc(skillName(c))}</b><p>${esc(SKILL_INFO[S.lang][c])}</p>
+    <p class="g">${S.lang==="ru"?"Группа":"Тобы"}: <b>${esc(L.groups[c[0]])}.</b> ${esc(GROUP_INFO[S.lang][c[0]])}</p></div>`;
 }
 function legendHTML(){
   const L=t(), groups={};
   for(const c of Object.keys(BANK.skills)) (groups[c[0]] ||= []).push(c);
-  return `<details class="legend" open><summary>${S.lang==="ru"?"Что означают коды навыков":"Дағды кодтары нені білдіреді"}</summary>
-    <p class="sub">${S.lang==="ru"?"Буква — группа навыков (от A, самой простой, до D, самой глубокой), цифра — конкретный навык. Например, B2 — второй навык группы B.":"Әріп – дағды тобы (A ең жеңіл, D ең терең), сан – сол топтағы нақты дағды. Мысалы, B2 – B тобындағы 2-дағды."}</p>
+  return `<details class="legend" open><summary>${S.lang==="ru"?"Что означают навыки":"Дағдылар нені білдіреді"}</summary>
     ${Object.entries(groups).map(([g,cs])=>`<div class="lg"><h3>${esc(L.groups[g])}</h3><p class="sub">${esc(GROUP_INFO[S.lang][g])}</p>
-      <dl>${cs.map(c=>`<dt>${c} · ${esc(skillName(c))}</dt><dd>${esc(SKILL_INFO[S.lang][c])}</dd>`).join("")}</dl></div>`).join("")}</details>`;
+      <dl>${cs.map(c=>`<dt>${esc(skillName(c))}</dt><dd>${esc(SKILL_INFO[S.lang][c])}</dd>`).join("")}</dl></div>`).join("")}</details>`;
 }
 
 /* ---------- Күй ---------- */
@@ -419,8 +418,8 @@ function cardHTML(it){
       ${fin?"":`<button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>`}
     </div>`;
   return `<article class="card ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
-    <div class="qhead"><span class="qnum">${it.number}</span><button type="button" class="chip skillchip" data-act="skill" data-id="${it.id}" aria-expanded="${!!openSkill[it.id]}" title="${S.lang==="ru"?"Что это за навык?":"Бұл қандай дағды?"}">${it.skill} · ${esc(skillName)} <span aria-hidden="true">ⓘ</span></button>
-      <span class="chip lvl">${L.level(it.level)}</span>${it.negative?`<span class="chip lvl">${L.neg}</span>`:""}</div>
+    <div class="qhead"><span class="qnum">${it.number}</span><button type="button" class="chip skillchip" data-act="skill" data-id="${it.id}" aria-expanded="${!!openSkill[it.id]}" title="${S.lang==="ru"?"Что это за навык?":"Бұл қандай дағды?"}">${esc(skillName)} <span aria-hidden="true">ⓘ</span></button>
+      ${it.negative?`<span class="chip lvl">${L.neg}</span>`:""}</div>
     ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${fin?"":actions}${(!fin&&openHelp[it.id])?assistHTML(it):""}</article>`;
 }
 
@@ -667,14 +666,14 @@ function renderResults(){
   // Сұрақтар картасы
   const qmap=BANK.texts.map(tx=>`<div class="qm-row"><span class="qm-t">${esc(tx.title)}</span><div class="qm-cells">${itemsOf(tx.id).map(x=>{
       const c=isFirst(x)?"good":isSecond(x)?"mid":"weak", i=isFirst(x)?"✓":isSecond(x)?"~":"✗";
-      const tip=`${x.number}. ${x.skill} · ${skillName(x.skill)} — ${c==="good"?(ru?"верно с первой попытки":"бірінші әрекетте дұрыс"):c==="mid"?(ru?"верно со второй попытки":"екінші әрекетте дұрыс"):(ru?"не решено":"шешілмеді")}`;
+      const tip=`${x.number}. ${skillName(x.skill)} — ${c==="good"?(ru?"верно с первой попытки":"бірінші әрекетте дұрыс"):c==="mid"?(ru?"верно со второй попытки":"екінші әрекетте дұрыс"):(ru?"не решено":"шешілмеді")}`;
       return `<span class="qm ${c}" title="${esc(tip)}" aria-label="${esc(tip)}"><b>${x.number}</b><i aria-hidden="true">${i}</i></span>`;}).join("")}</div></div>`).join("");
   const qlegend=`<div class="lgd"><span><i class="sw good"></i>✓ ${ru?"с первой попытки":"бірінші әрекетте"}</span><span><i class="sw mid"></i>~ ${ru?"со второй попытки":"екінші әрекетте"}</span><span><i class="sw weak"></i>✗ ${ru?"не решено":"шешілмеді"}</span></div>`;
   // Топтар мен дағдылар
   const groups={}; for(const c of Object.keys(BANK.skills)) (groups[c[0]] ||= []).push(c);
   const gbars=Object.keys(groups).map(g=>{ const sg=statOf(items.filter(x=>x.skill[0]===g)); return hbar(esc(L.groups[g]), sg, `${L.groups[g]}: ${sg.g}/${sg.n}`); }).join("");
   const skillStats=Object.keys(BANK.skills).map(c=>({c,...statOf(items.filter(x=>x.skill===c))}));
-  const sbars=skillStats.map(x=>hbar(`<b>${x.c}</b> ${esc(skillName(x.c))}`, x, `${x.c} · ${skillName(x.c)}: ${x.g}/${x.n}`)).join("");
+  const sbars=skillStats.map(x=>hbar(esc(skillName(x.c)), x, `${skillName(x.c)}: ${x.g}/${x.n}`)).join("");
   // Әр дағды бойынша екінші әрекеттегі дұрыс жауаптар да есептеледі
   for(const x of skillStats){ const its=items.filter(i=>i.skill===x.c); x.s2=its.filter(isSecond).length; x.score=x.n?(x.g+0.5*x.s2)/x.n:0; }
   const present=skillStats.filter(x=>x.p!==null);
@@ -682,7 +681,7 @@ function renderResults(){
   // 75%-ға жеткен дағды болмаса: басқаларға қарағанда жақсы шыққан дағдылар
   const relative = strong.length ? [] : present.filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,3);
   const fixedSecond = present.filter(x=>x.s2>0 && !strong.includes(x));
-  const chips=a=>a.length?a.map(x=>`<span class="sk">${x.c} · ${esc(skillName(x.c))}</span>`).join(""):`<span class="muted">${ru?"пока нет":"әзірге жоқ"}</span>`;
+  const chips=a=>a.length?a.map(x=>`<span class="sk">${esc(skillName(x.c))}</span>`).join(""):`<span class="muted">${ru?"пока нет":"әзірге жоқ"}</span>`;
   const bandLegend=`<div class="lgd"><span><i class="sw good"></i>${BAND[S.lang].good} (75%+)</span><span><i class="sw mid"></i>${BAND[S.lang].mid} (50–74%)</span><span><i class="sw weak"></i>${BAND[S.lang].weak} (&lt;50%)</span></div>`;
   document.getElementById("results").innerHTML=`
     <div class="rep-hero">${ring}<div class="rep-sum"><h2>${verdict}</h2>
@@ -694,7 +693,7 @@ function renderResults(){
         ${strong.length?`<div class="sks">${chips(strong)}</div>`
           : relative.length?`<p class="note" style="margin-top:0">${ru?"Пока ни один навык не достиг 75%, но лучше всего у тебя получилось:":"Әзірге 75%-ға жеткен дағды жоқ, бірақ басқаларға қарағанда мына дағдыларың жақсы шықты:"}</p><div class="sks">${chips(relative)}</div>`
           : `<p class="note" style="margin-top:0">${ru?"Сильные стороны пока не определились. Внимательно перечитай тексты и попробуй ещё раз.":"Мықты жағың әзірге анықталмады. Мәтіндерді мұқият қайта оқып, тағы байқап көр."}</p>`}
-        ${fixedSecond.length?`<p class="sub2">${ru?"Со второй попытки ты исправил(а) ошибки в навыках:":"Екінші әрекетте қатеңді түзеткен дағдыларың:"}</p><div class="sks">${fixedSecond.map(x=>`<span class="sk">${x.c} · ${esc(skillName(x.c))} <small>(${x.s2})</small></span>`).join("")}</div>
+        ${fixedSecond.length?`<p class="sub2">${ru?"Со второй попытки ты исправил(а) ошибки в навыках:":"Екінші әрекетте қатеңді түзеткен дағдыларың:"}</p><div class="sks">${fixedSecond.map(x=>`<span class="sk">${esc(skillName(x.c))} <small>(${x.s2})</small></span>`).join("")}</div>
           <p class="note">${ru?"Значит, ты умеешь находить ответ в тексте, если перечитываешь внимательно. Теперь постарайся найти его с первой попытки.":"Бұл – мәтінді мұқият қайта оқығанда жауапты таба алатыныңды көрсетеді. Енді оны бірінші әрекетте табуға тырыс."}</p>`:""}
       </div>
       <div class="sw-box weak"><h3><span class="ic" aria-hidden="true">!</span>${ru?"Нужно уделить внимание":"Мән беру керек"}</h3><div class="sks">${chips(weak)}</div></div>
