@@ -521,7 +521,7 @@ function cardHTML(it){
     let lastWrong="";
     if(!good && s.tries.length){
       const lw=s.tries[s.tries.length-1], dev=devOf(it,lw);
-      lastWrong=`<div class="fb bad" role="status"><h4>${L.bad}: ${shownLetter(it,lw)}) ${esc(it.options[lw])}</h4>
+      lastWrong=`<div class="fb bad" role="status"><h4>${S.lang==="ru"?"Этот ответ тоже неверный":"Бұл жауап та дұрыс емес"}: ${shownLetter(it,lw)}) ${esc(it.options[lw])}</h4>
         <p><b>${L.why}</b> ${L.because?L.because+esc(noteOf(it,lw)):esc(cap(noteOf(it,lw)))}</p>
         ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w",kwOf(it,lw))).join("")}`:""}</div>`;
     }
