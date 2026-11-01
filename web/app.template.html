@@ -54,6 +54,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .texttabs .done{color:var(--ok);font-size:12px;font-weight:600}
 
 .mobswitch{display:none;margin-top:10px}
+.backq{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:6;box-shadow:0 4px 14px rgba(0,0,0,.25);padding:11px 20px}
 .grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:20px;padding-block:14px 40px;align-items:start}
 .paper{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px 30px;position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto}
 .paper h2{font-family:var(--f-text);font-size:22px;margin:0 0 4px;text-wrap:balance}
@@ -156,6 +157,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
     </div>
     <div class="grid" id="grid" data-view="text">
       <article class="paper" id="paper"></article>
+      <button class="btn primary backq" id="backq" type="button" hidden>← Сұраққа оралу</button>
       <div class="qs" id="qs"></div>
     </div>
   </section>
@@ -288,7 +290,7 @@ function cardHTML(it){
       ${fin?`<button class="btn" type="button" data-act="mark" data-id="${it.id}">${L.inText}</button>`
            :`<button class="btn primary" type="button" data-act="check" data-id="${it.id}" ${canCheck?"":"disabled"}>${L.check}</button>`}
       ${s.status==="retry"?`<button class="btn ghost" type="button" data-act="reveal" data-id="${it.id}">${L.show}</button>`:""}
-      <button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:"💬 "+L.helper}</button>
+      <button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>
     </div>`;
   return `<article class="card ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
     <div class="qhead"><span class="qnum">${it.number}</span><span class="chip">${it.skill} · ${esc(skillName)}</span>
@@ -297,7 +299,42 @@ function cardHTML(it){
 }
 
 /* ---------- Көмекші (Claude) ---------- */
+/* ЖИ қолжетімсіз кезде: банк деректерінен құрылған 3 сатылы кеңес */
+const TIPS = {
+  kk:{"А":"Сұрақтағы негізгі сөзді тап, сосын сол сөзді немесе оның синонимін мәтіннен ізде.",
+      "Ә":"Әр нұсқаны мәтінмен жеке-жеке салыстыр. Мәтінде дәл солай айтылған ба, әлде тек ұқсас па?",
+      "Б":"Бір сөйлемге емес, бүкіл мәтінге (немесе абзацқа) қара. Автор ең көп не туралы айтады?",
+      "В":"Мәтінді кім, кімге, не үшін жазғанын ойла. Автор ойын қалай жеткізеді?"},
+  ru:{"А":"Найди ключевое слово в вопросе, потом ищи это слово или его синоним в тексте.",
+      "Ә":"Сравни каждый вариант с текстом по отдельности. Сказано ли в тексте именно так или только похоже?",
+      "Б":"Смотри не на одно предложение, а на весь текст (или абзац). О чём автор говорит больше всего?",
+      "В":"Подумай, кто, для кого и зачем написал текст. Как автор передаёт свою мысль?"}};
+function hintPlace(it){
+  const tx=BANK.texts.find(x=>x.id===it.text_id), f=frags(it.evidence[0])[0]||"";
+  const i=tx.paragraphs.findIndex(p=>p.replace(/\*\*/g,"").includes(f));
+  if(i<0) return null;
+  if(tx.numbered_paragraphs) return S.lang==="ru"?`Перечитай ${i+1}-й абзац.`:`${i+1}-азатжолды қайта оқып шық.`;
+  const pos=i/Math.max(1,tx.paragraphs.length-1), kk=pos<.34?"басындағы":pos<.67?"ортасындағы":"соңындағы", ru=pos<.34?"в начале":pos<.67?"в середине":"в конце";
+  return S.lang==="ru"?`Ответ ищи ${ru} текста.`:`Жауапты мәтіннің ${kk} бөліктен ізде.`;
+}
+function hintsFor(it){
+  const s=st(it.id), out=[TIPS[S.lang][it.skill[0]]], place=hintPlace(it);
+  if(place) out.push(place);
+  const cand=Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o));
+  if(cand.length>1){ const o=cand[0]; out.push((S.lang==="ru"?`Вариант ${shownLetter(it,o)} точно не подходит: `:`${shownLetter(it,o)} нұсқасы дұрыс емес: `)+it.distractor_notes[o]); }
+  return out;
+}
+const hintStep={};
+function hintHTML(it){
+  const L=t(), s=st(it.id), fin=s.status==="ok"||s.status==="revealed";
+  if(fin) return `<div class="assist"><div class="msgs"><div class="msg note">${S.lang==="ru"?"Объяснение и доказательство из текста — выше.":"Түсіндірме мен мәтіндегі дәлел жоғарыда берілген."}</div></div></div>`;
+  const hs=hintsFor(it), n=Math.min(hintStep[it.id]||1,hs.length);
+  const shown=hs.slice(0,n).map((h,i)=>`<div class="msg ai"><b>${i+1}.</b> ${esc(h)}</div>`).join("");
+  const more = n<hs.length ? `<button class="btn" type="button" data-act="nexthint" data-id="${it.id}">${S.lang==="ru"?"Ещё подсказка":"Тағы кеңес"} (${n}/${hs.length})</button>` : `<span class="score">${S.lang==="ru"?"Подсказки закончились. Перечитай текст и выбери ответ.":"Кеңестер осымен бітті. Мәтінді қайта оқып, жауап таңда."}</span>`;
+  return `<div class="assist" id="as-${it.id}"><div class="msgs" aria-live="polite">${shown}</div>${more}</div>`;
+}
 function assistHTML(it){
+  if(!sample) return hintHTML(it);
   const L=t(), s=st(it.id), log=chats[it.id]||[];
   const msgs = log.map(m=>`<div class="msg ${m.role==="user"?"me":"ai"}">${esc(m.content)}</div>`).join("") ||
     `<div class="msg note">${sample===null?L.noAI:L.hello}</div>`;
@@ -380,10 +417,13 @@ function rerenderCard(id){
   if(el){ el.outerHTML=cardHTML(it); const m=document.getElementById("msgs-"+id); if(m) m.scrollTop=m.scrollHeight; }
   renderTop();
 }
-function markEvidence(it){
+let backTo=null;
+function markEvidence(it, jump){
   marks = it.evidence.flatMap(frags);
   renderPaper();
-  if(matchMedia("(max-width:880px)").matches) setView("text");
+  const phone = matchMedia("(max-width:880px)").matches;
+  if(phone && !jump) return;
+  if(phone){ backTo=it.id; setView("text"); }
   const m=document.querySelector("#paper mark"); m?.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"center"});
 }
 document.addEventListener("change",e=>{
@@ -399,8 +439,9 @@ document.addEventListener("click",e=>{
       else { s.tries.push(s.sel); s.sel=null; s.status = s.tries.length>=2 ? "revealed" : "retry"; save(); rerenderCard(id); if(s.status==="revealed") markEvidence(it); }
       break;
     case "reveal": s.status="revealed"; save(); rerenderCard(id); markEvidence(it); break;
-    case "mark": markEvidence(it); break;
-    case "help": openHelp[id]=!openHelp[id]; rerenderCard(id); if(openHelp[id]) document.getElementById("in-"+id)?.focus(); break;
+    case "mark": markEvidence(it,true); break;
+    case "nexthint": hintStep[id]=(hintStep[id]||1)+1; rerenderCard(id); break;
+    case "help": openHelp[id]=!openHelp[id]; if(openHelp[id]&&!hintStep[id]) hintStep[id]=1; rerenderCard(id); if(openHelp[id]) document.getElementById("in-"+id)?.focus(); break;
     case "quick": ask(id,b.textContent); break;
   }
 });
@@ -434,8 +475,11 @@ function renderTop(){
 }
 function setView(v){
   S.view=v; save(); document.getElementById("grid").dataset.view=v;
+  const bb=document.getElementById("backq"); if(bb) bb.hidden = !(v==="text" && backTo);
+  if(v==="qs" && backTo){ const c=document.getElementById("card-"+backTo); backTo=null; if(bb) bb.hidden=true; c?.scrollIntoView({block:"start"}); }
   document.querySelectorAll("#mobswitch button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v));
 }
+document.getElementById("backq").addEventListener("click",()=>setView("qs"));
 document.getElementById("mobswitch").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setView(b.dataset.v); });
 
 function renderResults(){
@@ -470,6 +514,7 @@ function renderAll(){
   document.getElementById("langRu").setAttribute("aria-pressed",S.lang==="ru");
   const bn=document.getElementById("banner"); bn.hidden=!L.banner; bn.textContent=L.banner;
   const [mt,mq]=document.querySelectorAll("#mobswitch button"); mt.textContent=L.text; mq.textContent=L.qs;
+  document.getElementById("backq").textContent = S.lang==="ru"?"← Вернуться к вопросу":"← Сұраққа оралу";
   document.getElementById("resultsBtn").textContent = showingResults?L.back:L.results;
   document.getElementById("practice").hidden=showingResults;
   document.getElementById("results").hidden=!showingResults;
