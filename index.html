@@ -63,6 +63,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .paper p .pn{font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--accent);margin-right:6px;text-indent:0}
 mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .paper strong{font-weight:700}
+mark.w{background:var(--bad-soft);box-shadow:inset 0 -2px 0 var(--bad)}
 
 .qs{display:flex;flex-direction:column;gap:14px;min-width:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
@@ -104,12 +105,14 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
 .fb{margin-top:12px;border-radius:8px;padding:12px 14px;font-size:14.5px}
 .fb.ok{background:var(--ok-soft)}
+.fb.reveal{background:var(--ok-soft);border-left:4px solid var(--ok)} .fb.reveal h4{color:var(--ok)}
 .fb.second{background:var(--accent-soft)} .fb.second p{margin:0}
 .fb.bad{background:var(--bad-soft)}
 .fb h4{margin:0 0 4px;font-size:14.5px}
 .fb.ok h4{color:var(--ok)} .fb.bad h4{color:var(--bad)}
 .fb p{margin:0 0 6px}
 .fb blockquote{margin:6px 0;padding:6px 10px;border-left:3px solid var(--mark);font-family:var(--f-text);font-size:15px;background:var(--panel);border-radius:0 6px 6px 0}
+.fb blockquote.w{border-left-color:var(--bad)}
 .fb blockquote .tr{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-family:var(--f-ui);font-size:14px;color:var(--muted)}
 .fb ul{margin:4px 0 0;padding-left:18px}
 .fb li{margin-bottom:3px}
@@ -409,9 +412,9 @@ const noteOf = (it,o) => (ru_() && it.distractor_notes_ru) ? it.distractor_notes
 const explOf = it => (ru_() && it.explanation_ru) ? it.explanation_ru : it.explanation;
 const textLabel = i => ru_() ? `Текст ${i+1}` : `${i+1}-мәтін`;
 /* Дәлел сөйлем: қазақша нұсқасы, орысша интерфейсте астында аудармасы */
-function quoteHTML(kk, label){
+function quoteHTML(kk, label, cls){
   const tr = ru_() ? (BANK.evidence_ru||{})[kk] : null;
-  return `<blockquote>${esc(kk)}${label?` ${esc(label)}`:""}${tr?`<span class="tr">${esc(tr)}</span>`:""}</blockquote>`;
+  return `<blockquote${cls?` class="${cls}"`:""}>${esc(kk)}${label?` ${esc(label)}`:""}${tr?`<span class="tr">${esc(tr)}</span>`:""}</blockquote>`;
 }
 const cap = t => t ? t[0].toUpperCase()+t.slice(1) : t;
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])).replace(/(\d)-(?=[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])/g,"$1\u2011");
@@ -425,11 +428,12 @@ function renderPaper(){
   const paras = tx.paragraphs.map((raw,i)=>{
     const bold=[]; let plain=""; let b=false;
     for(let k=0;k<raw.length;k++){ if(raw.startsWith("**",k)){b=!b;k++;continue;} plain+=raw[k]; bold.push(b); }
-    const mk=new Array(plain.length).fill(false);
-    for(const f of marks){ const at=plain.indexOf(f); if(at>=0) for(let k=at;k<at+f.length;k++) mk[k]=true; }
+    const mk=new Array(plain.length).fill("");
+    for(const f0 of marks){ const f=typeof f0==="string"?f0:f0.t, c=typeof f0==="string"?"m":"w";
+      const at=plain.indexOf(f); if(at>=0) for(let k=at;k<at+f.length;k++) if(mk[k]!=="m") mk[k]=c; }
     let html="", cur=null;
     for(let k=0;k<plain.length;k++){
-      const key=(bold[k]?"b":"")+(mk[k]?"m":"");
+      const key=(bold[k]?"b":"")+mk[k];
       if(key!==cur){ if(cur!==null) html+=close(cur); html+=open(key); cur=key; }
       html+=esc(plain[k]);
     }
@@ -437,8 +441,8 @@ function renderPaper(){
     const pn = tx.numbered_paragraphs ? `<span class="pn">${i+1}</span>` : "";
     return `<p>${pn}${html}</p>`;
   }).join("");
-  function open(k){ return (k.includes("m")?'<mark>':"")+(k.includes("b")?"<strong>":""); }
-  function close(k){ return (k.includes("b")?"</strong>":"")+(k.includes("m")?"</mark>":""); }
+  function open(k){ return (k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":""); }
+  function close(k){ return (k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":""); }
   const sn = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note; const src = sn ? ` · ${esc(sn)}` : "";
   document.getElementById("paper").innerHTML =
     `<h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div>${paras}`;
@@ -487,14 +491,21 @@ function cardHTML(it){
     const last=s.tries[s.tries.length-1];
     const note=noteOf(it,last), dev=devOf(it,last);
     fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${L.because?L.because+esc(note):esc(cap(note))}</p>
-      ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e)).join("")}`:""}</div>`;
+      ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w")).join("")}`:""}</div>`;
   } else if(s.status==="retry"){
     fb=`<div class="fb second" role="status"><p>${L.secondNow}</p></div>`;
   } else if(fin){
     const good = s.status==="ok";
-    const wrongs = s.tries.map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(noteOf(it,o)))}</li>`).join("");
+    const wrongs = s.tries.filter((o,i)=>good || i<s.tries.length-1).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(noteOf(it,o)))}</li>`).join("");
     const rest = Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o)).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(noteOf(it,o)))}</li>`).join("");
-    fb=`<div class="fb ${good?"ok":"bad"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)}</h4>
+    let lastWrong="";
+    if(!good && s.tries.length){
+      const lw=s.tries[s.tries.length-1], dev=devOf(it,lw);
+      lastWrong=`<div class="fb bad" role="status"><h4>${L.bad}: ${shownLetter(it,lw)}) ${esc(it.options[lw])}</h4>
+        <p><b>${L.why}</b> ${L.because?L.because+esc(noteOf(it,lw)):esc(cap(noteOf(it,lw)))}</p>
+        ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w")).join("")}`:""}</div>`;
+    }
+    fb=lastWrong+`<div class="fb ${good?"ok":"reveal"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)+") "+esc(it.options[it.key])}</h4>
       <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-азатжол[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(абзац ${m[1]})`:m[0].trim()):""); }).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
   }
@@ -654,8 +665,9 @@ document.addEventListener("change",e=>{
   if(el.value===it.key){ s.status="ok"; }
   else { s.tries.push(el.value); s.status = s.tries.length>=2 ? "revealed" : "wrong1"; }
   s.sel=null; save(); rerenderCard(id);
-  if(s.status==="ok"||s.status==="revealed") markEvidence(it);
-  else { const dev=devOf(it,el.value); marks=dev; renderPaper(); if(dev.length) scrollToMark(); }
+  if(s.status==="ok") markEvidence(it);
+  else if(s.status==="revealed"){ marks=[...devOf(it,el.value).map(t=>({t,w:true})), ...it.evidence.flatMap(frags)]; renderPaper(); scrollToMark(); }
+  else { const dev=devOf(it,el.value); marks=dev.map(t=>({t,w:true})); renderPaper(); if(dev.length) scrollToMark(); }
 });
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]"); if(!b||b.tagName==="INPUT") return;
