@@ -268,7 +268,7 @@ const UI = {
       errAI:{not_granted:"Доступ к помощнику не разрешён.",rate_limited:"Слишком частые запросы. Подожди немного и попробуй снова.",refused:"Помощник не смог ответить на этот вопрос. Попробуй спросить иначе.",session_expired:"Нужно войти заново.",_:"Связь прервалась. Попробуй отправить ещё раз."},
       rTitle:"Результаты по навыкам", rSub:"Учитываются ответы с первой попытки. По этой таблице учитель видит слабые навыки ученика.",
       groups:{"A":"Поиск информации","B":"Прямые выводы","C":"Интерпретация и обобщение","D":"Оценка"}, notYet:"нет данных",
-      banner:"Русский интерфейс по плану получает задания уровня «қазақ тілі — второй язык». Они ещё готовятся, поэтому здесь показаны задания первого языка. Тексты и вопросы остаются на казахском, помощник объясняет по-русски."}
+      banner:"Русский интерфейс по плану получает задания уровня «казахский язык как второй». Они ещё готовятся, поэтому здесь показаны задания первого языка. Тексты и вопросы остаются на казахском, помощник объясняет по-русски."}
 };
 const SKILL_RU = {"A1":"Поиск конкретного факта","A2":"Причина и следствие","A3":"Где находится информация","B1":"Определение отсылки","B2":"Значение слова в тексте","B3":"Сверка утверждения с текстом","B4":"Чувства и характер героя","C1":"Основная мысль, тема, заголовок","C2":"Скрытый смысл","C3":"Вывод, совет, мораль","C4":"Структура и логика текста","D1":"Тип и жанр текста","D2":"Цель и позиция автора"};
 
@@ -376,6 +376,10 @@ function fullSentence(textId, frag){
   return frag;
 }
 const devOf = (it, o) => ((it.distractor_evidence||{})[o]||[]).map(e=>fullSentence(it.text_id,e));
+const ru_ = () => S.lang==="ru";
+const noteOf = (it,o) => (ru_() && it.distractor_notes_ru) ? it.distractor_notes_ru[o] : it.distractor_notes[o];
+const explOf = it => (ru_() && it.explanation_ru) ? it.explanation_ru : it.explanation;
+const textLabel = i => ru_() ? `Текст ${i+1}` : `${i+1}-мәтін`;
 const cap = t => t ? t[0].toUpperCase()+t.slice(1) : t;
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])).replace(/(\d)-(?=[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])/g,"$1\u2011");
 const stripLoc = e => e.replace(/\s*\([^)]*азатжол[^)]*\)$/,"");
@@ -402,9 +406,9 @@ function renderPaper(){
   }).join("");
   function open(k){ return (k.includes("m")?'<mark>':"")+(k.includes("b")?"<strong>":""); }
   function close(k){ return (k.includes("b")?"</strong>":"")+(k.includes("m")?"</mark>":""); }
-  const src = tx.source_note ? ` · ${esc(tx.source_note)}` : "";
+  const sn = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note; const src = sn ? ` · ${esc(sn)}` : "";
   document.getElementById("paper").innerHTML =
-    `<h2>${esc(tx.title)}</h2><div class="meta">${S.text+1}-мәтін${src}</div>${paras}`;
+    `<h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div>${paras}`;
 }
 
 /* ---------- Тапсырмалар ---------- */
@@ -428,17 +432,17 @@ function cardHTML(it){
   let fb="";
   if(s.status==="wrong1"){
     const last=s.tries[s.tries.length-1];
-    const note=it.distractor_notes[last], dev=devOf(it,last);
+    const note=noteOf(it,last), dev=devOf(it,last);
     fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${L.because?L.because+esc(note):esc(cap(note))}</p>
       ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>`<blockquote>${esc(e)}</blockquote>`).join("")}`:""}</div>`;
   } else if(s.status==="retry"){
     fb=`<div class="fb second" role="status"><p>${L.secondNow}</p></div>`;
   } else if(fin){
     const good = s.status==="ok";
-    const wrongs = s.tries.map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(it.distractor_notes[o]))}</li>`).join("");
-    const rest = Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o)).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(it.distractor_notes[o]))}</li>`).join("");
+    const wrongs = s.tries.map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(noteOf(it,o)))}</li>`).join("");
+    const rest = Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o)).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(noteOf(it,o)))}</li>`).join("");
     fb=`<div class="fb ${good?"ok":"bad"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)}</h4>
-      <p>${esc(it.explanation)}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>`<blockquote>${esc(e)}</blockquote>`).join("")}
+      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>`<blockquote>${esc(ru_()?e.replace(/\((\d+)-азатжол[^)]*\)/,"(абзац $1)"):e)}</blockquote>`).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
   }
   const actions = `<div class="actions">
@@ -629,7 +633,7 @@ function renderTabs(){
   document.getElementById("texttabs").innerHTML = BANK.texts.map((tx,i)=>{
     const its=itemsOf(tx.id), done=its.filter(x=>["ok","revealed"].includes(st(x.id).status)).length;
     return `<button role="tab" type="button" aria-selected="${i===S.text}" data-tab="${i}">${esc(tx.title)}
-      <small>${i+1}-мәтін · ${L.qcount(its.length)} ${done===its.length?`· <span class="done">✓ ${L.done}</span>`:done?`· ${done}/${its.length}`:""}</small></button>`;
+      <small>${textLabel(i)} · ${L.qcount(its.length)} ${done===its.length?`· <span class="done">✓ ${L.done}</span>`:done?`· ${done}/${its.length}`:""}</small></button>`;
   }).join("");
 }
 document.getElementById("texttabs").addEventListener("click",e=>{
