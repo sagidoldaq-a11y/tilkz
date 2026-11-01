@@ -68,7 +68,19 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .paper strong{font-weight:700}
 .paper .u{background:rgba(64,140,255,.22);box-shadow:inset 0 -2px 0 var(--accent);border-radius:2px;cursor:pointer}
-.hltip{font-size:12.5px;color:var(--muted);margin:-8px 0 12px;min-height:22px;display:flex;align-items:center}
+.phead{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
+.ptitle{min-width:0}
+.mk{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;color:var(--ink)}
+.mk[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+.mktip{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin:4px 0 12px;font-size:14px;position:relative}
+.mktip::before{content:"";position:absolute;top:-7px;right:34px;width:12px;height:12px;background:var(--accent-soft);border-left:1px solid var(--accent);border-top:1px solid var(--accent);transform:rotate(45deg)}
+.paper .mktip p{margin:0 0 6px;font-family:var(--f-ui);font-size:14px;line-height:1.5;text-align:left;text-indent:0;max-width:none} .paper .mktip .how{color:var(--muted);font-size:13px}
+.mktip .btn{padding:5px 12px;font-size:13px}
+.hltip{font-size:12.5px;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hltip:empty{display:none}
+.hltip .on{color:var(--accent);font-weight:600}
+.paper.marking p{cursor:text;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.paper.marking .pt{cursor:crosshair}
 .hlclear{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:2px 10px;font-size:12.5px;color:var(--muted)}
 .hlbar{position:fixed;z-index:30;background:var(--ink);color:var(--panel);border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25);padding:3px}
 .hlbar button{border:0;background:transparent;color:inherit;font-weight:700;font-size:14px;padding:7px 14px;border-radius:999px}
@@ -403,7 +415,7 @@ function load(){
   let s=null; try{ s=JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){}
   return Object.assign({lang:"kk", text:0, view:"text", items:{}, order:{}}, s||{});
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,text:S.text,view:S.view,items:S.items,order:S.order,cur:S.cur,split:S.split,hl:S.hl})); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,text:S.text,view:S.view,items:S.items,order:S.order,cur:S.cur,split:S.split,hl:S.hl,marker:S.marker,tipSeen:S.tipSeen})); }catch(e){} }
 const t = () => UI[S.lang];
 const itemsOf = tid => BANK.items.filter(x=>x.text_id===tid);
 const st = id => (S.items[id] ||= {sel:null, tries:[], status:"open"}); // open | retry | ok | revealed
@@ -479,7 +491,7 @@ function renderPaper(){
     const kwf=new Array(plain.length).fill(false);
     for(const [a,b] of kwRanges(plain, markKw)) if(mk[a]) for(let k=a;k<b;k++) kwf[k]=true;
     const uf=new Array(plain.length).fill(false);
-    for(const h of userHl(tx.id).filter(h=>h.p===i)) for(let k=h.a;k<h.b&&k<plain.length;k++) uf[k]=true;
+    for(const h of [...userHl(tx.id),...tmpHl].filter(h=>h.p===i)) for(let k=h.a;k<h.b&&k<plain.length;k++) uf[k]=true;
     let html="", cur=null;
     for(let k=0;k<plain.length;k++){
       const key=(uf[k]?"u":"")+(bold[k]?"b":"")+mk[k]+(kwf[k]?"k":"");
@@ -494,10 +506,14 @@ function renderPaper(){
   function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":"")+(k.includes("u")?"</span>":""); }
   const sn = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note; const src = sn ? ` · ${esc(sn)}` : "";
   document.getElementById("paper").innerHTML =
-    `<h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div>
-     <div class="hltip">${userHl(tx.id).length
-        ? `<button type="button" class="hlclear" data-hlclear>${ru_()?"Убрать все выделения":"Белгілерді өшіру"}</button>`
-        : `<span>✎ ${ru_()?"Выделите слово или предложение, чтобы отметить его":"Сөзді не сөйлемді таңдап, белгілеп қоюға болады"}</span>`}</div>${paras}`;
+    `<div class="phead"><div class="ptitle"><h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div></div>
+       <button type="button" class="mk" data-marker aria-pressed="${!!S.marker}" title="${ru_()?"Маркер: отметить слово или предложение":"Маркер: сөзді не сөйлемді белгілеу"}">🖍 ${ru_()?"Маркер":"Маркер"}</button></div>
+     ${S.tipSeen?"":`<div class="mktip" role="note"><p><b>🖍 ${ru_()?"Маркер":"Маркер"}.</b> ${ru_()?"Выдели в тексте предложение с правильным ответом — так его будет легко найти снова.":"Дұрыс жауап тұрған сөйлемді мәтіннен белгілеп қой, сонда оны қайтадан табу оңай болады."}</p>
+        <p class="how">${ru_()?"Включи маркер и нажми на слово или проведи пальцем от слова к слову.":"Маркерді қосып, сөзді бас немесе сөзден сөзге қарай сүйре."}</p>
+        <button type="button" class="btn primary" data-tipok>${ru_()?"Понятно":"Түсінікті"}</button></div>`}
+     <div class="hltip">${S.marker?`<span class="on">${ru_()?"Маркер включён: нажми на слово или проведи от слова к слову. Нажатие на пометку убирает её.":"Маркер қосулы: сөзді бас немесе сөзден сөзге сүйре. Белгіні басса, ол өшеді."}</span>`:""}
+       ${userHl(tx.id).length?`<button type="button" class="hlclear" data-hlclear>${ru_()?"Убрать все пометки":"Белгілерді өшіру"}</button>`:""}</div>${paras}`;
+  document.getElementById("paper").classList.toggle("marking", !!S.marker);
 }
 
 /* ---------- Оқушының белгілері (мәтінде сөзді/сөйлемді белгілеу) ---------- */
@@ -548,6 +564,7 @@ function showBar(rect, html){
 }
 function hideBar(){ hlBar.hidden=true; hlPending=null; }
 function onSelect(){
+  if(S.marker) return;
   const rs=selectionRanges(); if(!rs.length){ if(hlPending?.type==="add") hideBar(); return; }
   const rect=getSelection().getRangeAt(0).getBoundingClientRect();
   hlPending={type:"add", ranges:rs};
@@ -565,6 +582,7 @@ hlBar.addEventListener("click",e=>{
 });
 document.getElementById("paper").addEventListener("click",e=>{
   if(e.target.closest("[data-hlclear]")){ S.hl[BANK.texts[S.text].id]=[]; save(); hideBar(); renderPaper(); return; }
+  if(S.marker) return;
   const u=e.target.closest(".u"); if(!u || !getSelection().isCollapsed) return;
   const pEl=u.closest("p[data-pi]"), sel=getSelection();
   const off=offsetIn(pEl, sel.anchorNode||u.firstChild, sel.anchorOffset||0);
@@ -576,6 +594,53 @@ document.getElementById("paper").addEventListener("click",e=>{
 document.getElementById("paper").addEventListener("scroll",hideBar);
 addEventListener("scroll",hideBar,{passive:true});
 document.addEventListener("pointerdown",e=>{ if(!hlBar.hidden && !hlBar.contains(e.target) && !e.target.closest("#paper .u")) { if(hlPending?.type==="del") hideBar(); } });
+
+/* Маркер режимі: сөзді басу – белгілеу/өшіру; сөзден сөзге сүйреу – тіркес/сөйлем */
+function pointAt(x,y){
+  let node,off;
+  if(document.caretPositionFromPoint){ const c=document.caretPositionFromPoint(x,y); if(!c) return null; node=c.offsetNode; off=c.offset; }
+  else if(document.caretRangeFromPoint){ const r=document.caretRangeFromPoint(x,y); if(!r) return null; node=r.startContainer; off=r.startOffset; }
+  else return null;
+  const el=(node.nodeType===1?node:node.parentElement)?.closest("p[data-pi]"); if(!el || !el.querySelector(".pt").contains(node)) return null;
+  return {p:+el.dataset.pi, o:offsetIn(el,node,off)};
+}
+function wordAt(p,o){ const t=BANK.texts[S.text].paragraphs[p].replace(/\*\*/g,""); let a=o,b=o;
+  while(a>0 && /[\p{L}\p{N}-]/u.test(t[a-1])) a--; while(b<t.length && /[\p{L}\p{N}-]/u.test(t[b])) b++; return b>a?{p,a,b}:null; }
+function spanRanges(s0,s1){
+  let [A,B]=(s0.p<s1.p||(s0.p===s1.p&&s0.o<=s1.o))?[s0,s1]:[s1,s0]; const out=[];
+  for(let p=A.p;p<=B.p;p++){ const len=BANK.texts[S.text].paragraphs[p].replace(/\*\*/g,"").length;
+    const a=p===A.p?A.o:0, b=p===B.p?B.o:len; const wa=wordAt(p,a), wb=wordAt(p,Math.max(a,b-1));
+    out.push({p, a:wa?Math.min(wa.a,a):a, b:wb?Math.max(wb.b,b):b}); }
+  return out.filter(r=>r.b>r.a);
+}
+let mkStart=null, mkMoved=false, tmpHl=[];
+const paperEl=document.getElementById("paper");
+paperEl.addEventListener("pointerdown",e=>{
+  if(!S.marker || e.target.closest("button")) return;
+  const pt=pointAt(e.clientX,e.clientY); if(!pt) return;
+  mkStart=pt; mkMoved=false; tmpHl=[]; e.preventDefault();
+});
+paperEl.addEventListener("pointermove",e=>{
+  if(!mkStart) return; const pt=pointAt(e.clientX,e.clientY); if(!pt) return;
+  if(pt.p!==mkStart.p || Math.abs(pt.o-mkStart.o)>1){ mkMoved=true; tmpHl=spanRanges(mkStart,pt); renderPaper(); }
+});
+const mkEnd=e=>{
+  if(!mkStart) return; const s0=mkStart; mkStart=null;
+  if(e.type==="pointercancel"){ tmpHl=[]; renderPaper(); return; }
+  const list=userHl(BANK.texts[S.text].id);
+  if(!mkMoved){
+    const hit=list.find(h=>h.p===s0.p && s0.o>=h.a && s0.o<=h.b);
+    if(hit) list.splice(list.indexOf(hit),1);
+    else { const w=wordAt(s0.p,s0.o); if(w) addHl([w]); }
+    save();
+  } else if(tmpHl.length) addHl(tmpHl);
+  tmpHl=[]; renderPaper();
+};
+paperEl.addEventListener("pointerup",mkEnd); paperEl.addEventListener("pointercancel",mkEnd);
+paperEl.addEventListener("click",e=>{
+  if(e.target.closest("[data-marker]")){ S.marker=!S.marker; S.tipSeen=true; save(); hideBar(); getSelection().removeAllRanges(); renderPaper(); }
+  if(e.target.closest("[data-tipok]")){ S.tipSeen=true; save(); renderPaper(); }
+});
 
 /* ---------- Тапсырмалар ---------- */
 const phone = () => matchMedia("(max-width:880px)").matches;
@@ -680,12 +745,12 @@ function hintsFor(it){
     // Болымсыз сұрақта жауап мәтінде жоқ, сондықтан орнын көрсетпейміз
     out.push(ru?"Это отрицательный вопрос: три варианта в тексте есть, а один — нет. Ищем тот, которого в тексте НЕТ."
                :"Бұл – болымсыз сұрақ: үш нұсқа мәтінде бар, біреуі жоқ. Мәтінде ЖОҚ нұсқаны іздейміз.");
-    out.push(ru?"Проверь все четыре варианта по очереди. Рядом с каждым, который нашёл в тексте, мысленно ставь ✓. Вариант без ✓ и есть ответ."
-               :"Төрт нұсқаның бәрін кезекпен тексер. Мәтіннен тапқан әр нұсқаның қасына ойша ✓ белгісін қой. ✓ қойылмай қалған нұсқа – жауап.");
+    out.push(ru?"Проверь все четыре варианта по очереди. Рядом с каждым, который нашёл в тексте, мысленно ставь ✓. Вариант без ✓ и есть ответ. Найденные в тексте варианты отмечай 🖍 маркером."
+               :"Төрт нұсқаның бәрін кезекпен тексер. Мәтіннен тапқан әр нұсқаның қасына ойша ✓ белгісін қой. ✓ қойылмай қалған нұсқа – жауап. Мәтіннен тапқан нұсқаларды 🖍 маркермен белгілеп отыр.");
   } else {
     const place=hintPlace(it); if(place) out.push(place);
-    out.push(ru?"Прежде чем выбрать, найди в тексте предложение, которое подтверждает твой ответ. Если такого предложения нет, подумай ещё раз."
-               :"Жауапты таңдамас бұрын, оны растайтын сөйлемді мәтіннен тап. Ондай сөйлем таппасаң, тағы ойлан.");
+    out.push(ru?"Прежде чем выбрать, найди в тексте предложение, которое подтверждает ответ. Включи 🖍 маркер и выдели в тексте предложение с правильным ответом — так его будет легко найти снова."
+               :"Жауапты таңдамас бұрын, оны растайтын сөйлемді мәтіннен тап. 🖍 Маркерді қосып, дұрыс жауап тұрған сөйлемді мәтіннен белгілеп қой, сонда оны қайтадан табу оңай болады.");
   }
   return out;
 }
@@ -1011,7 +1076,7 @@ function landingHTML(){
   }
   return `<div class="land-head"><span class="eyebrow">${ru?"Читательская грамотность":"Оқу сауаттылығы"}</span>
       <h1>НЗМ, БИЛ. Қазақ тілі</h1>
-      <p>${ru?"Выберите вариант. В каждом варианте — тексты и вопросы в формате экзамена. После каждого ответа — объяснение и доказательство из текста, в конце — отчёт по навыкам.":"Нұсқаны таңдаңыз. Әр нұсқада емтихан форматындағы мәтіндер мен сұрақтар бар. Әр жауаптан кейін түсініктеме мен мәтіннен дәлел беріледі, соңында дағдылар бойынша есеп шығады."}</p></div>
+      <p>${ru?"Выберите вариант. В каждом варианте — тексты и вопросы в формате экзамена. После каждого ответа — объяснение и доказательство из текста, в конце — отчёт по навыкам. В тексте можно делать пометки 🖍 маркером.":"Нұсқаны таңдаңыз. Әр нұсқада емтихан форматындағы мәтіндер мен сұрақтар бар. Әр жауаптан кейін түсініктеме мен мәтіннен дәлел беріледі, соңында дағдылар бойынша есеп шығады. Мәтінде 🖍 маркермен белгі қоюға болады."}</p></div>
     <div class="variants"><article class="variant">
       <h2>${ru?"Вариант 1":"1-нұсқа"}</h2>
       <p class="vmeta">${ru?`${nT} текста · ${N} вопросов`:`${nT} мәтін · ${N} сұрақ`}</p>
