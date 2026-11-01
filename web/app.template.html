@@ -75,7 +75,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .skillchip:hover{text-decoration:underline}
 .skillbox{background:var(--accent-soft);border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:14px}
 .skillbox p{margin:4px 0 0}
-.skillbox .g{color:var(--muted)}
+.skillbox .g{color:var(--muted)} .skillbox .g b{color:var(--ink)}
 .legend{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
 .legend summary{font-family:var(--f-text);font-size:19px;font-weight:700;cursor:pointer}
 .legend .lg{margin-top:14px}
@@ -314,7 +314,7 @@ const openSkill = {};
 function skillBox(c){
   const L=t();
   return `<div class="skillbox"><b>${esc(skillName(c))}</b><p>${esc(SKILL_INFO[S.lang][c])}</p>
-    <p class="g">${S.lang==="ru"?`Это вопрос из группы «${esc(L.groups[c[0]])}».`:`Бұл «${esc(L.groups[c[0]])}» тобына жататын сұрақ.`} ${esc(GROUP_INFO[S.lang][c[0]])}</p></div>`;
+    <p class="g">${S.lang==="ru"?`Это вопрос из группы «<b>${esc(L.groups[c[0]])}</b>».`:`Бұл «<b>${esc(L.groups[c[0]])}</b>» тобына жататын сұрақ.`} ${esc(GROUP_INFO[S.lang][c[0]])}</p></div>`;
 }
 function legendHTML(){
   const L=t(), groups={};
