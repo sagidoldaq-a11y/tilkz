@@ -343,6 +343,7 @@ const SKILL_INFO = {
       "D2":"Определи цель и позицию автора: зачем он написал текст и что сам думает?"}};
 const skillName = c => S.lang==="ru" ? SKILL_RU[c] : BANK.skills[c];
 const openSkill = {};
+const openAn = {};   // «Дұрыс жауаптың талдауы» ашық па
 function skillBox(c){
   const L=t();
   return `<div class="skillbox"><b>${esc(skillName(c))}</b><p>${esc(SKILL_INFO[S.lang][c])}</p>
@@ -488,7 +489,7 @@ function renderQs(){
 function goQ(i){
   const its=itemsOf(BANK.texts[S.text].id); if(i<0||i>=its.length) return;
   S.cur[S.text]=i; save(); marks=[];
-  const it=its[i], s_=st(it.id); if(s_.status==="ok"||s_.status==="revealed"){ marks=it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; }
+  const it=its[i], s_=st(it.id); if(s_.status==="ok"){ marks=it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; } else if(s_.status==="revealed") setRevealMarks(it);
   renderPaper(); renderQs(); document.getElementById("qs").scrollTop=0;
 }
 document.getElementById("qs").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b && !b.disabled) goQ(+b.dataset.go); });
@@ -524,9 +525,14 @@ function cardHTML(it){
         <p><b>${L.why}</b> ${L.because?L.because+esc(noteOf(it,lw)):esc(cap(noteOf(it,lw)))}</p>
         ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w",kwOf(it,lw))).join("")}`:""}</div>`;
     }
-    fb=lastWrong+`<div class="fb ${good?"ok":"reveal"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)+") "+esc(it.options[it.key])}</h4>
+    const analysis=`<div class="fb ${good?"ok":"reveal"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)+") "+esc(it.options[it.key])}</h4>
       <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-азатжол[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(абзац ${m[1]})`:m[0].trim()):"", "", kwOf(it,"ok")); }).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
+    if(good) fb=analysis;
+    else {
+      const ru=S.lang==="ru", open=!!openAn[it.id];
+      fb=lastWrong+`<div class="actions"><button class="btn ${open?"":"primary"}" type="button" data-act="analysis" data-id="${it.id}" aria-expanded="${open}">${open?(ru?"Скрыть разбор":"Талдауды жасыру"):(ru?"Разбор правильного ответа":"Дұрыс жауаптың талдауы")}</button></div>`+(open?analysis:"");
+    }
   }
   const actions = `<div class="actions">
             ${s.status==="wrong1"?`<button class="btn primary" type="button" data-act="second" data-id="${it.id}">${L.second}</button>`:""}
@@ -676,6 +682,11 @@ function scrollToMark(){
   const top = m.getBoundingClientRect().top - paper.getBoundingClientRect().top + paper.scrollTop - paper.clientHeight/3;
   paper.scrollTo({top:Math.max(0,top), behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
 }
+function setRevealMarks(it){
+  const lw=st(it.id).tries.at(-1);
+  marks=devOf(it,lw).map(t=>({t,w:true})); markKw=[...kwOf(it,lw).kk];
+  if(openAn[it.id]){ marks.push(...it.evidence.flatMap(frags)); markKw.push(...kwOf(it,"ok").kk); }
+}
 function markEvidence(it){ marks = it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; renderPaper(); scrollToMark(); }
 document.addEventListener("change",e=>{
   const el=e.target; if(el.dataset.act!=="pick") return;
@@ -685,7 +696,7 @@ document.addEventListener("change",e=>{
   else { s.tries.push(el.value); s.status = s.tries.length>=2 ? "revealed" : "wrong1"; }
   s.sel=null; save(); rerenderCard(id);
   if(s.status==="ok") markEvidence(it);
-  else if(s.status==="revealed"){ marks=[...devOf(it,el.value).map(t=>({t,w:true})), ...it.evidence.flatMap(frags)]; markKw=[...kwOf(it,el.value).kk, ...kwOf(it,"ok").kk]; renderPaper(); scrollToMark(); }
+  else if(s.status==="revealed"){ setRevealMarks(it); renderPaper(); scrollToMark(); }
   else { const dev=devOf(it,el.value); marks=dev.map(t=>({t,w:true})); markKw=kwOf(it,el.value).kk; renderPaper(); if(dev.length) scrollToMark(); }
 });
 document.addEventListener("click",e=>{
@@ -696,6 +707,9 @@ document.addEventListener("click",e=>{
     case "reveal": s.status="revealed"; save(); rerenderCard(id); markEvidence(it); break;
     case "mark": markEvidence(it,true); break;
     case "skill": openSkill[id]=!openSkill[id]; rerenderCard(id); break;
+    case "analysis": openAn[id]=!openAn[id]; rerenderCard(id); setRevealMarks(it); renderPaper();
+      if(openAn[id]){ const m=document.querySelector("#paper mark:not(.w)"); if(m){ const pp=document.getElementById("paper"); pp.scrollTo({top:Math.max(0,m.getBoundingClientRect().top-pp.getBoundingClientRect().top+pp.scrollTop-pp.clientHeight/3),behavior:"smooth"}); } }
+      break;
     case "nexthint": hintStep[id]=(hintStep[id]||1)+1; rerenderCard(id); break;
     case "help": openHelp[id]=!openHelp[id]; if(openHelp[id]&&!hintStep[id]) hintStep[id]=1; rerenderCard(id); if(openHelp[id]) document.getElementById("in-"+id)?.focus(); break;
     case "quick": ask(id,b.textContent); break;
