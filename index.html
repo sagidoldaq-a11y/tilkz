@@ -411,17 +411,16 @@ function cardHTML(it){
     const rest = Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o)).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(it.distractor_notes[o])}</li>`).join("");
     fb=`<div class="fb ${good?"ok":"bad"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)}</h4>
       <p>${esc(it.explanation)}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>`<blockquote>${esc(e)}</blockquote>`).join("")}
-      <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul>${good?`<p>${L.ownWords}</p>`:""}</div>`;
+      <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
   }
   const actions = `<div class="actions">
-      ${s.status==="ok"?`<button class="btn" type="button" data-act="mark" data-id="${it.id}">${L.inText}</button>`:""}
-      ${s.status==="wrong1"?`<button class="btn primary" type="button" data-act="second" data-id="${it.id}">${L.second}</button>`:""}
-      <button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>
+            ${s.status==="wrong1"?`<button class="btn primary" type="button" data-act="second" data-id="${it.id}">${L.second}</button>`:""}
+      ${fin?"":`<button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>`}
     </div>`;
   return `<article class="card ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
     <div class="qhead"><span class="qnum">${it.number}</span><button type="button" class="chip skillchip" data-act="skill" data-id="${it.id}" aria-expanded="${!!openSkill[it.id]}" title="${S.lang==="ru"?"Что это за навык?":"Бұл қандай дағды?"}">${it.skill} · ${esc(skillName)} <span aria-hidden="true">ⓘ</span></button>
       <span class="chip lvl">${L.level(it.level)}</span>${it.negative?`<span class="chip lvl">${L.neg}</span>`:""}</div>
-    ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${actions}${openHelp[it.id]?assistHTML(it):""}</article>`;
+    ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${fin?"":actions}${(!fin&&openHelp[it.id])?assistHTML(it):""}</article>`;
 }
 
 /* ---------- Көмекші (Claude) ---------- */
