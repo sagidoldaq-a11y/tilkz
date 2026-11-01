@@ -22,6 +22,10 @@
   --accent:#78AEEE; --accent-soft:#1D2B3D; --mark:#8C6B14; --mark-ink:#FFF6DA;
   --ok:#55C792; --ok-soft:#15302A; --bad:#F2796F; --bad-soft:#3A1E1E; color-scheme:dark}
 html,body{background:var(--paper);color:var(--ink)}
+/* Мәтін теретін өрістерден басқа жерде жыпылықтаған курсор (каретка) көрінбейді */
+body{caret-color:transparent}
+input,textarea,select,[contenteditable="true"]{caret-color:auto}
+
 body{font-family:var(--f-ui);font-size:15px;line-height:1.5}
 *{box-sizing:border-box}
 button{font:inherit;color:inherit;cursor:pointer}

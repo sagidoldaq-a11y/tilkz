@@ -35,6 +35,10 @@
 *{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{margin:0;background:var(--paper);color:var(--ink)}
+/* Мәтін теретін өрістерден басқа жерде жыпылықтаған курсор (каретка) көрінбейді */
+body{caret-color:transparent}
+input,textarea,select,[contenteditable="true"]{caret-color:auto}
+
 body{font-family:var(--f-ui);font-size:16px;line-height:1.55}
 a{color:inherit}
 img{max-width:100%;display:block}
