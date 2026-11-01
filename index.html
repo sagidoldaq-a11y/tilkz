@@ -125,9 +125,9 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .assist textarea{flex:1;min-width:0;resize:vertical;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit;background:var(--panel);color:var(--ink)}
 
 .btn:disabled{opacity:.5;cursor:not-allowed}
-:root{--good:var(--ok);--mid:#A8740B;--weak:var(--bad);--mid-soft:#FBF0D9}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mid:#E3AE45;--mid-soft:#3A2F17}}
-:root[data-theme="dark"]{--mid:#E3AE45;--mid-soft:#3A2F17}
+:root{--good:#5CCB8A;--mid:#F2C230;--weak:#E5534B;--on-status:#17202B;--good-soft:#E4F6EC;--mid-soft:#FDF4D6;--weak-soft:#FCE5E3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--good-soft:#173527;--mid-soft:#3A3115;--weak-soft:#3D1D1C}}
+:root[data-theme="dark"]{--good-soft:#173527;--mid-soft:#3A3115;--weak-soft:#3D1D1C}
 .finbar{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
 .finbar p{margin:10px 0 0;font-size:14px;color:var(--muted)}
 .fprog{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
@@ -143,7 +143,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
 .kpi{border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
 .kpi b{font:700 24px var(--f-text);color:var(--ink);font-variant-numeric:tabular-nums}
-.kpi .ki{font-weight:700;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:var(--panel);font-size:12px}
+.kpi .ki{font-weight:700;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:var(--on-status);font-size:12px}
 .kpi.good .ki{background:var(--good)} .kpi.mid .ki{background:var(--mid)} .kpi.weak .ki{background:var(--weak)}
 .rep-sec{border-top:1px solid var(--line);margin-top:20px;padding-top:16px}
 .rep-sec h3{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 8px}
@@ -155,13 +155,14 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .qm-row{display:grid;grid-template-columns:minmax(0,11em) 1fr;gap:10px;align-items:center}
 .qm-t{font-size:13px;color:var(--muted)}
 .qm-cells{display:flex;flex-wrap:wrap;gap:4px}
-.qm{width:44px;height:40px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--panel);font-size:13px;line-height:1.1;cursor:default}
+.qm{width:44px;height:40px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--on-status);font-size:13px;line-height:1.1;cursor:default}
 .qm i{font-style:normal;font-size:11px;opacity:.9}
 .qm.good{background:var(--good)} .qm.mid{background:var(--mid)} .qm.weak{background:var(--weak)}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .sw-box{border-radius:8px;padding:12px 14px}
-.sw-box.good{background:var(--ok-soft)} .sw-box.weak{background:var(--bad-soft)}
-.sw-box.good h3{color:var(--good)} .sw-box.weak h3{color:var(--weak)}
+.sw-box.good{background:var(--good-soft)} .sw-box.weak{background:var(--weak-soft)}
+.sw-box h3{color:var(--ink)} .sw-box h3 .ic{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;color:var(--on-status);margin-right:6px;font-size:12px} .sw-box.good .ic{background:var(--good)} .sw-box.weak .ic{background:var(--weak)}
+.sw-box .note{margin:8px 0 0;font-size:13px;color:var(--muted)} .sw-box .sub2{margin:10px 0 6px;font-size:13px;font-weight:600}
 .sks{display:flex;flex-wrap:wrap;gap:6px}
 .sk{background:var(--panel);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600}
 .muted{color:var(--muted);font-size:13px}
@@ -640,7 +641,7 @@ function finalize(){
   save();
 }
 function band(p){ return p>=75?"good":p>=50?"mid":"weak"; }
-const BAND = {kk:{good:"✓ Мықты",mid:"~ Орташа",weak:"! Жаттықтыру керек"}, ru:{good:"✓ Сильная сторона",mid:"~ Средне",weak:"! Нужно тренировать"}};
+const BAND = {kk:{good:"✓ Мықты",mid:"~ Орташа",weak:"! Мән беру керек"}, ru:{good:"✓ Сильная сторона",mid:"~ Средне",weak:"! Нужно уделить внимание"}};
 function statOf(items){ const n=items.length, g=items.filter(isFirst).length; return {n,g,p:n?Math.round(100*g/n):null}; }
 function hbar(label, st_, title){
   if(st_.p===null) return `<div class="hb none"><span class="hl">${label}</span><div class="track"></div><span class="hv" title="${S.lang==="ru"?"В этом варианте нет вопросов на этот навык":"Бұл нұсқада осы дағдыға сұрақ жоқ"}">—</span></div>`;
@@ -674,7 +675,13 @@ function renderResults(){
   const gbars=Object.keys(groups).map(g=>{ const sg=statOf(items.filter(x=>x.skill[0]===g)); return hbar(esc(L.groups[g]), sg, `${L.groups[g]}: ${sg.g}/${sg.n}`); }).join("");
   const skillStats=Object.keys(BANK.skills).map(c=>({c,...statOf(items.filter(x=>x.skill===c))}));
   const sbars=skillStats.map(x=>hbar(`<b>${x.c}</b> ${esc(skillName(x.c))}`, x, `${x.c} · ${skillName(x.c)}: ${x.g}/${x.n}`)).join("");
-  const strong=skillStats.filter(x=>x.p!==null&&x.p>=75), weak=skillStats.filter(x=>x.p!==null&&x.p<50);
+  // Әр дағды бойынша екінші әрекеттегі дұрыс жауаптар да есептеледі
+  for(const x of skillStats){ const its=items.filter(i=>i.skill===x.c); x.s2=its.filter(isSecond).length; x.score=x.n?(x.g+0.5*x.s2)/x.n:0; }
+  const present=skillStats.filter(x=>x.p!==null);
+  const strong=present.filter(x=>x.p>=75), weak=present.filter(x=>x.p<50);
+  // 75%-ға жеткен дағды болмаса: басқаларға қарағанда жақсы шыққан дағдылар
+  const relative = strong.length ? [] : present.filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,3);
+  const fixedSecond = present.filter(x=>x.s2>0 && !strong.includes(x));
   const chips=a=>a.length?a.map(x=>`<span class="sk">${x.c} · ${esc(skillName(x.c))}</span>`).join(""):`<span class="muted">${ru?"пока нет":"әзірге жоқ"}</span>`;
   const bandLegend=`<div class="lgd"><span><i class="sw good"></i>${BAND[S.lang].good} (75%+)</span><span><i class="sw mid"></i>${BAND[S.lang].mid} (50–74%)</span><span><i class="sw weak"></i>${BAND[S.lang].weak} (&lt;50%)</span></div>`;
   document.getElementById("results").innerHTML=`
@@ -683,8 +690,14 @@ function renderResults(){
       <div class="kpis">${kpis}</div></div></div>
     <section class="rep-sec"><h3>${ru?"Карта вопросов":"Сұрақтар картасы"}</h3>${qlegend}<div class="qmap">${qmap}</div></section>
     <section class="rep-sec two">
-      <div class="sw-box good"><h3>✓ ${ru?"Твои сильные стороны":"Мықты жақтарың"}</h3><div class="sks">${chips(strong)}</div></div>
-      <div class="sw-box weak"><h3>! ${ru?"Что нужно тренировать":"Жаттықтыру керек"}</h3><div class="sks">${chips(weak)}</div></div>
+      <div class="sw-box good"><h3><span class="ic" aria-hidden="true">✓</span>${ru?"Твои сильные стороны":"Мықты жақтарың"}</h3>
+        ${strong.length?`<div class="sks">${chips(strong)}</div>`
+          : relative.length?`<p class="note" style="margin-top:0">${ru?"Пока ни один навык не достиг 75%, но лучше всего у тебя получилось:":"Әзірге 75%-ға жеткен дағды жоқ, бірақ басқаларға қарағанда мына дағдыларың жақсы шықты:"}</p><div class="sks">${chips(relative)}</div>`
+          : `<p class="note" style="margin-top:0">${ru?"Сильные стороны пока не определились. Внимательно перечитай тексты и попробуй ещё раз.":"Мықты жағың әзірге анықталмады. Мәтіндерді мұқият қайта оқып, тағы байқап көр."}</p>`}
+        ${fixedSecond.length?`<p class="sub2">${ru?"Со второй попытки ты исправил(а) ошибки в навыках:":"Екінші әрекетте қатеңді түзеткен дағдыларың:"}</p><div class="sks">${fixedSecond.map(x=>`<span class="sk">${x.c} · ${esc(skillName(x.c))} <small>(${x.s2})</small></span>`).join("")}</div>
+          <p class="note">${ru?"Значит, ты умеешь находить ответ в тексте, если перечитываешь внимательно. Теперь постарайся найти его с первой попытки.":"Бұл – мәтінді мұқият қайта оқығанда жауапты таба алатыныңды көрсетеді. Енді оны бірінші әрекетте табуға тырыс."}</p>`:""}
+      </div>
+      <div class="sw-box weak"><h3><span class="ic" aria-hidden="true">!</span>${ru?"Нужно уделить внимание":"Мән беру керек"}</h3><div class="sks">${chips(weak)}</div></div>
     </section>
     <section class="rep-sec"><h3>${ru?"Группы навыков":"Дағды топтары"}</h3>${bandLegend}<div class="hbars">${gbars}</div></section>
     <section class="rep-sec"><h3>${ru?"Навыки подробно":"Дағдылар бойынша толық"}</h3><div class="hbars">${sbars}</div>
