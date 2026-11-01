@@ -237,7 +237,7 @@ for x in Q:
             if e not in body: print("ДИСТРАКТОР ДӘЛЕЛІ ТАБЫЛМАДЫ:", x["id"], k, "|", e)
 
 # Орысша аудармалар (translations_ru_v1.py)
-from translations_ru_v1 import EXPL_RU, NOTES_RU
+from translations_ru_v1 import EXPL_RU, NOTES_RU, EVID_RU
 for x in Q:
     assert set(NOTES_RU[x["number"]]) == set(x["distractor_notes"]), x["id"]
     x["explanation_ru"] = EXPL_RU[x["number"]]
@@ -265,7 +265,7 @@ for x in Q:
 
 bank = {"bank_id": "kaz-L1-sagidolda-2026-v1", "track": "first_language",
         "source": "Сағидолда Қ. «Тест жинағы. НИШ, БИЛ. Қазақ тілі», 2026, 1-нұсқа",
-        "skills": SKILLS,
+        "skills": SKILLS, "evidence_ru": EVID_RU,
         "style_notes": ["«Мазалама» деп жазба, оның орнына «Уайымдама» не «Алаң болма» де"],
         "texts": texts, "items": Q}
 (OUT / "bank_v1.json").write_text(json.dumps(bank, ensure_ascii=False, indent=2), encoding="utf-8")

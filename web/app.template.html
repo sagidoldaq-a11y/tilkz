@@ -110,6 +110,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .fb.ok h4{color:var(--ok)} .fb.bad h4{color:var(--bad)}
 .fb p{margin:0 0 6px}
 .fb blockquote{margin:6px 0;padding:6px 10px;border-left:3px solid var(--mark);font-family:var(--f-text);font-size:15px;background:var(--panel);border-radius:0 6px 6px 0}
+.fb blockquote .tr{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-family:var(--f-ui);font-size:14px;color:var(--muted)}
 .fb ul{margin:4px 0 0;padding-left:18px}
 .fb li{margin-bottom:3px}
 
@@ -368,8 +369,9 @@ function fullSentence(textId, frag){
   const tx=BANK.texts.find(x=>x.id===textId);
   for(const raw of tx.paragraphs){
     const p=raw.replace(/\*\*/g,""), i=p.indexOf(frag); if(i<0) continue;
-    let a=i; while(a>0 && !/[.!?]/.test(p[a-1])) a--;
-    let b=i+frag.length; while(b<p.length && !/[.!?]/.test(p[b])) b++;
+    // Сөйлем шекарасы: тыныс белгісінен кейін бос орын тұрса ғана (sunnycomb.com сияқты сөздер бөлінбейді)
+    let a=i; while(a>0 && !(p[a-1]===" " && /[.!?]/.test(p[a-2]||""))) a--;
+    let b=i+frag.length; while(b<p.length && !(/[.!?]/.test(p[b]) && (b+1===p.length || p[b+1]===" "))) b++;
     if(b<p.length) b++;
     return p.slice(a,b).trim();
   }
@@ -380,6 +382,11 @@ const ru_ = () => S.lang==="ru";
 const noteOf = (it,o) => (ru_() && it.distractor_notes_ru) ? it.distractor_notes_ru[o] : it.distractor_notes[o];
 const explOf = it => (ru_() && it.explanation_ru) ? it.explanation_ru : it.explanation;
 const textLabel = i => ru_() ? `Текст ${i+1}` : `${i+1}-мәтін`;
+/* Дәлел сөйлем: қазақша нұсқасы, орысша интерфейсте астында аудармасы */
+function quoteHTML(kk, label){
+  const tr = ru_() ? (BANK.evidence_ru||{})[kk] : null;
+  return `<blockquote>${esc(kk)}${label?` ${esc(label)}`:""}${tr?`<span class="tr">${esc(tr)}</span>`:""}</blockquote>`;
+}
 const cap = t => t ? t[0].toUpperCase()+t.slice(1) : t;
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])).replace(/(\d)-(?=[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])/g,"$1\u2011");
 const stripLoc = e => e.replace(/\s*\([^)]*азатжол[^)]*\)$/,"");
@@ -434,7 +441,7 @@ function cardHTML(it){
     const last=s.tries[s.tries.length-1];
     const note=noteOf(it,last), dev=devOf(it,last);
     fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${L.because?L.because+esc(note):esc(cap(note))}</p>
-      ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>`<blockquote>${esc(e)}</blockquote>`).join("")}`:""}</div>`;
+      ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e)).join("")}`:""}</div>`;
   } else if(s.status==="retry"){
     fb=`<div class="fb second" role="status"><p>${L.secondNow}</p></div>`;
   } else if(fin){
@@ -442,7 +449,7 @@ function cardHTML(it){
     const wrongs = s.tries.map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(noteOf(it,o)))}</li>`).join("");
     const rest = Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o)).map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(cap(noteOf(it,o)))}</li>`).join("");
     fb=`<div class="fb ${good?"ok":"bad"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)}</h4>
-      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>`<blockquote>${esc(ru_()?e.replace(/\((\d+)-азатжол[^)]*\)/,"(абзац $1)"):e)}</blockquote>`).join("")}
+      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-азатжол[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(абзац ${m[1]})`:m[0].trim()):""); }).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
   }
   const actions = `<div class="actions">
