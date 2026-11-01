@@ -236,6 +236,15 @@ for x in Q:
         for e in evs:
             if e not in body: print("ДИСТРАКТОР ДӘЛЕЛІ ТАБЫЛМАДЫ:", x["id"], k, "|", e)
 
+# Кілт сөздер және кілт сөз көрінетін етіп кеңейтілген дәлелдер (keywords_v1.py)
+from keywords_v1 import KW, EVIDENCE_OVERRIDE, DISTRACTOR_EVIDENCE_EXTRA
+for x in Q:
+    n = x["number"]
+    if n in EVIDENCE_OVERRIDE: x["evidence"] = EVIDENCE_OVERRIDE[n]
+    for k in list(x["distractor_evidence"]):
+        x["distractor_evidence"][k] = DISTRACTOR_EVIDENCE_EXTRA.get((n, k), []) + x["distractor_evidence"][k]
+    x["keywords"] = {k: {"kk": v[0], "ru": v[1]} for k, v in KW.get(n, {}).items()}
+
 # Орысша аудармалар (translations_ru_v1.py)
 from translations_ru_v1 import EXPL_RU, NOTES_RU, EVID_RU
 for x in Q:

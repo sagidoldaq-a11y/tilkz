@@ -64,6 +64,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .paper strong{font-weight:700}
 mark.w{background:var(--bad-soft);box-shadow:inset 0 -2px 0 var(--bad)}
+b.kw{font-weight:800}
+.fb blockquote b.kw{color:var(--ink);font-weight:800}
 
 .qs{display:flex;flex-direction:column;gap:14px;min-width:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
@@ -411,10 +413,25 @@ const ru_ = () => S.lang==="ru";
 const noteOf = (it,o) => (ru_() && it.distractor_notes_ru) ? it.distractor_notes_ru[o] : it.distractor_notes[o];
 const explOf = it => (ru_() && it.explanation_ru) ? it.explanation_ru : it.explanation;
 const textLabel = i => ru_() ? `Текст ${i+1}` : `${i+1}-мәтін`;
+/* Кілт сөздер: мәтіндегі орындарын табу (әріп өлшеміне қарамай) */
+function kwRanges(text, list){
+  const low=text.toLocaleLowerCase("kk"), out=[];
+  for(const w of (list||[])){ const lw=w.toLocaleLowerCase("kk"); let i=low.indexOf(lw); while(i>=0){ out.push([i,i+lw.length]); i=low.indexOf(lw,i+lw.length); } }
+  return out;
+}
+function boldKw(text, list){
+  const flags=new Array(text.length).fill(false);
+  for(const [a,b] of kwRanges(text,list)) for(let k=a;k<b;k++) flags[k]=true;
+  let out="", on=false;
+  for(let k=0;k<text.length;k++){ if(flags[k]!==on){ out+=on?"</b>":'<b class="kw">'; on=flags[k]; } out+=esc(text[k]); }
+  return out+(on?"</b>":"");
+}
+const kwOf = (it, slot) => ((it.keywords||{})[slot]) || {kk:[],ru:[]};
+let markKw=[];   // мәтінде белгіленген сөйлемдердегі кілт сөздер
 /* Дәлел сөйлем: қазақша нұсқасы, орысша интерфейсте астында аудармасы */
-function quoteHTML(kk, label, cls){
+function quoteHTML(kk, label, cls, kw){
   const tr = ru_() ? (BANK.evidence_ru||{})[kk] : null;
-  return `<blockquote${cls?` class="${cls}"`:""}>${esc(kk)}${label?` ${esc(label)}`:""}${tr?`<span class="tr">${esc(tr)}</span>`:""}</blockquote>`;
+  return `<blockquote${cls?` class="${cls}"`:""}>${boldKw(kk,kw?.kk)}${label?` ${esc(label)}`:""}${tr?`<span class="tr">${boldKw(tr,kw?.ru)}</span>`:""}</blockquote>`;
 }
 const cap = t => t ? t[0].toUpperCase()+t.slice(1) : t;
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])).replace(/(\d)-(?=[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])/g,"$1\u2011");
@@ -431,9 +448,11 @@ function renderPaper(){
     const mk=new Array(plain.length).fill("");
     for(const f0 of marks){ const f=typeof f0==="string"?f0:f0.t, c=typeof f0==="string"?"m":"w";
       const at=plain.indexOf(f); if(at>=0) for(let k=at;k<at+f.length;k++) if(mk[k]!=="m") mk[k]=c; }
+    const kwf=new Array(plain.length).fill(false);
+    for(const [a,b] of kwRanges(plain, markKw)) if(mk[a]) for(let k=a;k<b;k++) kwf[k]=true;
     let html="", cur=null;
     for(let k=0;k<plain.length;k++){
-      const key=(bold[k]?"b":"")+mk[k];
+      const key=(bold[k]?"b":"")+mk[k]+(kwf[k]?"k":"");
       if(key!==cur){ if(cur!==null) html+=close(cur); html+=open(key); cur=key; }
       html+=esc(plain[k]);
     }
@@ -441,8 +460,8 @@ function renderPaper(){
     const pn = tx.numbered_paragraphs ? `<span class="pn">${i+1}</span>` : "";
     return `<p>${pn}${html}</p>`;
   }).join("");
-  function open(k){ return (k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":""); }
-  function close(k){ return (k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":""); }
+  function open(k){ return (k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
+  function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":""); }
   const sn = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note; const src = sn ? ` · ${esc(sn)}` : "";
   document.getElementById("paper").innerHTML =
     `<h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div>${paras}`;
@@ -469,7 +488,7 @@ function renderQs(){
 function goQ(i){
   const its=itemsOf(BANK.texts[S.text].id); if(i<0||i>=its.length) return;
   S.cur[S.text]=i; save(); marks=[];
-  const it=its[i], s_=st(it.id); if(s_.status==="ok"||s_.status==="revealed") marks=it.evidence.flatMap(frags);
+  const it=its[i], s_=st(it.id); if(s_.status==="ok"||s_.status==="revealed"){ marks=it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; }
   renderPaper(); renderQs(); document.getElementById("qs").scrollTop=0;
 }
 document.getElementById("qs").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b && !b.disabled) goQ(+b.dataset.go); });
@@ -491,7 +510,7 @@ function cardHTML(it){
     const last=s.tries[s.tries.length-1];
     const note=noteOf(it,last), dev=devOf(it,last);
     fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${L.because?L.because+esc(note):esc(cap(note))}</p>
-      ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w")).join("")}`:""}</div>`;
+      ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w",kwOf(it,last))).join("")}`:""}</div>`;
   } else if(s.status==="retry"){
     fb=`<div class="fb second" role="status"><p>${L.secondNow}</p></div>`;
   } else if(fin){
@@ -503,10 +522,10 @@ function cardHTML(it){
       const lw=s.tries[s.tries.length-1], dev=devOf(it,lw);
       lastWrong=`<div class="fb bad" role="status"><h4>${L.bad}: ${shownLetter(it,lw)}) ${esc(it.options[lw])}</h4>
         <p><b>${L.why}</b> ${L.because?L.because+esc(noteOf(it,lw)):esc(cap(noteOf(it,lw)))}</p>
-        ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w")).join("")}`:""}</div>`;
+        ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w",kwOf(it,lw))).join("")}`:""}</div>`;
     }
     fb=lastWrong+`<div class="fb ${good?"ok":"reveal"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)+") "+esc(it.options[it.key])}</h4>
-      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-азатжол[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(абзац ${m[1]})`:m[0].trim()):""); }).join("")}
+      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-азатжол[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(абзац ${m[1]})`:m[0].trim()):"", "", kwOf(it,"ok")); }).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
   }
   const actions = `<div class="actions">
@@ -657,7 +676,7 @@ function scrollToMark(){
   const top = m.getBoundingClientRect().top - paper.getBoundingClientRect().top + paper.scrollTop - paper.clientHeight/3;
   paper.scrollTo({top:Math.max(0,top), behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
 }
-function markEvidence(it){ marks = it.evidence.flatMap(frags); renderPaper(); scrollToMark(); }
+function markEvidence(it){ marks = it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; renderPaper(); scrollToMark(); }
 document.addEventListener("change",e=>{
   const el=e.target; if(el.dataset.act!=="pick") return;
   const id=el.dataset.id, it=BANK.items.find(x=>x.id===id), s=st(id);
@@ -666,8 +685,8 @@ document.addEventListener("change",e=>{
   else { s.tries.push(el.value); s.status = s.tries.length>=2 ? "revealed" : "wrong1"; }
   s.sel=null; save(); rerenderCard(id);
   if(s.status==="ok") markEvidence(it);
-  else if(s.status==="revealed"){ marks=[...devOf(it,el.value).map(t=>({t,w:true})), ...it.evidence.flatMap(frags)]; renderPaper(); scrollToMark(); }
-  else { const dev=devOf(it,el.value); marks=dev.map(t=>({t,w:true})); renderPaper(); if(dev.length) scrollToMark(); }
+  else if(s.status==="revealed"){ marks=[...devOf(it,el.value).map(t=>({t,w:true})), ...it.evidence.flatMap(frags)]; markKw=[...kwOf(it,el.value).kk, ...kwOf(it,"ok").kk]; renderPaper(); scrollToMark(); }
+  else { const dev=devOf(it,el.value); marks=dev.map(t=>({t,w:true})); markKw=kwOf(it,el.value).kk; renderPaper(); if(dev.length) scrollToMark(); }
 });
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]"); if(!b||b.tagName==="INPUT") return;
