@@ -531,7 +531,7 @@ function cardHTML(it){
     if(good) fb=analysis;
     else {
       const ru=S.lang==="ru", open=!!openAn[it.id];
-      fb=lastWrong+`<div class="actions"><button class="btn ${open?"":"primary"}" type="button" data-act="analysis" data-id="${it.id}" aria-expanded="${open}">${open?(ru?"Скрыть разбор":"Талдауды жасыру"):(ru?"Разбор правильного ответа":"Дұрыс жауаптың талдауы")}</button></div>`+(open?analysis:"");
+      fb=(open?"":lastWrong)+`<div class="actions"><button class="btn ${open?"":"primary"}" type="button" data-act="analysis" data-id="${it.id}" aria-expanded="${open}">${open?(ru?"Скрыть разбор":"Талдауды жасыру"):(ru?"Разбор правильного ответа":"Дұрыс жауаптың талдауы")}</button></div>`+(open?analysis:"");
     }
   }
   const actions = `<div class="actions">
@@ -684,8 +684,9 @@ function scrollToMark(){
 }
 function setRevealMarks(it){
   const lw=st(it.id).tries.at(-1);
-  marks=devOf(it,lw).map(t=>({t,w:true})); markKw=[...kwOf(it,lw).kk];
-  if(openAn[it.id]){ marks.push(...it.evidence.flatMap(frags)); markKw.push(...kwOf(it,"ok").kk); }
+  // Талдау ашық болса тек дұрыс жауаптың дәлелі (сары), жабық болса тек қате жауаптың дәлелі (қызғылт)
+  if(openAn[it.id]){ marks=it.evidence.flatMap(frags); markKw=[...kwOf(it,"ok").kk]; }
+  else { marks=devOf(it,lw).map(t=>({t,w:true})); markKw=[...kwOf(it,lw).kk]; }
 }
 function markEvidence(it){ marks = it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; renderPaper(); scrollToMark(); }
 document.addEventListener("change",e=>{
