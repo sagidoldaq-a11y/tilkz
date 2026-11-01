@@ -414,7 +414,7 @@ function cardHTML(it){
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul>${good?`<p>${L.ownWords}</p>`:""}</div>`;
   }
   const actions = `<div class="actions">
-      ${fin?`<button class="btn" type="button" data-act="mark" data-id="${it.id}">${L.inText}</button>`:""}
+      ${s.status==="ok"?`<button class="btn" type="button" data-act="mark" data-id="${it.id}">${L.inText}</button>`:""}
       ${s.status==="wrong1"?`<button class="btn primary" type="button" data-act="second" data-id="${it.id}">${L.second}</button>`:""}
       <button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>
     </div>`;
