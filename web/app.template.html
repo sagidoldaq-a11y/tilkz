@@ -419,7 +419,7 @@ function cardHTML(it){
     </div>`;
   return `<article class="card ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
     <div class="qhead"><span class="qnum">${it.number}</span><button type="button" class="chip skillchip" data-act="skill" data-id="${it.id}" aria-expanded="${!!openSkill[it.id]}" title="${S.lang==="ru"?"Что это за навык?":"Бұл қандай дағды?"}">${esc(skillName)} <span aria-hidden="true">ⓘ</span></button>
-      ${it.negative?`<span class="chip lvl">${L.neg}</span>`:""}</div>
+      </div>
     ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${fin?"":actions}${(!fin&&openHelp[it.id])?assistHTML(it):""}</article>`;
 }
 
