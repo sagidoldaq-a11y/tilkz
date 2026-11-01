@@ -324,6 +324,18 @@ function legendHTML(){
       <dl>${cs.map(c=>`<dt>${esc(skillName(c))}</dt><dd>${esc(SKILL_INFO[S.lang][c])}</dd>`).join("")}</dl></div>`).join("")}</details>`;
 }
 
+/* Сан есімге қосымша жалғау (үндестік заңы бойынша): 6-на, 5-не, 20-дан, 3-тен */
+const KK_UNITS=["нөл","бір","екі","үш","төрт","бес","алты","жеті","сегіз","тоғыз"];
+const KK_TENS=["","он","жиырма","отыз","қырық","елу","алпыс","жетпіс","сексен","тоқсан"];
+function kkLast(n){ n=Math.abs(n); if(n===0) return "нөл"; if(n%1000===0) return "мың"; if(n%100===0) return "жүз"; if(n%10) return KK_UNITS[n%10]; return KK_TENS[(n%100)/10]; }
+function kkBack(w){ const v=w.replace(/[иу]/g,"").match(/[аоұыәеөүі]/g); return v ? "аоұы".includes(v[v.length-1]) : false; }
+// Барыс септігі (тәуелдік жалғаудан кейін): «1-не», «6-на»
+const kkDat = n => `${n}-${kkBack(kkLast(n))?"на":"не"}`;
+// Шығыс септігі: «20-дан», «3-тен», «10-нан»
+function kkAbl(n){ const w=kkLast(n), b=kkBack(w), c=w[w.length-1];
+  const f = "мнң".includes(c) ? "н" : "қкпстшфх".includes(c) ? "т" : "д";
+  return `${n}-${f}${b?"а":"е"}н`; }
+
 /* ---------- Күй ---------- */
 const KEY = "oqylym-v1-state";
 let S = load();
@@ -685,7 +697,7 @@ function renderResults(){
   const bandLegend=`<div class="lgd"><span><i class="sw good"></i>${BAND[S.lang].good} (75%+)</span><span><i class="sw mid"></i>${BAND[S.lang].mid} (50–74%)</span><span><i class="sw weak"></i>${BAND[S.lang].weak} (&lt;50%)</span></div>`;
   document.getElementById("results").innerHTML=`
     <div class="rep-hero">${ring}<div class="rep-sum"><h2>${verdict}</h2>
-      <p class="sub">${ru?`Ты набрал(а) <b>${first} из ${N}</b> баллов (${pct}%). Балл даётся за верный ответ с первой попытки.`:`Сен <b>${N}-дан ${first} ұпай</b> жинадың (${pct}%). Ұпай бірінші әрекетте берілген дұрыс жауапқа беріледі.`}</p>
+      <p class="sub">${ru?`Ты набрал(а) <b>${first} из ${N}</b> баллов (${pct}%). Балл даётся за верный ответ с первой попытки.`:`Сен <b>${kkAbl(N)} ${first} ұпай</b> жинадың (${pct}%). Ұпай бірінші әрекетте берілген дұрыс жауапқа беріледі.`}</p>
       <div class="kpis">${kpis}</div></div></div>
     <section class="rep-sec"><h3>${ru?"Карта вопросов":"Сұрақтар картасы"}</h3>${qlegend}<div class="qmap">${qmap}</div></section>
     <section class="rep-sec two">
@@ -721,7 +733,7 @@ function finishBar(){
   const next = !last && textDone ? `<button class="btn" type="button" data-fin="next">${ru?"Следующий текст →":"Келесі мәтін →"}</button>` : "";
   const fin = `<button class="btn primary" type="button" data-fin="finish" ${allDone()?"":"disabled"}>${ru?"Завершить":"Аяқтау"}</button>`;
   const note = allDone() ? (ru?"Ответы отмечены во всех вопросах. При нажатии «Завершить» непроверенные ответы тоже будут оценены и откроется отчёт.":"Барлық сұраққа жауап белгіледің. «Аяқтау» батырмасын басқанда, тексерілмеген жауаптар да бағаланып, есеп шығады.")
-                         : (ru?`Отвечено ${done} из ${N}. Кнопка «Завершить» откроется, когда ответишь на все вопросы.`:`${N} сұрақтың ${done}-іне жауап бердің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`);
+                         : (ru?`Отвечено ${done} из ${N}. Кнопка «Завершить» откроется, когда ответишь на все вопросы.`:(done===0?`${N} сұрақтың біреуіне де жауап бермедің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`:`${N} сұрақтың ${kkDat(done)} жауап бердің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`));
   return `<div class="finbar"><div class="fprog"><i style="width:${Math.round(100*done/N)}%"></i></div><p>${note}</p><div class="actions">${next}${fin}</div></div>`;
 }
 function setLang(l){ S.lang=l; save(); renderAll(); }
