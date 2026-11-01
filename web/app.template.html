@@ -104,6 +104,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
 .fb{margin-top:12px;border-radius:8px;padding:12px 14px;font-size:14.5px}
 .fb.ok{background:var(--ok-soft)}
+.fb.second{background:var(--accent-soft)} .fb.second p{margin:0}
 .fb.bad{background:var(--bad-soft)}
 .fb h4{margin:0 0 4px;font-size:14.5px}
 .fb.ok h4{color:var(--ok)} .fb.bad h4{color:var(--bad)}
@@ -245,7 +246,7 @@ const UI = {
       score:(a,b,c)=>`Бірінші әрекетте дұрыс: <b>${a}</b> / ${b} · жауап берілді: ${c}`, check:"Тексеру", show:"Жауапты көрсету",
       helper:"Көмекші", hideHelper:"Көмекшіні жабу", inText:"Мәтіннен көрсету", reset:"Қайта бастау", qcount:n=>`${n} сұрақ`, done:"орындалды",
       level:n=>`${n}-деңгей`, neg:"Болымсыз сұрақ", ok:"Дұрыс!", bad:"Бұл жауап дұрыс емес", why:"Неліктен:",
-      tryAgain:"Мәтінге қайта қарап, тағы бір рет байқап көр. Көмекшіден кеңес сұрауға болады.",
+      tryAgain:"", second:"Екінші мүмкіндікті пайдаланамын", secondNow:"Екінші мүмкіндік: мәтінге қайта қарап, қалған 3 жауаптың бірін таңда. Бұл соңғы мүмкіндік.",
       revealH:"Дұрыс жауап", evidence:"Мәтіндегі дәлел:", others:"Қалған нұсқалар неге қате:", ownWords:"Енді неге дұрыс екенін өз сөзіңмен көмекшіге түсіндіріп көр.",
       quick:["Қайдан бастаймын?","Сұрақты түсінбедім","Мына сөздің мағынасы не?"], quickAfter:["Неге менің жауабым қате?","Неге дұрыс екенін түсіндіріп берейін"],
       hello:"Сәлем! Мен жауапты айтып бермеймін, бірақ оны мәтіннен өзің табуға көмектесемін.", ph:"Көмекшіге сұрағыңды жаз…", send:"Жіберу", stop:"Тоқтату", thinking:"Ойланып жатыр…",
@@ -258,7 +259,7 @@ const UI = {
       score:(a,b,c)=>`Верно с первой попытки: <b>${a}</b> / ${b} · отвечено: ${c}`, check:"Проверить", show:"Показать ответ",
       helper:"Помощник", hideHelper:"Закрыть помощника", inText:"Показать в тексте", reset:"Начать заново", qcount:n=>`${n} вопр.`, done:"выполнено",
       level:n=>`Уровень ${n}`, neg:"Отрицательный вопрос", ok:"Верно!", bad:"Ответ неверный", why:"Почему:",
-      tryAgain:"Перечитай текст и попробуй ещё раз. Можно попросить подсказку у помощника.",
+      tryAgain:"", second:"Использую вторую попытку", secondNow:"Вторая попытка: перечитай текст и выбери один из оставшихся 3 ответов. Это последняя попытка.",
       revealH:"Правильный ответ", evidence:"Доказательство в тексте:", others:"Почему остальные варианты неверны:", ownWords:"Теперь объясни помощнику своими словами, почему этот ответ верный.",
       quick:["С чего начать?","Не понимаю вопрос","Что значит это слово?"], quickAfter:["Почему мой ответ неверный?","Хочу объяснить, почему ответ верный"],
       hello:"Привет! Я не скажу ответ, но помогу тебе самому найти его в тексте.", ph:"Напиши вопрос помощнику…", send:"Отправить", stop:"Стоп", thinking:"Думает…",
@@ -392,16 +393,18 @@ function cardHTML(it){
     let cls="opt";
     if(fin && orig===it.key) cls+=" right";
     else if(s.tries.includes(orig)) cls+=" wrong";
-    else if(s.sel===orig && !fin) cls+=" sel";
-    if(fin) cls+=" off";
-    const dis = fin || s.tries.includes(orig);
-    return `<label class="${cls}"><input type="radio" name="${it.id}" value="${orig}" ${s.sel===orig?"checked":""} ${dis?"disabled":""} data-act="pick" data-id="${it.id}">
+    const locked = fin || s.status==="wrong1";
+    if(locked) cls+=" off";
+    const dis = locked || s.tries.includes(orig);
+    return `<label class="${cls}"><input type="radio" name="${it.id}" value="${orig}" ${dis?"disabled":""} data-act="pick" data-id="${it.id}">
       <span class="l">${"ABCD"[i]}</span><span class="t">${esc(it.options[orig])}</span></label>`;
   }).join("");
   let fb="";
-  if(s.status==="retry"){
+  if(s.status==="wrong1"){
     const last=s.tries[s.tries.length-1];
-    fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${esc(it.distractor_notes[last])}</p><p>${L.tryAgain}</p></div>`;
+    fb=`<div class="fb bad" role="status"><h4>${L.bad}</h4><p><b>${L.why}</b> ${esc(it.distractor_notes[last])}</p></div>`;
+  } else if(s.status==="retry"){
+    fb=`<div class="fb second" role="status"><p>${L.secondNow}</p></div>`;
   } else if(fin){
     const good = s.status==="ok";
     const wrongs = s.tries.map(o=>`<li><b>${shownLetter(it,o)})</b> ${esc(it.distractor_notes[o])}</li>`).join("");
@@ -410,11 +413,9 @@ function cardHTML(it){
       <p>${esc(it.explanation)}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>`<blockquote>${esc(e)}</blockquote>`).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul>${good?`<p>${L.ownWords}</p>`:""}</div>`;
   }
-  const canCheck = !fin && s.sel && !s.tries.includes(s.sel);
   const actions = `<div class="actions">
-      ${fin?`<button class="btn" type="button" data-act="mark" data-id="${it.id}">${L.inText}</button>`
-           :`<button class="btn primary" type="button" data-act="check" data-id="${it.id}" ${canCheck?"":"disabled"}>${L.check}</button>`}
-      ${s.status==="retry"?`<button class="btn ghost" type="button" data-act="reveal" data-id="${it.id}">${L.show}</button>`:""}
+      ${fin?`<button class="btn" type="button" data-act="mark" data-id="${it.id}">${L.inText}</button>`:""}
+      ${s.status==="wrong1"?`<button class="btn primary" type="button" data-act="second" data-id="${it.id}">${L.second}</button>`:""}
       <button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>
     </div>`;
   return `<article class="card ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
@@ -554,16 +555,18 @@ function markEvidence(it, jump){
 }
 document.addEventListener("change",e=>{
   const el=e.target; if(el.dataset.act!=="pick") return;
-  st(el.dataset.id).sel=el.value; save(); rerenderCard(el.dataset.id);
+  const id=el.dataset.id, it=BANK.items.find(x=>x.id===id), s=st(id);
+  if(s.status==="ok"||s.status==="revealed"||s.status==="wrong1") return;
+  if(el.value===it.key){ s.status="ok"; }
+  else { s.tries.push(el.value); s.status = s.tries.length>=2 ? "revealed" : "wrong1"; }
+  s.sel=null; save(); rerenderCard(id);
+  if(s.status==="ok"||s.status==="revealed") markEvidence(it);
 });
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]"); if(!b||b.tagName==="INPUT") return;
   const id=b.dataset.id, it=id&&BANK.items.find(x=>x.id===id), s=id&&st(id);
   switch(b.dataset.act){
-    case "check":
-      if(s.sel===it.key){ s.status="ok"; save(); rerenderCard(id); markEvidence(it); }
-      else { s.tries.push(s.sel); s.sel=null; s.status = s.tries.length>=2 ? "revealed" : "retry"; save(); rerenderCard(id); if(s.status==="revealed") markEvidence(it); }
-      break;
+    case "second": s.status="retry"; save(); rerenderCard(id); break;
     case "reveal": s.status="revealed"; save(); rerenderCard(id); markEvidence(it); break;
     case "mark": markEvidence(it,true); break;
     case "skill": openSkill[id]=!openSkill[id]; rerenderCard(id); break;
