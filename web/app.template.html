@@ -59,7 +59,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .paper{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px 30px;position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto}
 .paper h2{font-family:var(--f-text);font-size:22px;margin:0 0 4px;text-wrap:balance}
 .paper .meta{color:var(--muted);font-size:13px;margin-bottom:16px}
-.paper p{font-family:var(--f-text);font-size:17.5px;line-height:1.72;margin:0 0 12px;max-width:66ch;text-indent:1.6em}
+.paper p{font-family:var(--f-text);font-size:17.5px;line-height:1.72;margin:0 0 12px;text-indent:1.6em;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
 .paper p .pn{font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--accent);margin-right:6px;text-indent:0}
 mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .paper strong{font-weight:700}
@@ -123,6 +123,64 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .assist form{display:flex;gap:8px}
 .assist textarea{flex:1;min-width:0;resize:vertical;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit;background:var(--panel);color:var(--ink)}
 
+.btn:disabled{opacity:.5;cursor:not-allowed}
+:root{--good:var(--ok);--mid:#A8740B;--weak:var(--bad);--mid-soft:#FBF0D9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mid:#E3AE45;--mid-soft:#3A2F17}}
+:root[data-theme="dark"]{--mid:#E3AE45;--mid-soft:#3A2F17}
+.finbar{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.finbar p{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.fprog{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.fprog i{display:block;height:100%;background:var(--accent)}
+.rep-hero{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.ring{width:170px;height:170px;flex:0 0 auto}
+.ring circle{fill:none;stroke-width:14}
+.r-bg{stroke:var(--line)} .r-good{stroke:var(--good);stroke-linecap:butt} .r-mid{stroke:var(--mid)}
+.r-big{font:700 40px var(--f-text);fill:var(--ink);text-anchor:middle;dominant-baseline:middle;font-variant-numeric:tabular-nums}
+.r-sm{font:500 13px var(--f-ui);fill:var(--muted);text-anchor:middle}
+.rep-sum{flex:1 1 300px;min-width:0}
+.rep-sum h2{font-family:var(--f-text);font-size:26px;margin:0 0 6px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.kpi b{font:700 24px var(--f-text);color:var(--ink);font-variant-numeric:tabular-nums}
+.kpi .ki{font-weight:700;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:var(--panel);font-size:12px}
+.kpi.good .ki{background:var(--good)} .kpi.mid .ki{background:var(--mid)} .kpi.weak .ki{background:var(--weak)}
+.rep-sec{border-top:1px solid var(--line);margin-top:20px;padding-top:16px}
+.rep-sec h3{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 8px}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.lgd span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sw.good{background:var(--good)} .sw.mid{background:var(--mid)} .sw.weak{background:var(--weak)}
+.qmap{display:flex;flex-direction:column;gap:8px}
+.qm-row{display:grid;grid-template-columns:minmax(0,11em) 1fr;gap:10px;align-items:center}
+.qm-t{font-size:13px;color:var(--muted)}
+.qm-cells{display:flex;flex-wrap:wrap;gap:4px}
+.qm{width:44px;height:40px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--panel);font-size:13px;line-height:1.1;cursor:default}
+.qm i{font-style:normal;font-size:11px;opacity:.9}
+.qm.good{background:var(--good)} .qm.mid{background:var(--mid)} .qm.weak{background:var(--weak)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sw-box{border-radius:8px;padding:12px 14px}
+.sw-box.good{background:var(--ok-soft)} .sw-box.weak{background:var(--bad-soft)}
+.sw-box.good h3{color:var(--good)} .sw-box.weak h3{color:var(--weak)}
+.sks{display:flex;flex-wrap:wrap;gap:6px}
+.sk{background:var(--panel);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600}
+.muted{color:var(--muted);font-size:13px}
+.hbars{display:flex;flex-direction:column;gap:7px}
+.hb{display:grid;grid-template-columns:minmax(0,17em) 1fr 6.5em;gap:12px;align-items:center;font-size:14px}
+.hb .track{height:16px;border-radius:4px;background:var(--line);overflow:hidden}
+.hb .track i{display:block;height:100%;border-radius:0 4px 4px 0}
+.hb.good .track i{background:var(--good)} .hb.mid .track i{background:var(--mid)} .hb.weak .track i{background:var(--weak)}
+.hb .hv{text-align:right;font-variant-numeric:tabular-nums}
+.hb .hv small{color:var(--muted)}
+.hb.none{color:var(--muted)} .hb.none .track{background:repeating-linear-gradient(135deg,var(--line) 0 4px,transparent 4px 8px)}
+@media (max-width:880px){
+  .hb{grid-template-columns:minmax(0,1fr) 5.5em;gap:4px 10px}
+  .hb .hl{grid-column:1/-1}
+  .two{grid-template-columns:minmax(0,1fr)}
+  .qm-row{grid-template-columns:minmax(0,1fr)}
+  .kpis{grid-template-columns:minmax(0,1fr)}
+  .kpi{flex-direction:row;align-items:center;gap:10px}
+  .ring{width:140px;height:140px}
+}
 .results{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-block:16px 40px}
 .results h2{font-family:var(--f-text);margin:0 0 4px}
 .results .sub{color:var(--muted);margin:0 0 16px;font-size:14px}
@@ -194,7 +252,7 @@ const UI = {
       noAI:"Көмекші бұл көріністе қолжетімсіз. Платформаның толық нұсқасында ол әрдайым қосулы болады.",
       errAI:{not_granted:"Көмекшіге рұқсат берілмеді.",rate_limited:"Сұрақ тым жиі жіберілді. Біраз күтіп, қайта жазып көр.",refused:"Көмекші бұл сұраққа жауап бере алмады. Басқаша сұрап көр.",session_expired:"Қайта кіру қажет.",_:"Байланыс үзілді. Қайта жіберіп көр."},
       rTitle:"Дағдылар бойынша нәтиже", rSub:"Есеп бірінші әрекеттегі жауаптар бойынша жүргізіледі. Мұғалім осы кестеден оқушының әлсіз дағдыларын көреді.",
-      groups:{"А":"А. Ақпаратты табу","Ә":"Ә. Тікелей қорытынды жасау","Б":"Б. Түсіндіру және біріктіру","В":"В. Бағалау"}, notYet:"әлі жоқ",
+      groups:{"A":"A. Ақпаратты табу","B":"B. Тікелей қорытынды жасау","C":"C. Түсіндіру және біріктіру","D":"D. Бағалау"}, notYet:"әлі жоқ",
       banner:""},
   ru:{tagline:"Читательская грамотность · НИШ, БИЛ · вариант 1", text:"Текст", qs:"Вопросы", results:"Результаты", back:"Вернуться к заданиям",
       score:(a,b,c)=>`Верно с первой попытки: <b>${a}</b> / ${b} · отвечено: ${c}`, check:"Проверить", show:"Показать ответ",
@@ -207,48 +265,48 @@ const UI = {
       noAI:"Помощник недоступен в этом просмотре. В полной версии платформы он всегда включён.",
       errAI:{not_granted:"Доступ к помощнику не разрешён.",rate_limited:"Слишком частые запросы. Подожди немного и попробуй снова.",refused:"Помощник не смог ответить на этот вопрос. Попробуй спросить иначе.",session_expired:"Нужно войти заново.",_:"Связь прервалась. Попробуй отправить ещё раз."},
       rTitle:"Результаты по навыкам", rSub:"Учитываются ответы с первой попытки. По этой таблице учитель видит слабые навыки ученика.",
-      groups:{"А":"А. Поиск информации","Ә":"Ә. Прямые выводы","Б":"Б. Интерпретация и обобщение","В":"В. Оценка"}, notYet:"нет данных",
+      groups:{"A":"A. Поиск информации","B":"B. Прямые выводы","C":"C. Интерпретация и обобщение","D":"D. Оценка"}, notYet:"нет данных",
       banner:"Русский интерфейс по плану получает задания уровня «қазақ тілі — второй язык». Они ещё готовятся, поэтому здесь показаны задания первого языка. Тексты и вопросы остаются на казахском, помощник объясняет по-русски."}
 };
-const SKILL_RU = {"А1":"Поиск конкретного факта","А2":"Причина и следствие","А3":"Где находится информация","Ә1":"Определение отсылки","Ә2":"Значение слова в тексте","Ә3":"Сверка утверждения с текстом","Ә4":"Чувства и характер героя","Б1":"Основная мысль, тема, заголовок","Б2":"Скрытый смысл","Б3":"Вывод, совет, мораль","Б4":"Структура и логика текста","В1":"Тип и жанр текста","В2":"Цель и позиция автора"};
+const SKILL_RU = {"A1":"Поиск конкретного факта","A2":"Причина и следствие","A3":"Где находится информация","B1":"Определение отсылки","B2":"Значение слова в тексте","B3":"Сверка утверждения с текстом","B4":"Чувства и характер героя","C1":"Основная мысль, тема, заголовок","C2":"Скрытый смысл","C3":"Вывод, совет, мораль","C4":"Структура и логика текста","D1":"Тип и жанр текста","D2":"Цель и позиция автора"};
 
 /* Дағдылар анықтамасы: топ және әр дағды не білдіреді */
 const GROUP_INFO = {
-  kk:{"А":"Жауап мәтінде ашық жазылып тұр, оқушы тек тауып алуы керек.",
-      "Ә":"Жауап мәтінде дәл сол сөзбен жазылмаған: оқушы бір-екі сөйлемге сүйеніп, өзі қорытынды шығарады.",
-      "Б":"Оқушы бір сөйлемге емес, бүкіл мәтінге немесе абзацқа қарап, ойды жинақтайды.",
-      "В":"Оқушы мәтінге сырттан қарап, оны кім, не үшін, қалай жазғанын бағалайды."},
-  ru:{"А":"Ответ прямо написан в тексте, его нужно только найти.",
-      "Ә":"Ответ не написан теми же словами: ученик сам делает вывод по одному-двум предложениям.",
-      "Б":"Ученик смотрит не на одно предложение, а на весь текст или абзац и обобщает мысль.",
-      "В":"Ученик смотрит на текст со стороны: кто, зачем и как его написал."}};
+  kk:{"A":"Жауап мәтінде ашық жазылып тұр, оқушы тек тауып алуы керек.",
+      "B":"Жауап мәтінде дәл сол сөзбен жазылмаған: оқушы бір-екі сөйлемге сүйеніп, өзі қорытынды шығарады.",
+      "C":"Оқушы бір сөйлемге емес, бүкіл мәтінге немесе абзацқа қарап, ойды жинақтайды.",
+      "D":"Оқушы мәтінге сырттан қарап, оны кім, не үшін, қалай жазғанын бағалайды."},
+  ru:{"A":"Ответ прямо написан в тексте, его нужно только найти.",
+      "B":"Ответ не написан теми же словами: ученик сам делает вывод по одному-двум предложениям.",
+      "C":"Ученик смотрит не на одно предложение, а на весь текст или абзац и обобщает мысль.",
+      "D":"Ученик смотрит на текст со стороны: кто, зачем и как его написал."}};
 const SKILL_INFO = {
-  kk:{"А1":"Мәтіндегі нақты деректі табады: кім, не, қашан, қанша.",
-      "А2":"Себеп пен салдарды табады: неліктен, не себеп болды.",
-      "А3":"Ақпараттың қай абзацта, қай бөлімде тұрғанын анықтайды.",
-      "Ә1":"Есімдіктің немесе сөздің кімді/нені меңзейтінін анықтайды («оның» деп кімді айтады?).",
-      "Ә2":"Сөздің немесе тіркестің мәтіндегі мағынасын түсінеді.",
-      "Ә3":"Тұжырымды мәтінмен салыстырып, сәйкес келетін-келмейтінін анықтайды.",
-      "Ә4":"Кейіпкердің немесе автордың сезімі мен мінезін анықтайды.",
-      "Б1":"Мәтіннің немесе абзацтың негізгі ойын, тақырыбын, атауын анықтайды.",
-      "Б2":"Астарлы ойды түсінеді: «автор не айтқысы келді?».",
-      "Б3":"Мәтіннің түйінін, кеңесін, тағылымын анықтайды.",
-      "Б4":"Мәтіннің құрылымы мен логикасын түсінеді: оқиғаның реті, бос орынды толтыру, байланыстырушы сөз.",
-      "В1":"Мәтіннің үлгісін, жанрын анықтайды: сұхбат, мақала, әңгіме.",
-      "В2":"Автордың мақсатын, көзқарасын анықтайды."},
-  ru:{"А1":"Находит конкретный факт в тексте: кто, что, когда, сколько.",
-      "А2":"Находит причину и следствие: почему, что стало причиной.",
-      "А3":"Определяет, в каком абзаце или части находится информация.",
-      "Ә1":"Определяет, кого или что обозначает местоимение или слово («оның» — это кто?).",
-      "Ә2":"Понимает значение слова или выражения в тексте.",
-      "Ә3":"Сверяет утверждение с текстом: соответствует или нет.",
-      "Ә4":"Определяет чувства и характер героя или автора.",
-      "Б1":"Определяет основную мысль, тему, заголовок текста или абзаца.",
-      "Б2":"Понимает скрытый смысл: «что хотел сказать автор?».",
-      "Б3":"Определяет вывод, совет, мораль текста.",
-      "Б4":"Понимает структуру и логику текста: порядок событий, пропуск, связующее слово.",
-      "В1":"Определяет тип и жанр текста: интервью, статья, рассказ.",
-      "В2":"Определяет цель и позицию автора."}};
+  kk:{"A1":"Мәтіндегі нақты деректі табады: кім, не, қашан, қанша.",
+      "A2":"Себеп пен салдарды табады: неліктен, не себеп болды.",
+      "A3":"Ақпараттың қай абзацта, қай бөлімде тұрғанын анықтайды.",
+      "B1":"Есімдіктің немесе сөздің кімді/нені меңзейтінін анықтайды («оның» деп кімді айтады?).",
+      "B2":"Сөздің немесе тіркестің мәтіндегі мағынасын түсінеді.",
+      "B3":"Тұжырымды мәтінмен салыстырып, сәйкес келетін-келмейтінін анықтайды.",
+      "B4":"Кейіпкердің немесе автордың сезімі мен мінезін анықтайды.",
+      "C1":"Мәтіннің немесе абзацтың негізгі ойын, тақырыбын, атауын анықтайды.",
+      "C2":"Астарлы ойды түсінеді: «автор не айтқысы келді?».",
+      "C3":"Мәтіннің түйінін, кеңесін, тағылымын анықтайды.",
+      "C4":"Мәтіннің құрылымы мен логикасын түсінеді: оқиғаның реті, бос орынды толтыру, байланыстырушы сөз.",
+      "D1":"Мәтіннің үлгісін, жанрын анықтайды: сұхбат, мақала, әңгіме.",
+      "D2":"Автордың мақсатын, көзқарасын анықтайды."},
+  ru:{"A1":"Находит конкретный факт в тексте: кто, что, когда, сколько.",
+      "A2":"Находит причину и следствие: почему, что стало причиной.",
+      "A3":"Определяет, в каком абзаце или части находится информация.",
+      "B1":"Определяет, кого или что обозначает местоимение или слово («оның» — это кто?).",
+      "B2":"Понимает значение слова или выражения в тексте.",
+      "B3":"Сверяет утверждение с текстом: соответствует или нет.",
+      "B4":"Определяет чувства и характер героя или автора.",
+      "C1":"Определяет основную мысль, тему, заголовок текста или абзаца.",
+      "C2":"Понимает скрытый смысл: «что хотел сказать автор?».",
+      "C3":"Определяет вывод, совет, мораль текста.",
+      "C4":"Понимает структуру и логику текста: порядок событий, пропуск, связующее слово.",
+      "D1":"Определяет тип и жанр текста: интервью, статья, рассказ.",
+      "D2":"Определяет цель и позицию автора."}};
 const skillName = c => S.lang==="ru" ? SKILL_RU[c] : BANK.skills[c];
 const openSkill = {};
 function skillBox(c){
@@ -260,7 +318,7 @@ function legendHTML(){
   const L=t(), groups={};
   for(const c of Object.keys(BANK.skills)) (groups[c[0]] ||= []).push(c);
   return `<details class="legend" open><summary>${S.lang==="ru"?"Что означают коды навыков":"Дағды кодтары нені білдіреді"}</summary>
-    <p class="sub">${S.lang==="ru"?"Буква — группа навыков (от А, самой простой, до В, самой глубокой), цифра — конкретный навык. Например, Ә2 — второй навык группы Ә.":"Әріп – дағды тобы (А ең жеңіл, В ең терең), сан – сол топтағы нақты дағды. Мысалы, Ә2 – Ә тобындағы 2-дағды."}</p>
+    <p class="sub">${S.lang==="ru"?"Буква — группа навыков (от A, самой простой, до D, самой глубокой), цифра — конкретный навык. Например, B2 — второй навык группы B.":"Әріп – дағды тобы (A ең жеңіл, D ең терең), сан – сол топтағы нақты дағды. Мысалы, B2 – B тобындағы 2-дағды."}</p>
     ${Object.entries(groups).map(([g,cs])=>`<div class="lg"><h3>${esc(L.groups[g])}</h3><p class="sub">${esc(GROUP_INFO[S.lang][g])}</p>
       <dl>${cs.map(c=>`<dt>${c} · ${esc(skillName(c))}</dt><dd>${esc(SKILL_INFO[S.lang][c])}</dd>`).join("")}</dl></div>`).join("")}</details>`;
 }
@@ -325,7 +383,7 @@ function renderPaper(){
 /* ---------- Тапсырмалар ---------- */
 function renderQs(){
   const box=document.getElementById("qs");
-  box.innerHTML = itemsOf(BANK.texts[S.text].id).map(cardHTML).join("");
+  box.innerHTML = itemsOf(BANK.texts[S.text].id).map(cardHTML).join("") + finishBar();
 }
 function cardHTML(it){
   const s=st(it.id), L=t(), ord=orderOf(it), fin=(s.status==="ok"||s.status==="revealed");
@@ -368,14 +426,14 @@ function cardHTML(it){
 /* ---------- Көмекші (Claude) ---------- */
 /* ЖИ қолжетімсіз кезде: банк деректерінен құрылған 3 сатылы кеңес */
 const TIPS = {
-  kk:{"А":"Сұрақтағы негізгі сөзді тап, сосын сол сөзді немесе оның синонимін мәтіннен ізде.",
-      "Ә":"Әр нұсқаны мәтінмен жеке-жеке салыстыр. Мәтінде дәл солай айтылған ба, әлде тек ұқсас па?",
-      "Б":"Бір сөйлемге емес, бүкіл мәтінге (немесе абзацқа) қара. Автор ең көп не туралы айтады?",
-      "В":"Мәтінді кім, кімге, не үшін жазғанын ойла. Автор ойын қалай жеткізеді?"},
-  ru:{"А":"Найди ключевое слово в вопросе, потом ищи это слово или его синоним в тексте.",
-      "Ә":"Сравни каждый вариант с текстом по отдельности. Сказано ли в тексте именно так или только похоже?",
-      "Б":"Смотри не на одно предложение, а на весь текст (или абзац). О чём автор говорит больше всего?",
-      "В":"Подумай, кто, для кого и зачем написал текст. Как автор передаёт свою мысль?"}};
+  kk:{"A":"Сұрақтағы негізгі сөзді тап, сосын сол сөзді немесе оның синонимін мәтіннен ізде.",
+      "B":"Әр нұсқаны мәтінмен жеке-жеке салыстыр. Мәтінде дәл солай айтылған ба, әлде тек ұқсас па?",
+      "C":"Бір сөйлемге емес, бүкіл мәтінге (немесе абзацқа) қара. Автор ең көп не туралы айтады?",
+      "D":"Мәтінді кім, кімге, не үшін жазғанын ойла. Автор ойын қалай жеткізеді?"},
+  ru:{"A":"Найди ключевое слово в вопросе, потом ищи это слово или его синоним в тексте.",
+      "B":"Сравни каждый вариант с текстом по отдельности. Сказано ли в тексте именно так или только похоже?",
+      "C":"Смотри не на одно предложение, а на весь текст (или абзац). О чём автор говорит больше всего?",
+      "D":"Подумай, кто, для кого и зачем написал текст. Как автор передаёт свою мысль?"}};
 function hintPlace(it){
   const tx=BANK.texts.find(x=>x.id===it.text_id), f=frags(it.evidence[0])[0]||"";
   const i=tx.paragraphs.findIndex(p=>p.replace(/\*\*/g,"").includes(f));
@@ -482,6 +540,7 @@ async function ask(id, text){
 function rerenderCard(id){
   const it=BANK.items.find(x=>x.id===id), el=document.getElementById("card-"+id);
   if(el){ el.outerHTML=cardHTML(it); const m=document.getElementById("msgs-"+id); if(m) m.scrollTop=m.scrollHeight; }
+  const fb=document.querySelector("#qs .finbar"); if(fb) fb.outerHTML=finishBar();
   renderTop();
 }
 let backTo=null;
@@ -540,6 +599,7 @@ function renderTop(){
   const answered=sts.filter(s=>s.status==="ok"||s.status==="revealed").length;
   document.getElementById("score").innerHTML=L.score(first,all.length,answered);
   renderTabs();
+  const rb=document.getElementById("resultsBtn"); if(rb && !showingResults){ const ad=allDone(); rb.textContent = ad?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isDone).length}/${BANK.items.length}`; rb.disabled=!ad; rb.classList.toggle("primary",ad); }
 }
 function setView(v){
   S.view=v; save(); document.getElementById("grid").dataset.view=v;
@@ -550,26 +610,84 @@ function setView(v){
 document.getElementById("backq").addEventListener("click",()=>setView("qs"));
 document.getElementById("mobswitch").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setView(b.dataset.v); });
 
+/* ---------- Аяқтау және есеп ---------- */
+const isDone = x => ["ok","revealed"].includes(st(x.id).status);
+const isFirst = x => st(x.id).status==="ok" && st(x.id).tries.length===0;
+const isSecond = x => st(x.id).status==="ok" && st(x.id).tries.length>0;
+const allDone = () => BANK.items.every(isDone);
+function band(p){ return p>=75?"good":p>=50?"mid":"weak"; }
+const BAND = {kk:{good:"✓ Мықты",mid:"~ Орташа",weak:"! Жаттықтыру керек"}, ru:{good:"✓ Сильная сторона",mid:"~ Средне",weak:"! Нужно тренировать"}};
+function statOf(items){ const n=items.length, g=items.filter(isFirst).length; return {n,g,p:n?Math.round(100*g/n):null}; }
+function hbar(label, st_, title){
+  if(st_.p===null) return `<div class="hb none"><span class="hl">${label}</span><div class="track"></div><span class="hv" title="${S.lang==="ru"?"В этом варианте нет вопросов на этот навык":"Бұл нұсқада осы дағдыға сұрақ жоқ"}">—</span></div>`;
+  const b=band(st_.p);
+  return `<div class="hb ${b}" title="${esc(title)}"><span class="hl">${label}</span>
+    <div class="track" role="img" aria-label="${esc(title)}"><i style="width:${Math.max(st_.p,2)}%"></i></div>
+    <span class="hv"><b>${st_.p}%</b> <small>${st_.g}/${st_.n}</small></span></div>`;
+}
 function renderResults(){
-  const L=t(), groups={};
-  for(const code of Object.keys(BANK.skills)) (groups[code[0]] ||= []).push(code);
-  const rows = Object.entries(groups).map(([g,codes])=>`<div class="rgroup"><h3>${L.groups[g]}</h3>${codes.map(c=>{
-    const its=BANK.items.filter(x=>x.skill===c), done=its.filter(x=>["ok","revealed"].includes(st(x.id).status));
-    const good=done.filter(x=>st(x.id).status==="ok"&&st(x.id).tries.length===0).length;
-    const name=S.lang==="ru"?SKILL_RU[c]:BANK.skills[c];
-    if(!its.length) return `<div class="row none"><span>${c} · ${esc(name)}</span><div class="bar"></div><span class="n">${L.notYet}</span></div>`;
-    const pct=done.length?Math.round(100*good/done.length):0;
-    return `<div class="row ${done.length&&pct<50?"weak":""}"><span>${c} · ${esc(name)}</span><div class="bar"><i style="width:${pct}%"></i></div><span class="n">${good}/${done.length||its.length}</span></div>`;
-  }).join("")}</div>`).join("");
-  document.getElementById("results").innerHTML=`<h2>${L.rTitle}</h2><p class="sub">${L.rSub}</p>${rows}${legendHTML()}
-    <div class="actions"><button class="btn primary" type="button" id="backBtn">${L.back}</button><button class="btn ghost" type="button" id="resetBtn">${L.reset}</button></div>`;
+  const L=t(), ru=S.lang==="ru", items=BANK.items, N=items.length;
+  const first=items.filter(isFirst).length, second=items.filter(isSecond).length, miss=N-first-second;
+  const pct=Math.round(100*first/N);
+  const verdict = pct>=85?(ru?"Отличный результат!":"Өте жақсы нәтиже!"):pct>=65?(ru?"Хороший результат!":"Жақсы нәтиже!"):pct>=45?(ru?"Неплохо, но есть над чем работать.":"Жаман емес, бірақ жаттығу керек."):(ru?"Нужно больше тренироваться.":"Көбірек жаттығу керек.");
+  // Сақина
+  const R=54, C=2*Math.PI*R, seg=v=>C*v/N;
+  const ring=`<svg viewBox="0 0 140 140" class="ring" role="img" aria-label="${first} / ${N}">
+    <circle cx="70" cy="70" r="${R}" class="r-bg"/>
+    <circle cx="70" cy="70" r="${R}" class="r-good" stroke-dasharray="${seg(first)} ${C}" transform="rotate(-90 70 70)"/>
+    <circle cx="70" cy="70" r="${R}" class="r-mid" stroke-dasharray="${seg(second)} ${C}" stroke-dashoffset="${-seg(first)}" transform="rotate(-90 70 70)"/>
+    <text x="70" y="70" class="r-big">${first}</text><text x="70" y="94" class="r-sm">/ ${N} ${ru?"балл":"ұпай"}</text></svg>`;
+  const kpis=[[first,ru?"Верно с первой попытки":"Бірінші әрекетте дұрыс","good","✓"],[second,ru?"Верно со второй попытки":"Екінші әрекетте дұрыс","mid","~"],[miss,ru?"Не решено":"Шешілмеді","weak","✗"]]
+    .map(([v,l,c,i])=>`<div class="kpi ${c}"><span class="ki" aria-hidden="true">${i}</span><b>${v}</b><span>${l}</span></div>`).join("");
+  // Сұрақтар картасы
+  const qmap=BANK.texts.map(tx=>`<div class="qm-row"><span class="qm-t">${esc(tx.title)}</span><div class="qm-cells">${itemsOf(tx.id).map(x=>{
+      const c=isFirst(x)?"good":isSecond(x)?"mid":"weak", i=isFirst(x)?"✓":isSecond(x)?"~":"✗";
+      const tip=`${x.number}. ${x.skill} · ${skillName(x.skill)} — ${c==="good"?(ru?"верно с первой попытки":"бірінші әрекетте дұрыс"):c==="mid"?(ru?"верно со второй попытки":"екінші әрекетте дұрыс"):(ru?"не решено":"шешілмеді")}`;
+      return `<span class="qm ${c}" title="${esc(tip)}" aria-label="${esc(tip)}"><b>${x.number}</b><i aria-hidden="true">${i}</i></span>`;}).join("")}</div></div>`).join("");
+  const qlegend=`<div class="lgd"><span><i class="sw good"></i>✓ ${ru?"с первой попытки":"бірінші әрекетте"}</span><span><i class="sw mid"></i>~ ${ru?"со второй попытки":"екінші әрекетте"}</span><span><i class="sw weak"></i>✗ ${ru?"не решено":"шешілмеді"}</span></div>`;
+  // Топтар мен дағдылар
+  const groups={}; for(const c of Object.keys(BANK.skills)) (groups[c[0]] ||= []).push(c);
+  const gbars=Object.keys(groups).map(g=>{ const sg=statOf(items.filter(x=>x.skill[0]===g)); return hbar(esc(L.groups[g]), sg, `${L.groups[g]}: ${sg.g}/${sg.n}`); }).join("");
+  const skillStats=Object.keys(BANK.skills).map(c=>({c,...statOf(items.filter(x=>x.skill===c))}));
+  const sbars=skillStats.map(x=>hbar(`<b>${x.c}</b> ${esc(skillName(x.c))}`, x, `${x.c} · ${skillName(x.c)}: ${x.g}/${x.n}`)).join("");
+  const strong=skillStats.filter(x=>x.p!==null&&x.p>=75), weak=skillStats.filter(x=>x.p!==null&&x.p<50);
+  const chips=a=>a.length?a.map(x=>`<span class="sk">${x.c} · ${esc(skillName(x.c))}</span>`).join(""):`<span class="muted">${ru?"пока нет":"әзірге жоқ"}</span>`;
+  const bandLegend=`<div class="lgd"><span><i class="sw good"></i>${BAND[S.lang].good} (75%+)</span><span><i class="sw mid"></i>${BAND[S.lang].mid} (50–74%)</span><span><i class="sw weak"></i>${BAND[S.lang].weak} (&lt;50%)</span></div>`;
+  document.getElementById("results").innerHTML=`
+    <div class="rep-hero">${ring}<div class="rep-sum"><h2>${verdict}</h2>
+      <p class="sub">${ru?`Ты набрал(а) <b>${first} из ${N}</b> баллов (${pct}%). Балл даётся за верный ответ с первой попытки.`:`Сен <b>${N}-дан ${first} ұпай</b> жинадың (${pct}%). Ұпай бірінші әрекетте берілген дұрыс жауапқа беріледі.`}</p>
+      <div class="kpis">${kpis}</div></div></div>
+    <section class="rep-sec"><h3>${ru?"Карта вопросов":"Сұрақтар картасы"}</h3>${qlegend}<div class="qmap">${qmap}</div></section>
+    <section class="rep-sec two">
+      <div class="sw-box good"><h3>✓ ${ru?"Твои сильные стороны":"Мықты жақтарың"}</h3><div class="sks">${chips(strong)}</div></div>
+      <div class="sw-box weak"><h3>! ${ru?"Что нужно тренировать":"Жаттықтыру керек"}</h3><div class="sks">${chips(weak)}</div></div>
+    </section>
+    <section class="rep-sec"><h3>${ru?"Группы навыков":"Дағды топтары"}</h3>${bandLegend}<div class="hbars">${gbars}</div></section>
+    <section class="rep-sec"><h3>${ru?"Навыки подробно":"Дағдылар бойынша толық"}</h3><div class="hbars">${sbars}</div>
+      <p class="muted" style="margin-top:10px">${ru?"«—» и штриховка: в этом варианте нет вопросов на этот навык.":"«—» және штрихталған жолақ: бұл нұсқада осы дағдыға сұрақ жоқ."}</p></section>
+    ${legendHTML().replace('<details class="legend" open>','<details class="legend">')}
+    <div class="actions"><button class="btn primary" type="button" id="backBtn">${ru?"Посмотреть ответы":"Жауаптарды қарау"}</button><button class="btn ghost" type="button" id="resetBtn">${L.reset}</button></div>`;
 }
 let showingResults=false;
-document.getElementById("resultsBtn").addEventListener("click",()=>{ showingResults=!showingResults; renderAll(); });
+document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
 document.getElementById("results").addEventListener("click",e=>{
   if(e.target.id==="backBtn"){ showingResults=false; renderAll(); }
-  if(e.target.id==="resetBtn"){ S.items={}; S.order={}; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); }
+  if(e.target.id==="resetBtn"){ S.items={}; S.order={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
+document.getElementById("qs").addEventListener("click",e=>{
+  const b=e.target.closest("[data-fin]"); if(!b) return;
+  if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; save(); renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.fin==="finish" && allDone()){ showingResults=true; renderAll(); window.scrollTo({top:0}); }
+});
+function finishBar(){
+  const ru=S.lang==="ru", done=BANK.items.filter(isDone).length, N=BANK.items.length, last=S.text===BANK.texts.length-1;
+  const textDone=itemsOf(BANK.texts[S.text].id).every(isDone);
+  const next = !last && textDone ? `<button class="btn" type="button" data-fin="next">${ru?"Следующий текст →":"Келесі мәтін →"}</button>` : "";
+  const fin = `<button class="btn primary" type="button" data-fin="finish" ${allDone()?"":"disabled"}>${ru?"Завершить":"Аяқтау"}</button>`;
+  const note = allDone() ? (ru?"Все вопросы решены. Нажми «Завершить», чтобы увидеть отчёт.":"Барлық сұраққа жауап бердің. Есепті көру үшін «Аяқтау» батырмасын бас.")
+                         : (ru?`Отвечено ${done} из ${N}. Кнопка «Завершить» откроется, когда ответишь на все вопросы.`:`${N} сұрақтың ${done}-іне жауап бердің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`);
+  return `<div class="finbar"><div class="fprog"><i style="width:${Math.round(100*done/N)}%"></i></div><p>${note}</p><div class="actions">${next}${fin}</div></div>`;
+}
 function setLang(l){ S.lang=l; save(); renderAll(); }
 document.getElementById("langKk").onclick=()=>setLang("kk");
 document.getElementById("langRu").onclick=()=>setLang("ru");
@@ -583,7 +701,9 @@ function renderAll(){
   const bn=document.getElementById("banner"); bn.hidden=!L.banner; bn.textContent=L.banner;
   const [mt,mq]=document.querySelectorAll("#mobswitch button"); mt.textContent=L.text; mq.textContent=L.qs;
   document.getElementById("backq").textContent = S.lang==="ru"?"← Вернуться к вопросу":"← Сұраққа оралу";
-  document.getElementById("resultsBtn").textContent = showingResults?L.back:L.results;
+  const rb=document.getElementById("resultsBtn"), ad=allDone();
+  rb.textContent = showingResults ? L.back : (ad ? (S.lang==="ru"?"Отчёт":"Есеп") : (S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isDone).length}/${BANK.items.length}`);
+  rb.disabled = !showingResults && !ad; rb.classList.toggle("primary", ad && !showingResults);
   document.getElementById("practice").hidden=showingResults;
   document.getElementById("results").hidden=!showingResults;
   if(showingResults) renderResults();
