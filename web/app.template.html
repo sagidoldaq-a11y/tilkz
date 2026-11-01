@@ -1,5 +1,6 @@
 <title>TilKz AI</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<script>(function(){try{var th=localStorage.getItem("tilkz-theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;500;600;700&display=swap">
@@ -47,6 +48,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
 .btn.primary:disabled{opacity:.45;cursor:not-allowed}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--accent);padding-inline:8px}
+.themebtn{width:36px;height:32px;border:1px solid var(--line);background:var(--panel);border-radius:999px;display:grid;place-items:center;font-size:16px;line-height:1;padding:0}
 .score{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .score b{color:var(--ink)}
 
@@ -283,6 +285,7 @@ b.kw{font-weight:800}
     <div class="brand"><b>TilKz <span class="ai">AI</span></b><span id="tagline"></span></div>
     <span class="score" id="score"></span>
     <button class="btn" id="resultsBtn" type="button"></button>
+    <button type="button" class="themebtn" id="themeBtn" aria-label="Тақырып / Тема"></button>
     <div class="seg" role="group" aria-label="Interface language">
       <button type="button" id="langKk" aria-pressed="true">ҚАЗ</button>
       <button type="button" id="langRu" aria-pressed="false">РУС</button>
@@ -1090,8 +1093,15 @@ document.getElementById("landing").addEventListener("click",e=>{
   if(b.dataset.land==="restart"){ S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; marks=[]; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
 document.getElementById("toLanding").addEventListener("click",()=>{ view="landing"; showingResults=false; renderAll(); window.scrollTo({top:0}); });
+/* Жарық / қараңғы тақырып (визиткамен ортақ баптау) */
+const themeBtn=document.getElementById("themeBtn");
+const isDark=()=>{ const t=document.documentElement.dataset.theme; return t ? t==="dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
+function paintTheme(){ const d=isDark(); themeBtn.textContent=d?"☀":"☾";
+  const lbl=S.lang==="ru"?(d?"Светлая тема":"Тёмная тема"):(d?"Жарық тақырып":"Қараңғы тақырып"); themeBtn.title=lbl; themeBtn.setAttribute("aria-label",lbl); }
+themeBtn.addEventListener("click",()=>{ const t=isDark()?"light":"dark"; document.documentElement.dataset.theme=t; try{localStorage.setItem("tilkz-theme",t);}catch(e){} paintTheme(); });
 function renderAll(){
   const L=t();
+  paintTheme();
   document.documentElement.lang = S.lang==="ru"?"ru":"kk";
   document.getElementById("tagline").textContent=L.tagline;
   document.getElementById("langKk").setAttribute("aria-pressed",S.lang==="kk");

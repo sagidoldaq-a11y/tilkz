@@ -13,6 +13,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://sagidoldaq-a11y.github.io/tilkz/">
 <meta name="twitter:card" content="summary_large_image">
+<script>(function(){try{var th=localStorage.getItem("tilkz-theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Noto+Sans:wght@400;500;600;700&display=swap">
@@ -50,6 +51,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .top{display:flex;align-items:center;justify-content:space-between;padding-block:14px}
 .brand{font-family:var(--f-text);font-weight:700;font-size:20px;text-decoration:none}
 .brand span{color:var(--accent);font-family:var(--f-ui);letter-spacing:.5px}
+.tools{display:flex;align-items:center;gap:8px}
+.themebtn{width:36px;height:32px;border:1px solid var(--line);background:var(--panel);border-radius:999px;display:grid;place-items:center;font-size:16px;line-height:1}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--panel)}
 .seg button{border:0;background:transparent;padding:4px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
@@ -131,10 +134,11 @@ footer{margin:48px 0 28px;color:var(--muted);font-size:13px;text-align:center}
 <div class="wrap">
   <header class="top">
     <a class="brand" href="./">TilKz <span>AI</span></a>
+    <div class="tools"><button type="button" class="themebtn" id="themeBtn" aria-label="Тақырып / Тема"></button>
     <div class="seg" role="group" aria-label="Тіл / Язык">
       <button type="button" data-lang="kk" aria-pressed="true">ҚАЗ</button>
       <button type="button" data-lang="ru" aria-pressed="false">РУС</button>
-    </div>
+    </div></div>
   </header>
 
   <main>
@@ -222,9 +226,9 @@ const T={
    c2tag:"Онлайн / офлайн", c2h:"Жеке сабақтар", c2kidsH:"Оқушыларға", c2kids:"5–11 сыныптар. Емтихандарға дайындық, үлгерімді жақсарту. Тек онлайн.",
    c2adultsH:"Ересектерге", c2adults:"Кәсіпкерлер, басшылар, мемлекеттік қызметкерлер. Жалпы және іскерлік қазақ тілі. Онлайн және офлайн.", c2go:"Сабаққа жазылу",
    c3tag:"Компанияларға", c3h:"Корпоративтік қазақ тілі", c3:"Компания қызметкерлеріне арналған қазақ тілі. Онлайн және офлайн.",
-   c3a:"Іскери хат алмасу", c3b:"Құжат жүргізу", c3c:"Іскерлік қазақ тілі: топтық сабақтар және топ-менеджерлермен жеке жұмыс", c3go:"Ұсыныс алу",
+   c3a:"Іскерлік хат алмасу", c3b:"Құжат жүргізу", c3c:"Іскерлік қазақ тілі: топтық сабақтар және топ-менеджерлермен жеке жұмыс", c3go:"Толығырақ білу",
    price:"Бағасы мен сабақ кестесі туралы {wa} жазыңыз.", priceWa:"WhatsApp-қа", contactTitle:"Байланыс", copy:"Көшіру", copied:"Көшірілді",
-   waKids:"Сәлеметсіз бе! Жеке сабаққа жазылғым келеді.", waPrice:"Сәлеметсіз бе! Сабақтардың бағасы мен кестесін білгім келеді.", waCorp:"Сәлеметсіз бе! Корпоративтік қазақ тілі курсы бойынша ұсыныс алғым келеді.",
+   waKids:"Сәлеметсіз бе! Жеке сабаққа жазылғым келеді.", waPrice:"Сәлеметсіз бе! Сабақтардың бағасы мен кестесін білгім келеді.", waCorp:"Сәлеметсіз бе! Корпоративтік қазақ тілі курсы бойынша толық ақпарат алғым келеді.",
    lbl:{wa:"WhatsApp",tg:"Telegram",ig:"Instagram",mail:"Электрондық пошта"}, write:"Жазу"},
  ru:{role:"Учитель казахского языка и литературы", name:"Казбек Сагидолда",
    lead:"Более 10 лет преподаю казахский язык. Подготовил более 2000 учеников к экзаменам в НИШ и БИЛ. Занимаюсь со школьниками, взрослыми и компаниями.",
@@ -237,9 +241,9 @@ const T={
    c2tag:"Онлайн / офлайн", c2h:"Индивидуальные занятия", c2kidsH:"Школьникам", c2kids:"5–11 классы. Подготовка к экзаменам, повышение успеваемости. Только онлайн.",
    c2adultsH:"Взрослым", c2adults:"Предприниматели, руководители, госслужащие. Общий и деловой казахский язык. Онлайн и офлайн.", c2go:"Записаться на занятие",
    c3tag:"Для компаний", c3h:"Корпоративный казахский язык", c3:"Казахский язык для сотрудников компаний. Онлайн и офлайн.",
-   c3a:"Деловая переписка", c3b:"Делопроизводство", c3c:"Деловой казахский: групповые занятия и индивидуальная работа с топ-менеджерами", c3go:"Получить предложение",
+   c3a:"Деловая переписка", c3b:"Делопроизводство", c3c:"Деловой казахский: групповые занятия и индивидуальная работа с топ-менеджерами", c3go:"Узнать подробнее",
    price:"О стоимости и расписании занятий напишите в {wa}.", priceWa:"WhatsApp", contactTitle:"Контакты", copy:"Копировать", copied:"Скопировано",
-   waKids:"Здравствуйте! Хочу записаться на индивидуальное занятие.", waPrice:"Здравствуйте! Хочу узнать стоимость и расписание занятий.", waCorp:"Здравствуйте! Хочу получить предложение по курсу корпоративного казахского языка.",
+   waKids:"Здравствуйте! Хочу записаться на индивидуальное занятие.", waPrice:"Здравствуйте! Хочу узнать стоимость и расписание занятий.", waCorp:"Здравствуйте! Хочу получить подробную информацию о курсе корпоративного казахского языка.",
    lbl:{wa:"WhatsApp",tg:"Telegram",ig:"Instagram",mail:"Электронная почта"}, write:"Написать"}
 };
 let lang="kk"; try{ lang=localStorage.getItem("tilkz-home-lang")||"kk"; }catch(e){}
@@ -268,6 +272,13 @@ document.addEventListener("click",async e=>{
   try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent=T[lang].copied; setTimeout(()=>b.textContent=T[lang].copy,1500); }
   catch(err){ const r=document.createRange(); r.selectNodeContents(b.previousElementSibling.querySelector("a")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); }
 });
+/* Жарық / қараңғы тақырып: таңдау сақталады, әйтпесе құрылғының баптауы */
+const themeBtn=document.getElementById("themeBtn");
+const isDark=()=>{ const t=document.documentElement.dataset.theme; return t ? t==="dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
+function paintTheme(){ const d=isDark(); themeBtn.textContent=d?"☀":"☾";
+  const lbl=lang==="ru"?(d?"Светлая тема":"Тёмная тема"):(d?"Жарық тақырып":"Қараңғы тақырып"); themeBtn.title=lbl; themeBtn.setAttribute("aria-label",lbl); }
+themeBtn.addEventListener("click",()=>{ const t=isDark()?"light":"dark"; document.documentElement.dataset.theme=t; try{localStorage.setItem("tilkz-theme",t);}catch(e){} paintTheme(); });
+const _render=render; render=function(){ _render(); paintTheme(); };
 render();
 </script>
 </body>
