@@ -67,6 +67,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .paper p .pn{font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--accent);margin-right:6px;text-indent:0}
 mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .paper strong{font-weight:700}
+.paper .u{background:rgba(64,140,255,.22);box-shadow:inset 0 -2px 0 var(--accent);border-radius:2px;cursor:pointer}
+.hltip{font-size:12.5px;color:var(--muted);margin:-8px 0 12px;min-height:22px;display:flex;align-items:center}
+.hlclear{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:2px 10px;font-size:12.5px;color:var(--muted)}
+.hlbar{position:fixed;z-index:30;background:var(--ink);color:var(--panel);border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25);padding:3px}
+.hlbar button{border:0;background:transparent;color:inherit;font-weight:700;font-size:14px;padding:7px 14px;border-radius:999px}
+.hlbar button:hover{background:rgba(255,255,255,.12)}
 mark.w{background:var(--bad-soft);box-shadow:inset 0 -2px 0 var(--bad)}
 b.kw{font-weight:800}
 .fb blockquote b.kw{color:var(--ink);font-weight:800}
@@ -397,7 +403,7 @@ function load(){
   let s=null; try{ s=JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){}
   return Object.assign({lang:"kk", text:0, view:"text", items:{}, order:{}}, s||{});
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,text:S.text,view:S.view,items:S.items,order:S.order,cur:S.cur,split:S.split})); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,text:S.text,view:S.view,items:S.items,order:S.order,cur:S.cur,split:S.split,hl:S.hl})); }catch(e){} }
 const t = () => UI[S.lang];
 const itemsOf = tid => BANK.items.filter(x=>x.text_id===tid);
 const st = id => (S.items[id] ||= {sel:null, tries:[], status:"open"}); // open | retry | ok | revealed
@@ -472,22 +478,104 @@ function renderPaper(){
       const at=plain.indexOf(f); if(at>=0) for(let k=at;k<at+f.length;k++) if(mk[k]!=="m") mk[k]=c; }
     const kwf=new Array(plain.length).fill(false);
     for(const [a,b] of kwRanges(plain, markKw)) if(mk[a]) for(let k=a;k<b;k++) kwf[k]=true;
+    const uf=new Array(plain.length).fill(false);
+    for(const h of userHl(tx.id).filter(h=>h.p===i)) for(let k=h.a;k<h.b&&k<plain.length;k++) uf[k]=true;
     let html="", cur=null;
     for(let k=0;k<plain.length;k++){
-      const key=(bold[k]?"b":"")+mk[k]+(kwf[k]?"k":"");
+      const key=(uf[k]?"u":"")+(bold[k]?"b":"")+mk[k]+(kwf[k]?"k":"");
       if(key!==cur){ if(cur!==null) html+=close(cur); html+=open(key); cur=key; }
       html+=esc(plain[k]);
     }
     if(cur!==null) html+=close(cur);
     const pn = tx.numbered_paragraphs ? `<span class="pn">${i+1}</span>` : "";
-    return `<p>${pn}${html}</p>`;
+    return `<p data-pi="${i}">${pn}<span class="pt">${html}</span></p>`;
   }).join("");
-  function open(k){ return (k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
-  function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":""); }
+  function open(k){ return (k.includes("u")?'<span class="u">':"")+(k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
+  function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":"")+(k.includes("u")?"</span>":""); }
   const sn = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note; const src = sn ? ` · ${esc(sn)}` : "";
   document.getElementById("paper").innerHTML =
-    `<h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div>${paras}`;
+    `<h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div>
+     <div class="hltip">${userHl(tx.id).length
+        ? `<button type="button" class="hlclear" data-hlclear>${ru_()?"Убрать все выделения":"Белгілерді өшіру"}</button>`
+        : `<span>✎ ${ru_()?"Выделите слово или предложение, чтобы отметить его":"Сөзді не сөйлемді таңдап, белгілеп қоюға болады"}</span>`}</div>${paras}`;
 }
+
+/* ---------- Оқушының белгілері (мәтінде сөзді/сөйлемді белгілеу) ---------- */
+const userHl = tid => ((S.hl ||= {})[tid] ||= []);
+function offsetIn(pEl, node, off){             // абзац мәтініндегі орын (нөмірді есептемей)
+  const pt=pEl.querySelector(".pt"); if(!pt) return null;
+  const r=document.createRange(); r.setStart(pt,0);
+  if(!pt.contains(node)){ return (node.compareDocumentPosition(pt) & Node.DOCUMENT_POSITION_FOLLOWING) ? 0 : pt.textContent.length; }
+  r.setEnd(node,off); return r.toString().length;
+}
+function selectionRanges(){
+  const sel=getSelection(); if(!sel || sel.isCollapsed || !sel.rangeCount) return [];
+  const rg=sel.getRangeAt(0), paper=document.getElementById("paper");
+  if(!paper.contains(rg.commonAncestorContainer)) return [];
+  const out=[];
+  paper.querySelectorAll("p[data-pi]").forEach(pEl=>{
+    if(!rg.intersectsNode(pEl)) return;
+    const len=pEl.querySelector(".pt").textContent.length;
+    const a = pEl.contains(rg.startContainer) ? offsetIn(pEl,rg.startContainer,rg.startOffset) : 0;
+    const b = pEl.contains(rg.endContainer) ? offsetIn(pEl,rg.endContainer,rg.endOffset) : len;
+    if(a!=null && b!=null && b>a) out.push({p:+pEl.dataset.pi, a:Math.max(0,a), b:Math.min(len,b)});
+  });
+  // Сөздің ортасынан басталса, тұтас сөзге дейін кеңейту
+  for(const r of out){ const t=BANK.texts[S.text].paragraphs[r.p].replace(/\*\*/g,"");
+    while(r.a>0 && /[\p{L}\p{N}]/u.test(t[r.a-1])) r.a--; while(r.b<t.length && /[\p{L}\p{N}]/u.test(t[r.b])) r.b++;
+    while(r.a<r.b && /\s/.test(t[r.a])) r.a++; while(r.b>r.a && /\s/.test(t[r.b-1])) r.b--; }
+  return out.filter(r=>r.b>r.a);
+}
+function addHl(ranges){
+  const list=userHl(BANK.texts[S.text].id);
+  for(const r of ranges){
+    const same=list.filter(h=>h.p===r.p && h.a<=r.b && h.b>=r.a);
+    const a=Math.min(r.a,...same.map(h=>h.a)), b=Math.max(r.b,...same.map(h=>h.b));
+    for(const h of same) list.splice(list.indexOf(h),1);
+    list.push({p:r.p,a,b});
+  }
+  save();
+}
+const hlBar=document.createElement("div"); hlBar.className="hlbar"; hlBar.hidden=true; document.body.appendChild(hlBar);
+let hlPending=null;
+function showBar(rect, html){
+  hlBar.innerHTML=html; hlBar.hidden=false;
+  const w=hlBar.offsetWidth, h=hlBar.offsetHeight;
+  let x=rect.left+rect.width/2-w/2, y=rect.top-h-10;
+  if(y<8) y=rect.bottom+10;
+  x=Math.max(8,Math.min(innerWidth-w-8,x));
+  hlBar.style.left=x+"px"; hlBar.style.top=y+"px";
+}
+function hideBar(){ hlBar.hidden=true; hlPending=null; }
+function onSelect(){
+  const rs=selectionRanges(); if(!rs.length){ if(hlPending?.type==="add") hideBar(); return; }
+  const rect=getSelection().getRangeAt(0).getBoundingClientRect();
+  hlPending={type:"add", ranges:rs};
+  showBar(rect, `<button type="button" data-hl="add">🖍 ${ru_()?"Выделить":"Белгілеу"}</button>`);
+}
+let selT=null;
+document.addEventListener("selectionchange",()=>{ clearTimeout(selT); selT=setTimeout(onSelect, 250); });
+// Түймені басқанда белгіленген мәтін жоғалып кетпеуі үшін
+hlBar.addEventListener("pointerdown",e=>e.preventDefault());
+hlBar.addEventListener("click",e=>{
+  const b=e.target.closest("[data-hl]"); if(!b||!hlPending) return;
+  if(b.dataset.hl==="add"){ addHl(hlPending.ranges); getSelection().removeAllRanges(); }
+  if(b.dataset.hl==="del"){ const list=userHl(BANK.texts[S.text].id); const i=list.indexOf(hlPending.h); if(i>=0) list.splice(i,1); save(); }
+  hideBar(); renderPaper();
+});
+document.getElementById("paper").addEventListener("click",e=>{
+  if(e.target.closest("[data-hlclear]")){ S.hl[BANK.texts[S.text].id]=[]; save(); hideBar(); renderPaper(); return; }
+  const u=e.target.closest(".u"); if(!u || !getSelection().isCollapsed) return;
+  const pEl=u.closest("p[data-pi]"), sel=getSelection();
+  const off=offsetIn(pEl, sel.anchorNode||u.firstChild, sel.anchorOffset||0);
+  const h=userHl(BANK.texts[S.text].id).find(h=>h.p===+pEl.dataset.pi && off>=h.a && off<=h.b);
+  if(!h) return;
+  hlPending={type:"del", h};
+  showBar(u.getBoundingClientRect(), `<button type="button" data-hl="del">✕ ${ru_()?"Убрать выделение":"Өшіру"}</button>`);
+});
+document.getElementById("paper").addEventListener("scroll",hideBar);
+addEventListener("scroll",hideBar,{passive:true});
+document.addEventListener("pointerdown",e=>{ if(!hlBar.hidden && !hlBar.contains(e.target) && !e.target.closest("#paper .u")) { if(hlPending?.type==="del") hideBar(); } });
 
 /* ---------- Тапсырмалар ---------- */
 const phone = () => matchMedia("(max-width:880px)").matches;
@@ -886,7 +974,7 @@ let showingResults=false;
 document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; if(!showingResults) finalize(); showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
 document.getElementById("results").addEventListener("click",e=>{
   if(e.target.id==="backBtn"){ showingResults=false; renderAll(); }
-  if(e.target.id==="resetBtn"){ S.items={}; S.order={}; S.cur={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
+  if(e.target.id==="resetBtn"){ S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
 document.getElementById("qs").addEventListener("click",e=>{
   const b=e.target.closest("[data-fin]"); if(!b) return;
@@ -934,7 +1022,7 @@ document.getElementById("landing").addEventListener("click",e=>{
   const b=e.target.closest("[data-land]"); if(!b) return;
   if(b.dataset.land==="start"){ view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
   if(b.dataset.land==="report"){ showingResults=true; view="practice"; renderAll(); window.scrollTo({top:0}); }
-  if(b.dataset.land==="restart"){ S.items={}; S.order={}; S.cur={}; S.text=0; marks=[]; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.land==="restart"){ S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; marks=[]; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
 document.getElementById("toLanding").addEventListener("click",()=>{ view="landing"; showingResults=false; renderAll(); window.scrollTo({top:0}); });
 function renderAll(){
