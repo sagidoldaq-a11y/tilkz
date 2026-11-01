@@ -599,7 +599,7 @@ function renderTop(){
   const answered=sts.filter(s=>s.status==="ok"||s.status==="revealed").length;
   document.getElementById("score").innerHTML=L.score(first,all.length,answered);
   renderTabs();
-  const rb=document.getElementById("resultsBtn"); if(rb && !showingResults){ const ad=allDone(); rb.textContent = ad?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isDone).length}/${BANK.items.length}`; rb.disabled=!ad; rb.classList.toggle("primary",ad); }
+  const rb=document.getElementById("resultsBtn"); if(rb && !showingResults){ const ad=allDone(); rb.textContent = ad?(BANK.items.every(isDone)?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")):(S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isAnswered).length}/${BANK.items.length}`; rb.disabled=!ad; rb.classList.toggle("primary",ad); }
 }
 function setView(v){
   S.view=v; save(); document.getElementById("grid").dataset.view=v;
@@ -614,7 +614,18 @@ document.getElementById("mobswitch").addEventListener("click",e=>{ const b=e.tar
 const isDone = x => ["ok","revealed"].includes(st(x.id).status);
 const isFirst = x => st(x.id).status==="ok" && st(x.id).tries.length===0;
 const isSecond = x => st(x.id).status==="ok" && st(x.id).tries.length>0;
-const allDone = () => BANK.items.every(isDone);
+const isAnswered = x => { const s=st(x.id); return isDone(x) || s.sel!==null || s.tries.length>0; };
+const allDone = () => BANK.items.every(isAnswered);
+/* Аяқтау: тексерілмеген таңдауларды бағалап, барлық сұрақты жабады */
+function finalize(){
+  for(const x of BANK.items){
+    const s=st(x.id); if(isDone(x)) continue;
+    if(s.sel!==null && s.sel===x.key) s.status="ok";
+    else { if(s.sel!==null) s.tries.push(s.sel); s.status="revealed"; }
+    s.sel=null;
+  }
+  save();
+}
 function band(p){ return p>=75?"good":p>=50?"mid":"weak"; }
 const BAND = {kk:{good:"✓ Мықты",mid:"~ Орташа",weak:"! Жаттықтыру керек"}, ru:{good:"✓ Сильная сторона",mid:"~ Средне",weak:"! Нужно тренировать"}};
 function statOf(items){ const n=items.length, g=items.filter(isFirst).length; return {n,g,p:n?Math.round(100*g/n):null}; }
@@ -669,7 +680,7 @@ function renderResults(){
     <div class="actions"><button class="btn primary" type="button" id="backBtn">${ru?"Посмотреть ответы":"Жауаптарды қарау"}</button><button class="btn ghost" type="button" id="resetBtn">${L.reset}</button></div>`;
 }
 let showingResults=false;
-document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
+document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; if(!showingResults) finalize(); showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
 document.getElementById("results").addEventListener("click",e=>{
   if(e.target.id==="backBtn"){ showingResults=false; renderAll(); }
   if(e.target.id==="resetBtn"){ S.items={}; S.order={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
@@ -677,14 +688,14 @@ document.getElementById("results").addEventListener("click",e=>{
 document.getElementById("qs").addEventListener("click",e=>{
   const b=e.target.closest("[data-fin]"); if(!b) return;
   if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; save(); renderAll(); window.scrollTo({top:0}); }
-  if(b.dataset.fin==="finish" && allDone()){ showingResults=true; renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.fin==="finish" && allDone()){ finalize(); showingResults=true; renderAll(); window.scrollTo({top:0}); }
 });
 function finishBar(){
-  const ru=S.lang==="ru", done=BANK.items.filter(isDone).length, N=BANK.items.length, last=S.text===BANK.texts.length-1;
-  const textDone=itemsOf(BANK.texts[S.text].id).every(isDone);
+  const ru=S.lang==="ru", done=BANK.items.filter(isAnswered).length, N=BANK.items.length, last=S.text===BANK.texts.length-1;
+  const textDone=itemsOf(BANK.texts[S.text].id).every(isAnswered);
   const next = !last && textDone ? `<button class="btn" type="button" data-fin="next">${ru?"Следующий текст →":"Келесі мәтін →"}</button>` : "";
   const fin = `<button class="btn primary" type="button" data-fin="finish" ${allDone()?"":"disabled"}>${ru?"Завершить":"Аяқтау"}</button>`;
-  const note = allDone() ? (ru?"Все вопросы решены. Нажми «Завершить», чтобы увидеть отчёт.":"Барлық сұраққа жауап бердің. Есепті көру үшін «Аяқтау» батырмасын бас.")
+  const note = allDone() ? (ru?"Ответы отмечены во всех вопросах. При нажатии «Завершить» непроверенные ответы тоже будут оценены и откроется отчёт.":"Барлық сұраққа жауап белгіледің. «Аяқтау» батырмасын басқанда, тексерілмеген жауаптар да бағаланып, есеп шығады.")
                          : (ru?`Отвечено ${done} из ${N}. Кнопка «Завершить» откроется, когда ответишь на все вопросы.`:`${N} сұрақтың ${done}-іне жауап бердің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`);
   return `<div class="finbar"><div class="fprog"><i style="width:${Math.round(100*done/N)}%"></i></div><p>${note}</p><div class="actions">${next}${fin}</div></div>`;
 }
@@ -702,7 +713,7 @@ function renderAll(){
   const [mt,mq]=document.querySelectorAll("#mobswitch button"); mt.textContent=L.text; mq.textContent=L.qs;
   document.getElementById("backq").textContent = S.lang==="ru"?"← Вернуться к вопросу":"← Сұраққа оралу";
   const rb=document.getElementById("resultsBtn"), ad=allDone();
-  rb.textContent = showingResults ? L.back : (ad ? (S.lang==="ru"?"Отчёт":"Есеп") : (S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isDone).length}/${BANK.items.length}`);
+  rb.textContent = showingResults ? L.back : (ad ? (BANK.items.every(isDone)?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")) : (S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isAnswered).length}/${BANK.items.length}`);
   rb.disabled = !showingResults && !ad; rb.classList.toggle("primary", ad && !showingResults);
   document.getElementById("practice").hidden=showingResults;
   document.getElementById("results").hidden=!showingResults;
