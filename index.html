@@ -694,7 +694,7 @@ function renderResults(){
   const relative = strong.length ? [] : present.filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,3);
   const fixedSecond = present.filter(x=>x.s2>0 && !strong.includes(x));
   const chips=a=>a.length?a.map(x=>`<span class="sk">${esc(skillName(x.c))}</span>`).join(""):`<span class="muted">${ru?"пока нет":"әзірге жоқ"}</span>`;
-  const bandLegend=`<div class="lgd"><span><i class="sw good"></i>${BAND[S.lang].good} (75%+)</span><span><i class="sw mid"></i>${BAND[S.lang].mid} (50–74%)</span><span><i class="sw weak"></i>${BAND[S.lang].weak} (&lt;50%)</span></div>`;
+  const bandLegend=`<div class="lgd"><span><i class="sw weak"></i>${BAND[S.lang].weak} (&lt;50%)</span><span><i class="sw mid"></i>${BAND[S.lang].mid} (50–74%)</span><span><i class="sw good"></i>${BAND[S.lang].good} (75%+)</span></div>`;
   document.getElementById("results").innerHTML=`
     <div class="rep-hero">${ring}<div class="rep-sum"><h2>${verdict}</h2>
       <p class="sub">${ru?`Ты набрал(а) <b>${first} из ${N}</b> баллов (${pct}%). Балл даётся только за верный ответ с первого раза.`:`Сен <b>${kkAbl(N)} ${first} ұпай</b> жинадың (${pct}%). Ұпай тек бір реттен берілген дұрыс жауапқа беріледі.`}</p>
