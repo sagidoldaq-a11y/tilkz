@@ -443,11 +443,21 @@ function hintPlace(it){
   const pos=i/Math.max(1,tx.paragraphs.length-1), kk=pos<.34?"басындағы":pos<.67?"ортасындағы":"соңындағы", ru=pos<.34?"в начале":pos<.67?"в середине":"в конце";
   return S.lang==="ru"?`Ответ ищи ${ru} текста.`:`Жауапты мәтіннің ${kk} бөліктен ізде.`;
 }
+/* ЕРЕЖЕ: кеңес ешқашан нақты бір нұсқаның дұрыс не бұрыс екенін айтпайды.
+   Ол тек оқу стратегиясын үйретеді, нұсқалар санын тарылтпайды. */
 function hintsFor(it){
-  const s=st(it.id), out=[TIPS[S.lang][it.skill[0]]], place=hintPlace(it);
-  if(place) out.push(place);
-  const cand=Object.keys(it.distractor_notes).filter(o=>!s.tries.includes(o));
-  if(cand.length>1){ const o=cand[0]; out.push((S.lang==="ru"?`Вариант ${shownLetter(it,o)} точно не подходит: `:`${shownLetter(it,o)} нұсқасы дұрыс емес: `)+it.distractor_notes[o]); }
+  const ru=S.lang==="ru", out=[TIPS[S.lang][it.skill[0]]];
+  if(it.negative){
+    // Болымсыз сұрақта жауап мәтінде жоқ, сондықтан орнын көрсетпейміз
+    out.push(ru?"Это отрицательный вопрос: три варианта в тексте есть, а один — нет. Ищем тот, которого в тексте НЕТ."
+               :"Бұл – болымсыз сұрақ: үш нұсқа мәтінде бар, біреуі жоқ. Мәтінде ЖОҚ нұсқаны іздейміз.");
+    out.push(ru?"Проверь все четыре варианта по очереди. Рядом с каждым, который нашёл в тексте, мысленно ставь ✓. Вариант без ✓ и есть ответ."
+               :"Төрт нұсқаның бәрін кезекпен тексер. Мәтіннен тапқан әр нұсқаның қасына ойша ✓ белгісін қой. ✓ қойылмай қалған нұсқа – жауап.");
+  } else {
+    const place=hintPlace(it); if(place) out.push(place);
+    out.push(ru?"Прежде чем выбрать, найди в тексте предложение, которое подтверждает твой ответ. Если такого предложения нет, подумай ещё раз."
+               :"Жауапты таңдамас бұрын, оны растайтын сөйлемді мәтіннен тап. Ондай сөйлем таппасаң, тағы ойлан.");
+  }
   return out;
 }
 const hintStep={};
@@ -494,6 +504,7 @@ ${(BANK.style_notes||[]).length?"- Teacher's extra notes: "+BANK.style_notes.joi
 STRICT RULES
 1. While the correct answer is not revealed, NEVER state, hint by letter, or confirm/deny which option is correct, even if asked directly or pressured. Instead guide: point to the key word in the question, tell which paragraph to reread, ask a guiding question.
 2. If the student chose a wrong option, explain why THAT option is wrong (use the teacher notes), then send them back to the text. Do not reveal the right one.
+2a. While the answer is not revealed, NEVER say that any option the student has NOT chosen is wrong or unlikely, and never narrow the choice ("it is between B and D", "A is not it"). Eliminating options makes the task too easy. Teach a reading strategy instead.
 3. After the answer is revealed or answered correctly: you may discuss the correct answer, quote the evidence sentence, and ask the student to explain in their own words. If they explain, give brief, honest feedback.
 4. Use ONLY this text and the teacher notes. Do not invent facts. If the question is unrelated to the task, gently bring the student back.
 5. Vocabulary questions about words in the text are welcome; explain the meaning in context.
