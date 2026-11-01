@@ -53,7 +53,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .texttabs button[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
 .texttabs .done{color:var(--ok);font-size:12px;font-weight:600}
 
-.mobswitch{display:none;margin-top:10px}
+.mobswitch{display:none!important}
 .backq{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:6;box-shadow:0 4px 14px rgba(0,0,0,.25);padding:11px 20px}
 .grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:20px;padding-block:14px 40px;align-items:start}
 .paper{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px 30px;position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto}
@@ -196,16 +196,41 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .row.weak .bar i{background:var(--bad)}
 .row.none{color:var(--muted)}
 
+.splitter,.qnav{display:none}
 @media (max-width:880px){
   header.top{position:static}
-  .mobswitch{display:flex}
-  .grid{grid-template-columns:minmax(0,1fr)}
-  .paper{position:static;max-height:none;padding:18px}
-  .paper p{font-size:17px}
-  .grid[data-view="text"] .qs{display:none}
-  .grid[data-view="qs"] .paper{display:none}
+  /* Ықшам тақырып жолағы: мәтін мен сұраққа көбірек орын қалады */
+  .top .wrap{padding-block:8px;gap:8px;flex-wrap:nowrap}
+  .brand b{font-size:19px} #tagline,#score{display:none}
+  .top .btn{padding:6px 10px;font-size:13px}
+  .seg button{padding:4px 9px}
+  .banner{margin-top:8px;font-size:13px;padding:8px 10px}
+  /* Экран екіге бөлінеді: жоғарыда мәтін, ортада сүйрелетін шекара, төменде бір сұрақ */
+  .grid{display:flex;flex-direction:column;align-items:stretch;gap:0;padding-block:6px 0;height:var(--gridH,72vh);min-height:360px}
+  .paper{position:relative;top:auto;flex:0 0 var(--topH,46%);max-height:none;overflow:auto;padding:14px 16px;border-radius:var(--r) var(--r) 0 0;overscroll-behavior:contain}
+  .paper h2{font-size:18px}
+  .paper p{font-size:16.5px;line-height:1.65}
+  .splitter{display:flex;flex:0 0 26px;align-items:center;justify-content:center;touch-action:none;cursor:row-resize;background:var(--paper);user-select:none;-webkit-user-select:none}
+  .splitter i{width:52px;height:6px;border-radius:3px;background:var(--muted);opacity:.55}
+  .splitter.drag i{opacity:1;background:var(--accent)}
+  .qs{flex:1 1 auto;min-height:0;overflow:auto;gap:10px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));overscroll-behavior:contain}
+  .qs .card{display:none;padding:14px}
+  .qs .card.cur{display:block}
+  .qs .finbar{display:none}
+  .qs.last .finbar{display:block}
+  .qnav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .qnav .nv{flex:0 0 auto;min-width:40px;height:36px;border:1px solid var(--line);background:var(--panel);border-radius:8px;font-weight:700}
+  .qnav .nv:disabled{opacity:.35}
+  .qnav .dots{display:flex;gap:5px;flex:1 1 auto;justify-content:center;flex-wrap:wrap}
+  .qnav .dot{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:700;color:var(--ink)}
+  .qnav .dot.cur{border:2px solid var(--accent)}
+  .qnav .dot.ok{background:var(--ok-soft);border-color:var(--ok)}
+  .qnav .dot.bad{background:var(--bad-soft);border-color:var(--bad)}
+  .qnav .dot.cur.ok,.qnav .dot.cur.bad{box-shadow:0 0 0 2px var(--accent)}
   .row{grid-template-columns:minmax(0,1fr) 5em 3.5em}
-  .texttabs button{min-width:130px}
+  .texttabs{padding-block:8px 0;gap:6px}
+  .texttabs button{min-width:0;padding:6px 10px;font-size:14px}
+  .texttabs button small{display:none}
 }
 @media (prefers-reduced-motion:no-preference){ mark{transition:background .3s} .card{transition:border-color .2s} }
 </style>
@@ -232,6 +257,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
     </div>
     <div class="grid" id="grid" data-view="text">
       <article class="paper" id="paper"></article>
+      <div class="splitter" id="splitter" role="separator" aria-orientation="horizontal" aria-label="Мәтін мен сұрақ арасындағы шекара" tabindex="0"><i></i></div>
       <button class="btn primary backq" id="backq" type="button" hidden>← Сұраққа оралу</button>
       <div class="qs" id="qs"></div>
     </div>
@@ -344,7 +370,7 @@ function load(){
   let s=null; try{ s=JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){}
   return Object.assign({lang:"kk", text:0, view:"text", items:{}, order:{}}, s||{});
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,text:S.text,view:S.view,items:S.items,order:S.order})); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,text:S.text,view:S.view,items:S.items,order:S.order,cur:S.cur,split:S.split})); }catch(e){} }
 const t = () => UI[S.lang];
 const itemsOf = tid => BANK.items.filter(x=>x.text_id===tid);
 const st = id => (S.items[id] ||= {sel:null, tries:[], status:"open"}); // open | retry | ok | revealed
@@ -419,10 +445,30 @@ function renderPaper(){
 }
 
 /* ---------- Тапсырмалар ---------- */
-function renderQs(){
-  const box=document.getElementById("qs");
-  box.innerHTML = itemsOf(BANK.texts[S.text].id).map(cardHTML).join("") + finishBar();
+const phone = () => matchMedia("(max-width:880px)").matches;
+/* Телефонда әр мәтіннің бір сұрағы көрсетіледі */
+function curIdx(){ S.cur ||= {}; const its=itemsOf(BANK.texts[S.text].id); let i=S.cur[S.text];
+  if(i==null){ i=its.findIndex(x=>!isAnswered(x)); if(i<0) i=0; S.cur[S.text]=i; } return Math.min(i,its.length-1); }
+const curId = () => itemsOf(BANK.texts[S.text].id)[curIdx()].id;
+function qnavHTML(){
+  const its=itemsOf(BANK.texts[S.text].id), ci=curIdx(), ru=S.lang==="ru";
+  const dots=its.map((x,i)=>{ const st_=st(x.id).status; const c=st_==="ok"?"ok":(st_==="revealed"||st_==="wrong1"||st_==="retry")?"bad":"";
+    return `<button type="button" class="dot ${c} ${i===ci?"cur":""}" data-go="${i}" aria-label="${ru?"Вопрос":"Сұрақ"} ${x.number}" ${i===ci?'aria-current="true"':""}>${x.number}</button>`; }).join("");
+  return `<div class="qnav"><button type="button" class="nv" data-go="${ci-1}" ${ci===0?"disabled":""} aria-label="${ru?"Предыдущий вопрос":"Алдыңғы сұрақ"}">‹</button>
+    <div class="dots">${dots}</div><button type="button" class="nv" data-go="${ci+1}" ${ci===its.length-1?"disabled":""} aria-label="${ru?"Следующий вопрос":"Келесі сұрақ"}">›</button></div>`;
 }
+function renderQs(){
+  const box=document.getElementById("qs"), its=itemsOf(BANK.texts[S.text].id);
+  box.classList.toggle("last", curIdx()===its.length-1);
+  box.innerHTML = qnavHTML() + its.map(cardHTML).join("") + finishBar();
+}
+function goQ(i){
+  const its=itemsOf(BANK.texts[S.text].id); if(i<0||i>=its.length) return;
+  S.cur[S.text]=i; save(); marks=[];
+  const it=its[i], s_=st(it.id); if(s_.status==="ok"||s_.status==="revealed") marks=it.evidence.flatMap(frags);
+  renderPaper(); renderQs(); document.getElementById("qs").scrollTop=0;
+}
+document.getElementById("qs").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b && !b.disabled) goQ(+b.dataset.go); });
 function cardHTML(it){
   const s=st(it.id), L=t(), ord=orderOf(it), fin=(s.status==="ok"||s.status==="revealed");
   const skillName = S.lang==="ru" ? SKILL_RU[it.skill] : it.skill_name;
@@ -456,7 +502,7 @@ function cardHTML(it){
             ${s.status==="wrong1"?`<button class="btn primary" type="button" data-act="second" data-id="${it.id}">${L.second}</button>`:""}
       ${fin?"":`<button class="btn ghost" type="button" data-act="help" data-id="${it.id}" aria-expanded="${!!openHelp[it.id]}">${openHelp[it.id]?L.hideHelper:(sample?"💬 "+L.helper:"💡 "+(S.lang==="ru"?"Подсказка":"Кеңес"))}</button>`}
     </div>`;
-  return `<article class="card ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
+  return `<article class="card ${it.id===curId()?"cur":""} ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
     <div class="qhead"><span class="qnum">${it.number}</span><button type="button" class="chip skillchip" data-act="skill" data-id="${it.id}" aria-expanded="${!!openSkill[it.id]}" title="${S.lang==="ru"?"Что это за навык?":"Бұл қандай дағды?"}">${esc(skillName)} <span aria-hidden="true">ⓘ</span></button>
       </div>
     ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${fin?"":actions}${(!fin&&openHelp[it.id])?assistHTML(it):""}</article>`;
@@ -591,17 +637,16 @@ function rerenderCard(id){
   const it=BANK.items.find(x=>x.id===id), el=document.getElementById("card-"+id);
   if(el){ el.outerHTML=cardHTML(it); const m=document.getElementById("msgs-"+id); if(m) m.scrollTop=m.scrollHeight; }
   const fb=document.querySelector("#qs .finbar"); if(fb) fb.outerHTML=finishBar();
+  const qn=document.querySelector("#qs .qnav"); if(qn) qn.outerHTML=qnavHTML();
   renderTop();
 }
 let backTo=null;
-function markEvidence(it, jump){
-  marks = it.evidence.flatMap(frags);
-  renderPaper();
-  const phone = matchMedia("(max-width:880px)").matches;
-  if(phone && !jump) return;
-  if(phone){ backTo=it.id; setView("text"); }
-  const m=document.querySelector("#paper mark"); m?.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"center"});
+function scrollToMark(){
+  const paper=document.getElementById("paper"), m=paper.querySelector("mark"); if(!m) return;
+  const top = m.getBoundingClientRect().top - paper.getBoundingClientRect().top + paper.scrollTop - paper.clientHeight/3;
+  paper.scrollTo({top:Math.max(0,top), behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
 }
+function markEvidence(it){ marks = it.evidence.flatMap(frags); renderPaper(); scrollToMark(); }
 document.addEventListener("change",e=>{
   const el=e.target; if(el.dataset.act!=="pick") return;
   const id=el.dataset.id, it=BANK.items.find(x=>x.id===id), s=st(id);
@@ -610,8 +655,7 @@ document.addEventListener("change",e=>{
   else { s.tries.push(el.value); s.status = s.tries.length>=2 ? "revealed" : "wrong1"; }
   s.sel=null; save(); rerenderCard(id);
   if(s.status==="ok"||s.status==="revealed") markEvidence(it);
-  else { const dev=devOf(it,el.value); marks=dev; renderPaper();
-    if(dev.length && !matchMedia("(max-width:880px)").matches) document.querySelector("#paper mark")?.scrollIntoView({behavior:"smooth",block:"center"}); }
+  else { const dev=devOf(it,el.value); marks=dev; renderPaper(); if(dev.length) scrollToMark(); }
 });
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]"); if(!b||b.tagName==="INPUT") return;
@@ -645,7 +689,7 @@ function renderTabs(){
 }
 document.getElementById("texttabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-tab]"); if(!b) return;
-  S.text=+b.dataset.tab; marks=[]; save(); renderAll(); window.scrollTo({top:0});
+  S.text=+b.dataset.tab; marks=[]; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0;
 });
 function renderTop(){
   const L=t(), all=BANK.items, sts=all.map(x=>st(x.id));
@@ -661,7 +705,28 @@ function setView(v){
   if(v==="qs" && backTo){ const c=document.getElementById("card-"+backTo); backTo=null; if(bb) bb.hidden=true; c?.scrollIntoView({block:"start"}); }
   document.querySelectorAll("#mobswitch button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v));
 }
-document.getElementById("backq").addEventListener("click",()=>setView("qs"));
+/* Шекараны сүйреу: мәтін бөлігінің үлесі 20–80% аралығында, браузерде сақталады */
+(function(){
+  const sp=document.getElementById("splitter"), grid=document.getElementById("grid");
+  const apply=r=>{ r=Math.min(.8,Math.max(.2,r)); grid.style.setProperty("--topH",(r*100).toFixed(1)+"%"); return r; };
+  if(S.split) apply(S.split);
+  let on=false;
+  sp.addEventListener("pointerdown",e=>{ on=true; sp.setPointerCapture(e.pointerId); sp.classList.add("drag"); e.preventDefault(); });
+  sp.addEventListener("pointermove",e=>{ if(!on) return; const g=grid.getBoundingClientRect(); S.split=apply((e.clientY-g.top)/g.height); });
+  const end=()=>{ if(!on) return; on=false; sp.classList.remove("drag"); save(); };
+  sp.addEventListener("pointerup",end); sp.addEventListener("pointercancel",end);
+  sp.addEventListener("keydown",e=>{ if(e.key!=="ArrowUp"&&e.key!=="ArrowDown") return; e.preventDefault(); S.split=apply((S.split||.46)+(e.key==="ArrowUp"?-.05:.05)); save(); });
+})();
+/* Бөлінген аймақ экранның қалған биіктігіне сияды */
+function fitGrid(){
+  const grid=document.getElementById("grid");
+  if(!phone()||showingResults){ grid.style.removeProperty("--gridH"); return; }
+  const top=grid.getBoundingClientRect().top+window.scrollY, vh=(window.visualViewport?.height||innerHeight);
+  let h=Math.max(360, Math.floor(vh-top-4)); grid.style.setProperty("--gridH", h+"px");
+  const extra=document.documentElement.scrollHeight-vh; if(extra>0 && h-extra>=360) grid.style.setProperty("--gridH",(h-extra)+"px");
+}
+addEventListener("resize",()=>{ fitGrid(); });
+window.visualViewport?.addEventListener("resize",fitGrid);
 document.getElementById("mobswitch").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setView(b.dataset.v); });
 
 /* ---------- Аяқтау және есеп ---------- */
@@ -754,11 +819,11 @@ let showingResults=false;
 document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; if(!showingResults) finalize(); showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
 document.getElementById("results").addEventListener("click",e=>{
   if(e.target.id==="backBtn"){ showingResults=false; renderAll(); }
-  if(e.target.id==="resetBtn"){ S.items={}; S.order={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
+  if(e.target.id==="resetBtn"){ S.items={}; S.order={}; S.cur={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
 document.getElementById("qs").addEventListener("click",e=>{
   const b=e.target.closest("[data-fin]"); if(!b) return;
-  if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; save(); renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0; }
   if(b.dataset.fin==="finish" && allDone()){ finalize(); showingResults=true; renderAll(); window.scrollTo({top:0}); }
 });
 function finishBar(){
@@ -789,7 +854,7 @@ function renderAll(){
   document.getElementById("practice").hidden=showingResults;
   document.getElementById("results").hidden=!showingResults;
   if(showingResults) renderResults();
-  renderPaper(); renderQs(); renderTop(); setView(S.view||"text");
+  renderPaper(); renderQs(); renderTop(); setView(S.view||"text"); requestAnimationFrame(fitGrid);
 }
 renderAll();
 </script>
