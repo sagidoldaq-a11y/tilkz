@@ -15,6 +15,8 @@
 | `img/` | Фотосурет және сілтеме алдын ала көрінісі (og.jpg) |
 | `content/build_v1.py` | 1-нұсқаның тапсырмалар банкі: мәтіндер, сұрақтар, кілттер, дағды кодтары, түсініктемелер |
 | `content/bank_v1.json` | Банктің JSON нұсқасы (`build_v1.py` жасайды) |
+| `content/build_l2_v1.py` | «Қазақ тілі (екінші тіл)» 1-нұсқасы: мәтіндер, сұрақтар, түсініктемелер, орысша аудармалар |
+| `content/bank_l2_v1.json` | Екінші тіл банкінің JSON нұсқасы |
 | `web/app.template.html` | Платформаның беті (дизайн және логика) |
 | `web/build_public.py` | `index.html` және `nzm-bil/index.html` беттерін құрастырады |
 | `docs/` | Мұғалімге арналған тексеру құжаттары |
@@ -23,6 +25,7 @@
 
 ```bash
 python3 content/build_v1.py
+python3 content/build_l2_v1.py
 python3 web/build_public.py
 ```
 

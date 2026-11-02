@@ -113,7 +113,7 @@ b.kw{font-weight:800}
 .legend dd{margin:0;color:var(--ink)}
 @media (max-width:880px){.legend dl{grid-template-columns:minmax(0,1fr)} .legend dd{margin-bottom:6px;color:var(--muted)}}
 .chip.lvl{background:transparent;border:1px solid var(--line);color:var(--muted)}
-.stem{font-size:16px;font-weight:600;margin:0 0 12px;text-wrap:pretty}
+.stem{font-size:16px;font-weight:600;margin:0 0 12px;text-wrap:pretty;white-space:pre-line}
 .stem .neg{font-weight:800;letter-spacing:.3px;text-decoration:underline;text-underline-offset:3px}
 .opts{display:flex;flex-direction:column;gap:8px}
 .opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer}
@@ -247,6 +247,8 @@ b.kw{font-weight:800}
   /* Ықшам тақырып жолағы: мәтін мен сұраққа көбірек орын қалады */
   .top .wrap{padding-block:8px;gap:8px;flex-wrap:nowrap}
   .brand b{font-size:19px} #tagline,#score{display:none}
+  .brand{white-space:nowrap;margin-right:auto} #resultsBtn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw;font-size:12.5px;padding:6px 9px}
+  .top .wrap{gap:6px}
   .top .btn{padding:6px 10px;font-size:13px}
   .seg button{padding:4px 9px}
   .banner{margin-top:8px;font-size:13px;padding:8px 10px}
@@ -313,7 +315,8 @@ b.kw{font-weight:800}
 </main>
 
 <script>
-const BANK = /*__BANK__*/null;
+const BANKS = { kk: /*__BANK__*/null, ru: /*__BANK_L2__*/null };
+let BANK = BANKS.kk;
 
 /* ---------- Интерфейс мәтіндері ---------- */
 const UI = {
@@ -342,7 +345,7 @@ const UI = {
       errAI:{not_granted:"Доступ к помощнику не разрешён.",rate_limited:"Слишком частые запросы. Подожди немного и попробуй снова.",refused:"Помощник не смог ответить на этот вопрос. Попробуй спросить иначе.",session_expired:"Нужно войти заново.",_:"Связь прервалась. Попробуй отправить ещё раз."},
       rTitle:"Результаты по навыкам", rSub:"Учитываются ответы с первой попытки. По этой таблице учитель видит слабые навыки ученика.",
       groups:{"A":"Поиск информации","B":"Прямые выводы","C":"Интерпретация и обобщение","D":"Оценка"}, notYet:"нет данных",
-      banner:"Русский интерфейс по плану получает задания уровня «казахский язык как второй». Они ещё готовятся, поэтому здесь показаны задания первого языка. Тексты и вопросы остаются на казахском, помощник объясняет по-русски."}
+      banner:""}
 };
 const SKILL_RU = {"A1":"Поиск конкретного факта","A2":"Причина и следствие","A3":"Где находится информация","B1":"Определение отсылки","B2":"Значение слова в тексте","B3":"Сверка утверждения с текстом","B4":"Чувства и характер героя","C1":"Основная мысль, тема, заголовок","C2":"Скрытый смысл","C3":"Вывод, совет, мораль","C4":"Структура и логика текста","D1":"Тип и жанр текста","D2":"Цель и позиция автора"};
 
@@ -414,11 +417,22 @@ function kkAbl(n){ const w=kkLast(n), b=kkBack(w), c=w[w.length-1];
 /* ---------- Күй ---------- */
 const KEY = "oqylym-v1-state";
 let S = load();
+BANK = BANKS[S.lang] || BANKS.kk;
 function load(){
   let s=null; try{ s=JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){}
-  return Object.assign({lang:"kk", text:0, view:"text", items:{}, order:{}}, s||{});
+  s=Object.assign({lang:"kk", view:"text"}, s||{});
+  s.banks ||= {};
+  // Бұрынғы (бір банкті) сақтауды бірінші тіл банкіне көшіру
+  if(s.items && BANKS.kk && !s.banks[BANKS.kk.bank_id]){
+    s.banks[BANKS.kk.bank_id]={text:s.text||0, items:s.items||{}, order:s.order||{}, cur:s.cur||{}, hl:s.hl||{}};
+  }
+  for(const k of ["text","items","order","cur","hl"]) delete s[k];
+  const per = () => (s.banks[BANK.bank_id] ||= {text:0, items:{}, order:{}, cur:{}, hl:{}});
+  for(const k of ["text","items","order","cur","hl"])
+    Object.defineProperty(s, k, {get(){ return per()[k]; }, set(v){ per()[k]=v; }, enumerable:false, configurable:true});
+  return s;
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,text:S.text,view:S.view,items:S.items,order:S.order,cur:S.cur,split:S.split,hl:S.hl,marker:S.marker,tipSeen:S.tipSeen})); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,view:S.view,banks:S.banks,split:S.split,marker:S.marker,tipSeen:S.tipSeen})); }catch(e){} }
 const t = () => UI[S.lang];
 const itemsOf = tid => BANK.items.filter(x=>x.text_id===tid);
 const st = id => (S.items[id] ||= {sel:null, tries:[], status:"open"}); // open | retry | ok | revealed
@@ -445,8 +459,10 @@ function fullSentence(textId, frag){
     const p=raw.replace(/\*\*/g,""), i=p.indexOf(frag); if(i<0) continue;
     // Сөйлем шекарасы: тыныс белгісінен кейін бос орын тұрса ғана (sunnycomb.com сияқты сөздер бөлінбейді)
     let a=i; while(a>0 && !(p[a-1]===" " && /[.!?]/.test(p[a-2]||""))) a--;
-    let b=i+frag.length; while(b<p.length && !(/[.!?]/.test(p[b]) && (b+1===p.length || p[b+1]===" "))) b++;
-    if(b<p.length) b++;
+    let b=i+frag.length;
+    // Үзінді сөйлемнің соңымен аяқталса (нүкте, сұрау не леп белгісі), келесі сөйлемге өтпейміз
+    const endsSentence = /[.!?…»]/.test(p[b-1]||"") && (b===p.length || p[b]===" ") && /[.!?]/.test(frag.replace(/[»"”\s]+$/,"").slice(-1));
+    if(!endsSentence){ while(b<p.length && !(/[.!?]/.test(p[b]) && (b+1===p.length || p[b+1]===" "))) b++; if(b<p.length) b++; }
     return p.slice(a,b).trim();
   }
   return frag;
@@ -478,7 +494,7 @@ function quoteHTML(kk, label, cls, kw){
 }
 const cap = t => t ? t[0].toUpperCase()+t.slice(1) : t;
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])).replace(/(\d)-(?=[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])/g,"$1\u2011");
-const stripLoc = e => e.replace(/\s*\([^)]*азатжол[^)]*\)$/,"");
+const stripLoc = e => e.replace(/\s*\([^)]*(азатжол|бөлім)[^)]*\)$/,"");
 const frags = e => stripLoc(e).split("...").map(f=>f.trim().replace(/^[.\s]+|[.\s]+$/g,"")).filter(Boolean);
 function stemHTML(s){ return esc(s).replace(/(^|[\s«(])([А-ЯӘҒҚҢӨҰҮҺІ]{3,})(?=[\s?.,!»)]|$)/g,(m,a,w)=>`${a}<span class="neg">${w}</span>`); }
 
@@ -509,7 +525,7 @@ function renderPaper(){
   function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":"")+(k.includes("u")?"</span>":""); }
   const sn = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note; const src = sn ? ` · ${esc(sn)}` : "";
   document.getElementById("paper").innerHTML =
-    `<div class="phead"><div class="ptitle"><h2>${esc(tx.title)}</h2><div class="meta">${textLabel(S.text)}${src}</div></div>
+    `<div class="phead"><div class="ptitle"><h2>${esc(tx.title || textLabel(S.text))}</h2>${tx.title||src?`<div class="meta">${tx.title?textLabel(S.text):""}${tx.title?src:src.replace(/^ · /,"")}</div>`:""}</div>
        <button type="button" class="mk" data-marker aria-pressed="${!!S.marker}" title="${ru_()?"Маркер: отметить слово или предложение":"Маркер: сөзді не сөйлемді белгілеу"}">🖍 ${ru_()?"Маркер":"Маркер"}</button></div>
      ${S.tipSeen?"":`<div class="mktip" role="note"><p><b>🖍 ${ru_()?"Маркер":"Маркер"}.</b> ${ru_()?"Выдели в тексте предложение с правильным ответом — так его будет легко найти снова.":"Дұрыс жауап тұрған сөйлемді мәтіннен белгілеп қой, сонда оны қайтадан табу оңай болады."}</p>
         <p class="how">${ru_()?"Включи маркер и нажми на слово или проведи пальцем от слова к слову.":"Маркерді қосып, сөзді бас немесе сөзден сөзге қарай сүйре."}</p>
@@ -703,7 +719,7 @@ function cardHTML(it){
         ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w",kwOf(it,lw))).join("")}`:""}</div>`;
     }
     const analysis=`<div class="fb ${good?"ok":"reveal"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)+") "+esc(it.options[it.key])}</h4>
-      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-азатжол[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(абзац ${m[1]})`:m[0].trim()):"", "", kwOf(it,"ok")); }).join("")}
+      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-(азатжол|бөлім)[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(${m[2]==="бөлім"?"часть":"абзац"} ${m[1]})`:m[0].trim()):"", "", kwOf(it,"ok")); }).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
     if(good) fb=analysis;
     else {
@@ -1058,11 +1074,17 @@ function finishBar(){
                          : (ru?`Отвечено ${done} из ${N}. Кнопка «Завершить» откроется, когда ответишь на все вопросы.`:(done===0?`Әлі ешбір сұраққа жауап бермедің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`:`${N} сұрақтың ${kkDat(done)} жауап бердің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`));
   return `<div class="finbar"><div class="fprog"><i style="width:${Math.round(100*done/N)}%"></i></div><p>${note}</p><div class="actions">${next}${fin}</div></div>`;
 }
-function setLang(l){ S.lang=l; save(); renderAll(); }
+function setLang(l){
+  const nb = BANKS[l] || BANKS.kk, changed = nb!==BANK;
+  S.lang=l; BANK=nb; save();
+  if(changed){ marks=[]; markKw=[]; tmpHl=[]; showingResults=false; view="landing"; hideBar(); }
+  renderAll(); if(changed) window.scrollTo({top:0});
+}
 document.getElementById("langKk").onclick=()=>setLang("kk");
 document.getElementById("langRu").onclick=()=>setLang("ru");
 
 let view="landing";
+const ruPlural=(n,a,b,c)=>{ const m=n%10, h=n%100; return (m===1&&h!==11)?a:(m>=2&&m<=4&&(h<12||h>14))?b:c; };
 function landingHTML(){
   const ru=S.lang==="ru", N=BANK.items.length, nT=BANK.texts.length, done=BANK.items.filter(isAnswered).length;
   const finished=BANK.items.every(isDone), first=BANK.items.filter(isFirst).length;
@@ -1077,12 +1099,13 @@ function landingHTML(){
   } else {
     btns=`<button class="btn primary" type="button" data-land="start">${ru?"Начать":"Бастау"}</button>`;
   }
-  return `<div class="land-head"><span class="eyebrow">${ru?"Читательская грамотность":"Оқу сауаттылығы"}</span>
+  const l2 = BANK.track==="second_language";
+  return `<div class="land-head"><span class="eyebrow">${ru?"Читательская грамотность":"Оқу сауаттылығы"} · ${l2?(ru?"казахский язык как второй":"қазақ тілі (екінші тіл)"):(ru?"казахский язык как первый":"қазақ тілі (бірінші тіл)")}</span>
       <h1>НЗМ, БИЛ. Қазақ тілі</h1>
       <p>${ru?"Выбери вариант. В каждом варианте — тексты и вопросы в формате экзамена. После каждого ответа — объяснение и доказательство из текста, в конце — отчёт по навыкам. В тексте можно делать пометки 🖍 маркером.":"Нұсқаны таңда. Әр нұсқада емтихан форматындағы мәтіндер мен сұрақтар бар. Әр жауаптан кейін түсініктеме мен мәтіннен дәлел беріледі, соңында дағдылар бойынша есеп шығады. Мәтінге 🖍 маркермен белгі қоюға болады."}</p></div>
     <div class="variants"><article class="variant">
       <h2>${ru?"Вариант 1":"1-нұсқа"}</h2>
-      <p class="vmeta">${ru?`${nT} текста · ${N} вопросов`:`${nT} мәтін · ${N} сұрақ`}</p>
+      <p class="vmeta">${ru?`${nT} ${ruPlural(nT,"текст","текста","текстов")} · ${N} ${ruPlural(N,"вопрос","вопроса","вопросов")}`:`${nT} мәтін · ${N} сұрақ`}</p>
       ${status?`<div class="vprog"><i style="width:${Math.round(100*(finished?N:done)/N)}%"></i></div><p class="vstatus">${status}</p>`:""}
       <div class="actions">${btns}</div></article></div>`;
 }

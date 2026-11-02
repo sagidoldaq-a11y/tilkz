@@ -12,6 +12,9 @@ shutil.copyfile(here / "home.html", root / "index.html")
 bank = json.loads((root / "content" / "bank_v1.json").read_text(encoding="utf-8"))
 tpl = (here / "app.template.html").read_text(encoding="utf-8")
 body = tpl.replace("/*__BANK__*/null", json.dumps(bank, ensure_ascii=False).replace("</", "<\\/"))
+bank2 = json.loads((root / "content" / "bank_l2_v1.json").read_text(encoding="utf-8"))
+body = body.replace("/*__BANK_L2__*/null", json.dumps(bank2, ensure_ascii=False).replace("</", "<\\/"))
+assert "/*__BANK" not in body
 # «TilKz AI» атауы визиткаға апаратын сілтеме болады
 brand_old = '<div class="brand"><b>TilKz <span class="ai">AI</span></b>'
 assert brand_old in body
