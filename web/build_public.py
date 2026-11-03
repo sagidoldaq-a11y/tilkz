@@ -14,6 +14,8 @@ tpl = (here / "app.template.html").read_text(encoding="utf-8")
 body = tpl.replace("/*__BANK__*/null", json.dumps(bank, ensure_ascii=False).replace("</", "<\\/"))
 bank2 = json.loads((root / "content" / "bank_l2_v1.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L2__*/null", json.dumps(bank2, ensure_ascii=False).replace("</", "<\\/"))
+bank4 = json.loads((root / "content" / "bank_l1_v2.json").read_text(encoding="utf-8"))
+body = body.replace("/*__BANK_L1_V2__*/null", json.dumps(bank4, ensure_ascii=False).replace("</", "<\\/"))
 bank3 = json.loads((root / "content" / "bank_l2_v2.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L2_V2__*/null", json.dumps(bank3, ensure_ascii=False).replace("</", "<\\/"))
 assert "/*__BANK" not in body

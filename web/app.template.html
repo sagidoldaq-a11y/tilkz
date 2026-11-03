@@ -342,7 +342,7 @@ b.kw{font-weight:800}
 </main>
 
 <script>
-const BANKS = { kk: [/*__BANK__*/null].filter(Boolean), ru: [/*__BANK_L2__*/null, /*__BANK_L2_V2__*/null].filter(Boolean) };
+const BANKS = { kk: [/*__BANK__*/null, /*__BANK_L1_V2__*/null].filter(Boolean), ru: [/*__BANK_L2__*/null, /*__BANK_L2_V2__*/null].filter(Boolean) };
 let BANK = BANKS.kk[0];
 const bankOf = (l, v) => { const a = BANKS[l] || BANKS.kk; return a[v] || a[0]; };
 
