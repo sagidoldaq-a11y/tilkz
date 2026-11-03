@@ -242,7 +242,8 @@ b.kw{font-weight:800}
 .row.none{color:var(--muted)}
 
 .splitter,.qnav{display:none}
-@media (max-width:880px){
+/* Телефон тігінен (және тар экрандар): мәтін жоғарыда, сұрақ төменде. Көлденең телефонға арналған баптау төменде. */
+@media (max-width:880px) and (orientation:portrait), (max-width:880px) and (min-height:521px){
   header.top{position:static}
   /* Ықшам тақырып жолағы: мәтін мен сұраққа көбірек орын қалады */
   .top .wrap{padding-block:8px;gap:8px;flex-wrap:nowrap}
@@ -279,12 +280,37 @@ b.kw{font-weight:800}
   .texttabs button{min-width:0;padding:6px 10px;font-size:14px}
   .texttabs button small{display:none}
 }
+/* Телефон көлденең: компьютердегідей мәтін сол жақта, сұрақтар оң жақта; екі бағана бөлек айналады */
+@media (orientation:landscape) and (max-height:520px){
+  header.top{position:static}
+  .top .wrap{padding-block:5px;gap:6px;flex-wrap:nowrap}
+  .brand{white-space:nowrap;margin-right:auto} .brand b{font-size:18px}
+  #tagline{display:none}
+  #score{font-size:12px;white-space:nowrap}
+  #resultsBtn{white-space:nowrap;font-size:12.5px;padding:5px 10px}
+  .top .btn{padding:5px 10px;font-size:13px} .seg button{padding:3px 9px}
+  .banner{margin-top:6px;font-size:13px;padding:6px 10px}
+  .tabsrow{gap:6px}
+  .texttabs{padding-block:5px 0;gap:6px}
+  .texttabs button{min-width:0;padding:5px 10px;font-size:14px}
+  .texttabs button small{display:none}
+  .grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:10px;padding-block:6px 0;height:var(--gridH,78vh);min-height:220px;align-items:stretch}
+  .paper{position:relative;top:auto;height:100%;max-height:none;overflow:auto;padding:12px 16px;overscroll-behavior:contain}
+  .paper h2{font-size:17px}
+  .paper .meta{margin-bottom:10px}
+  .paper p{font-size:15.5px;line-height:1.6;margin-bottom:10px}
+  .mktip{padding:8px 10px}
+  .qs{position:relative;height:100%;min-height:0;overflow:auto;gap:10px;overscroll-behavior:contain;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  .card{padding:12px 14px}
+  .landing{padding-block:16px 28px}
+}
 @media (prefers-reduced-motion:no-preference){ mark{transition:background .3s} .card{transition:border-color .2s} }
 .srcnote{margin:22px 0 0;text-indent:0;font:13px/1.45 var(--f-ui);color:var(--muted);text-align:left}
 .srcnote a{color:inherit;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
 .brand a.home{font-family:var(--f-text);font-weight:700;font-size:22px;letter-spacing:.2px;text-decoration:none;color:var(--ink)}
 .brand a.home .ai{color:var(--accent);font-family:var(--f-ui);font-weight:700;letter-spacing:.5px;font-size:inherit}
 @media (max-width:880px){.brand a.home{font-size:19px}}
+@media (orientation:landscape) and (max-height:520px){.brand a.home{font-size:18px}}
 </style>
 
 <header class="top">
@@ -709,7 +735,8 @@ paperEl.addEventListener("click",e=>{
 });
 
 /* ---------- Тапсырмалар ---------- */
-const phone = () => matchMedia("(max-width:880px)").matches;
+const phone = () => matchMedia("(max-width:880px) and (orientation:portrait), (max-width:880px) and (min-height:521px)").matches;
+const landPhone = () => matchMedia("(orientation:landscape) and (max-height:520px)").matches;
 /* Телефонда әр мәтіннің бір сұрағы көрсетіледі */
 function curIdx(){ S.cur ||= {}; const its=itemsOf(BANK.texts[S.text].id); let i=S.cur[S.text];
   if(i==null){ i=its.findIndex(x=>!isAnswered(x)); if(i<0) i=0; S.cur[S.text]=i; } return Math.min(i,its.length-1); }
@@ -949,7 +976,8 @@ document.getElementById("qs").addEventListener("pointerdown",e=>{ const c=e.targ
 let scrollQ=null, scrollRaf=0;
 function syncByScroll(){
   scrollRaf=0; if(phone() || view!=="practice" || showingResults) return;
-  const top=document.querySelector("header.top")?.getBoundingClientRect().bottom||0, bot=innerHeight;
+  const qr=document.getElementById("qs").getBoundingClientRect();
+  const top=Math.max(document.querySelector("header.top")?.getBoundingClientRect().bottom||0, qr.top), bot=Math.min(innerHeight, qr.bottom);
   let id=null, best=0, bestPx=0;
   for(const c of document.querySelectorAll("#qs [id^='card-']")){
     const r=c.getBoundingClientRect(), o=c.querySelector(".opts"), end=o?o.getBoundingClientRect().bottom:r.bottom;
@@ -960,7 +988,9 @@ function syncByScroll(){
   if(best<=0) id=null;
   if(id && id!==scrollQ){ scrollQ=id; activate(id); }
 }
-addEventListener("scroll",()=>{ if(!scrollRaf) scrollRaf=requestAnimationFrame(syncByScroll); },{passive:true});
+const onQScroll=()=>{ if(!scrollRaf) scrollRaf=requestAnimationFrame(syncByScroll); };
+addEventListener("scroll",onQScroll,{passive:true});
+document.getElementById("qs").addEventListener("scroll",onQScroll,{passive:true});
 document.getElementById("qs").addEventListener("focusin",e=>{ const c=e.target.closest("[id^='card-']"); if(c) activate(c.id.slice(5)); });
 function markEvidence(it){ marks = it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; renderPaper(); scrollToMark(); }
 document.addEventListener("change",e=>{
@@ -1041,10 +1071,11 @@ function setView(v){
 /* Бөлінген аймақ экранның қалған биіктігіне сияды */
 function fitGrid(){
   const grid=document.getElementById("grid");
-  if(!phone()||showingResults){ grid.style.removeProperty("--gridH"); return; }
-  const top=grid.getBoundingClientRect().top+window.scrollY, vh=(window.visualViewport?.height||innerHeight);
-  let h=Math.max(360, Math.floor(vh-top-4)); grid.style.setProperty("--gridH", h+"px");
-  const extra=document.documentElement.scrollHeight-vh; if(extra>0 && h-extra>=360) grid.style.setProperty("--gridH",(h-extra)+"px");
+  const lp=landPhone();
+  if(!(phone()||lp)||showingResults){ grid.style.removeProperty("--gridH"); return; }
+  const top=grid.getBoundingClientRect().top+window.scrollY, vh=(window.visualViewport?.height||innerHeight), minH=lp?220:360;
+  let h=Math.max(minH, Math.floor(vh-top-4)); grid.style.setProperty("--gridH", h+"px");
+  const extra=document.documentElement.scrollHeight-vh; if(extra>0 && h-extra>=minH) grid.style.setProperty("--gridH",(h-extra)+"px");
 }
 addEventListener("resize",()=>{ fitGrid(); });
 window.visualViewport?.addEventListener("resize",fitGrid);
