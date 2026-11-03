@@ -44,4 +44,13 @@ head = ('<!doctype html><html lang="kk"><head><meta charset="utf-8">'
 out = root / "nzm-bil"
 out.mkdir(exist_ok=True)
 (out / "index.html").write_text(head + body + "</body></html>", encoding="utf-8")
-print("ok", root / "index.html", out / "index.html")
+# 3) Мұғалім кабинеті
+banks_all = [bank, bank4, bank2, bank3]   # бірінші тіл: 1, 2-нұсқа; екінші тіл: 1, 2-нұсқа
+tt = (here / "teacher.template.html").read_text(encoding="utf-8")
+assert tt.count("/*__BANKS__*/[]") == 1 and tt.count("/*__SUPABASE__*/null") == 1
+tt = tt.replace("/*__BANKS__*/[]", json.dumps(banks_all, ensure_ascii=False).replace("</", "<\\/"))
+tt = tt.replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
+tout = root / "mugalim"
+tout.mkdir(exist_ok=True)
+(tout / "index.html").write_text(tt, encoding="utf-8")
+print("ok", root / "index.html", out / "index.html", tout / "index.html")
