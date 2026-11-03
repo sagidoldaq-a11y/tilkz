@@ -19,6 +19,11 @@ body = body.replace("/*__BANK_L1_V2__*/null", json.dumps(bank4, ensure_ascii=Fal
 bank3 = json.loads((root / "content" / "bank_l2_v2.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L2_V2__*/null", json.dumps(bank3, ensure_ascii=False).replace("</", "<\\/"))
 assert "/*__BANK" not in body
+# Тіркелу мен нәтижелерді сақтау (Supabase). Ашық (publishable) кілт – сайттың кодында тұруға арналған;
+# деректерді деректер қорындағы RLS ережелері қорғайды (supabase/001_init.sql).
+SUPABASE = {"url": "https://yqfepngubehrupkitklr.supabase.co", "key": "sb_publishable_R_DvPrvev24GFHUtyGwhRw_r5CopZYH"}
+assert body.count("/*__SUPABASE__*/null") == 1
+body = body.replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
 # «TilKz AI» атауы визиткаға апаратын сілтеме болады
 brand_old = '<div class="brand"><b>TilKz <span class="ai">AI</span></b>'
 assert brand_old in body
@@ -33,6 +38,7 @@ head = ('<!doctype html><html lang="kk"><head><meta charset="utf-8">'
         '<meta property="og:title" content="НЗМ, БИЛ. Қазақ тілі – TilKz AI">'
         '<meta property="og:description" content="Оқу сауаттылығы бойынша онлайн жаттықтырғыш. Автор: Қазбек Сағидолда">'
         '<meta property="og:image" content="https://sagidoldaq-a11y.github.io/tilkz/img/og.jpg">'
+        '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>'
         '<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>'
         '</head><body>')
 out = root / "nzm-bil"

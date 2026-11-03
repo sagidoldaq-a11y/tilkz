@@ -214,7 +214,7 @@ b.kw{font-weight:800}
   .ring{width:140px;height:140px}
 }
 .landing{padding-block:28px 48px;max-width:760px}
-.land-head .eyebrow{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.land-head .eyebrow,.auth .eyebrow{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);font-weight:700}
 .land-head h1{font-family:var(--f-text);font-size:clamp(28px,4vw,40px);margin:6px 0 10px}
 .land-head p{color:var(--muted);margin:0 0 22px;max-width:62ch}
 .variants{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
@@ -305,6 +305,29 @@ b.kw{font-weight:800}
   .landing{padding-block:16px 28px}
 }
 @media (prefers-reduced-motion:no-preference){ mark{transition:background .3s} .card{transition:border-color .2s} }
+/* Тіркелу және кіру */
+.auth{max-width:520px;margin:0 auto;padding-block:28px 48px}
+.auth .eyebrow{display:block;margin-bottom:6px}
+.auth h1{font-family:var(--f-text);font-size:30px;margin:0 0 6px}
+.auth .lead{color:var(--muted);margin:0 0 18px}
+.authcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.authtabs{display:flex;gap:6px;margin-bottom:16px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:3px}
+.authtabs button{flex:1;border:0;background:transparent;border-radius:999px;padding:8px 10px;font-weight:700;color:var(--muted)}
+.authtabs button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.af{display:grid;gap:12px}
+.af .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.af label{display:grid;gap:5px;font-size:14px;font-weight:600}
+.af input,.af select{font:inherit;font-weight:400;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);width:100%;box-sizing:border-box}
+.af input:focus,.af select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.af .hint{font-weight:400;font-size:12.5px;color:var(--muted)}
+.af .consent{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:13.5px;line-height:1.45}
+.af .consent input{width:auto;margin-top:3px;flex:0 0 auto}
+.af .err{color:var(--bad);font-size:14px;min-height:1em;margin:0}
+.af .ok{color:var(--ok);font-size:14px;margin:0}
+.af .btn{justify-self:start;padding:10px 22px}
+.af .codein{text-transform:uppercase;letter-spacing:3px;font-weight:700}
+.userbtn{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){ .af .row2{grid-template-columns:1fr} .auth h1{font-size:25px} .userbtn{max-width:34vw;padding:6px 9px;font-size:13px} }
 .srcnote{margin:22px 0 0;text-indent:0;font:13px/1.45 var(--f-ui);color:var(--muted);text-align:left}
 .srcnote a{color:inherit;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
 </style>
@@ -314,6 +337,7 @@ b.kw{font-weight:800}
     <div class="brand"><b>TilKz <span class="ai">AI</span></b><span id="tagline"></span></div>
     <span class="score" id="score"></span>
     <button class="btn" id="resultsBtn" type="button"></button>
+    <button type="button" class="btn userbtn" id="userBtn" hidden></button>
     <button type="button" class="themebtn" id="themeBtn" aria-label="Тақырып / Тема"></button>
     <div class="seg" role="group" aria-label="Interface language">
       <button type="button" id="langKk" aria-pressed="true">ҚАЗ</button>
@@ -324,6 +348,7 @@ b.kw{font-weight:800}
 
 <main class="wrap">
   <div class="banner" id="banner" hidden></div>
+  <section id="auth" class="auth" hidden></section>
   <section id="landing" class="landing" hidden></section>
   <section id="practice">
     <div class="tabsrow"><button type="button" class="btn ghost tolanding" id="toLanding"></button><nav class="texttabs" id="texttabs" role="tablist"></nav></div>
@@ -443,7 +468,7 @@ function kkAbl(n){ const w=kkLast(n), b=kkBack(w), c=w[w.length-1];
   return `${n}-${f}${b?"а":"е"}н`; }
 
 /* ---------- Күй ---------- */
-const KEY = "oqylym-v1-state";
+let KEY = "oqylym-v1-state";   // кірген оқушының деректері өз кілтінде сақталады: oqylym-v1-state:<id>
 let S = load();
 BANK = bankOf(S.lang, (S.vars||{})[S.lang]||0);
 function load(){
@@ -455,9 +480,9 @@ function load(){
   if(s.items && BANKS.kk[0] && !s.banks[BANKS.kk[0].bank_id]){
     s.banks[BANKS.kk[0].bank_id]={text:s.text||0, items:s.items||{}, order:s.order||{}, cur:s.cur||{}, hl:s.hl||{}};
   }
-  for(const k of ["text","items","order","cur","hl"]) delete s[k];
+  for(const k of ["text","items","order","cur","hl","attempt"]) delete s[k];
   const per = () => (s.banks[BANK.bank_id] ||= {text:0, items:{}, order:{}, cur:{}, hl:{}});
-  for(const k of ["text","items","order","cur","hl"])
+  for(const k of ["text","items","order","cur","hl","attempt"])
     Object.defineProperty(s, k, {get(){ return per()[k]; }, set(v){ per()[k]=v; }, enumerable:false, configurable:true});
   return s;
 }
@@ -996,7 +1021,7 @@ document.addEventListener("change",e=>{
   if(s.status==="ok"||s.status==="revealed"||s.status==="wrong1") return;
   if(el.value===it.key){ s.status="ok"; }
   else { s.tries.push(el.value); s.status = s.tries.length>=2 ? "revealed" : "wrong1"; }
-  s.sel=null; save(); rerenderCard(id);
+  s.sel=null; save(); rerenderCard(id); syncItem(it);
   if(s.status==="ok") markEvidence(it);
   else if(s.status==="revealed"){ setRevealMarks(it); renderPaper(); scrollToMark(); }
   else { const dev=devOf(it,el.value); marks=dev.map(t=>({t,w:true})); markKw=kwOf(it,el.value).kk; renderPaper(); if(dev.length) scrollToMark(); }
@@ -1005,8 +1030,8 @@ document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]"); if(!b||b.tagName==="INPUT") return;
   const id=b.dataset.id, it=id&&BANK.items.find(x=>x.id===id), s=id&&st(id);
   switch(b.dataset.act){
-    case "second": s.status="retry"; save(); rerenderCard(id); break;
-    case "reveal": s.status="revealed"; save(); rerenderCard(id); markEvidence(it); break;
+    case "second": s.status="retry"; save(); rerenderCard(id); syncItem(it); break;
+    case "reveal": s.status="revealed"; save(); rerenderCard(id); syncItem(it); markEvidence(it); break;
     case "mark": markEvidence(it,true); break;
     case "skill": openSkill[id]=!openSkill[id]; rerenderCard(id); break;
     case "analysis": openAn[id]=!openAn[id]; rerenderCard(id); setRevealMarks(it); renderPaper();
@@ -1018,6 +1043,7 @@ document.addEventListener("click",e=>{
   }
 });
 document.addEventListener("submit",e=>{
+  if(!e.target.dataset.id) return;   // тек көмекшінің формасы (тіркелу формасы өз өңдеушісінде)
   e.preventDefault(); const id=e.target.dataset.id, ta=document.getElementById("in-"+id);
   const v=ta.value; ta.value=""; ask(id,v);
 });
@@ -1167,12 +1193,12 @@ let showingResults=false;
 document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; if(!showingResults) finalize(); showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
 document.getElementById("results").addEventListener("click",e=>{
   if(e.target.id==="backBtn"){ showingResults=false; renderAll(); }
-  if(e.target.id==="resetBtn"){ S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
+  if(e.target.id==="resetBtn"){ S.attempt=null; S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
 document.getElementById("qs").addEventListener("click",e=>{
   const b=e.target.closest("[data-fin]"); if(!b) return;
   if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; activeQ=null; scrollQ=null; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0; }
-  if(b.dataset.fin==="finish" && allDone()){ finalize(); showingResults=true; renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.fin==="finish" && allDone()){ finalize(); syncFinish(); showingResults=true; renderAll(); window.scrollTo({top:0}); }
 });
 function finishBar(){
   const ru=S.lang==="ru", done=BANK.items.filter(isAnswered).length, N=BANK.items.length, last=S.text===BANK.texts.length-1;
@@ -1230,7 +1256,7 @@ document.getElementById("landing").addEventListener("click",e=>{
   if(nb!==BANK){ S.vars[S.lang]=vi; BANK=nb; marks=[]; markKw=[]; tmpHl=[]; activeQ=null; scrollQ=null; hideBar(); save(); }
   if(b.dataset.land==="start"){ view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
   if(b.dataset.land==="report"){ showingResults=true; view="practice"; renderAll(); window.scrollTo({top:0}); }
-  if(b.dataset.land==="restart"){ S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; marks=[]; activeQ=null; scrollQ=null; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.land==="restart"){ S.attempt=null; S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; marks=[]; activeQ=null; scrollQ=null; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
 document.getElementById("toLanding").addEventListener("click",()=>{ view="landing"; showingResults=false; renderAll(); window.scrollTo({top:0}); });
 /* Жарық / қараңғы тақырып (визиткамен ортақ баптау) */
@@ -1242,6 +1268,19 @@ themeBtn.addEventListener("click",()=>{ const t=isDark()?"light":"dark"; documen
 const onLandingNow=()=>view==="landing" && !showingResults;
 function renderAll(){
   const L=t();
+  const gate = authOn() && !USER;
+  document.getElementById("auth").hidden=!gate;
+  const ub=document.getElementById("userBtn"); ub.hidden=!USER;
+  if(USER){ const nm=PROFILE?`${PROFILE.first_name} ${PROFILE.last_name}`:(USER.email||""); ub.textContent="👤 "+nm; ub.title=S.lang==="ru"?"Выйти из аккаунта":"Аккаунттан шығу"; }
+  if(gate){
+    paintTheme(); document.documentElement.lang = S.lang==="ru"?"ru":"kk";
+    document.getElementById("tagline").textContent=L.tagline;
+    document.getElementById("langKk").setAttribute("aria-pressed",S.lang==="kk");
+    document.getElementById("langRu").setAttribute("aria-pressed",S.lang==="ru");
+    for(const id of ["landing","practice","results","banner"]) document.getElementById(id).hidden=true;
+    document.getElementById("resultsBtn").hidden=true; document.getElementById("score").hidden=true;
+    renderAuth(); return;
+  }
   paintTheme();
   document.documentElement.lang = S.lang==="ru"?"ru":"kk";
   const vn=(BANKS[S.lang]||BANKS.kk).indexOf(BANK)+1;
@@ -1264,5 +1303,127 @@ function renderAll(){
   if(showingResults) renderResults();
   renderPaper(); renderQs(); renderTop(); setView(S.view||"text"); requestAnimationFrame(fitGrid);
 }
-renderAll();
+/* ---------- Тіркелу, кіру және нәтижелерді серверге сақтау (Supabase) ----------
+   Сайтта ғана қосылады (build_public.py баптауды енгізеді); артефакт-нұсқа бұрынғыдай кірусіз жұмыс істейді. */
+const SB_CFG = /*__SUPABASE__*/null;
+const LOGIN_DOMAIN = "oqushy.tilkz.app";   // оқушының поштасы жоқ: логин ішкі «пошта» түрінде сақталады
+let sb=null, USER=null, PROFILE=null, authMode="login", authMsg="", authBusy=false;
+const authOn = () => !!sb;
+const loginEmail = v => { v=v.trim().toLowerCase(); return v.includes("@") ? v : v+"@"+LOGIN_DOMAIN; };
+const AUTH_T = {
+  kk:{eyebrow:"Оқу сауаттылығы · НЗМ, БИЛ", h:"Платформаға кіру", lead:"Мұғалім берген сынып кодымен тіркел немесе логиніңмен кір.",
+      login:"Кіру", reg:"Тіркелу", lg:"Логин", pw:"Құпиясөз", pw2:"Құпиясөзді қайтала", code:"Сынып коды", codeHint:"Мұғалімің берген 6 таңбалы код",
+      fn:"Аты", ln:"Тегі", grade:"Сынып", gradeOpt:n=>`${n}-сынып`, city:"Қала / ауыл", school:"Мектеп", lgHint:"Латын әріптері, сан, нүкте не сызықша: 3–20 таңба. Мысалы: aruzhan.s",
+      pwHint:"Кемінде 6 таңба. Логин мен құпиясөзді жазып ал, ұмытпа.",
+      consent:"Ата-анам (заңды өкілім) менің платформаға тіркелуіме және аты-жөнім, сыныбым, қалам, мектебім мен тест нәтижелерімнің мұғалімге көрсетілуіне келісім берді.",
+      doLogin:"Кіру", doReg:"Тіркелу", wait:"Күте тұр…", out:"Аккаунттан шығасың ба?",
+      e:{empty:"Барлық өрісті толтыр.", code:"Сынып коды қате. Мұғаліміңнен қайта сұра.", login:"Логин тек латын әріптері, сандар, нүкте, сызықша не астыңғы сызықтан тұрады (3–20 таңба).",
+         taken:"Бұл логин бос емес. Басқа логин ойлап тап.", pw:"Құпиясөз кемінде 6 таңба болуы керек.", pw2:"Құпиясөздер бірдей емес.", consent:"Ата-анаңның келісімі туралы белгіні қой.",
+         bad:"Логин не құпиясөз қате.", net:"Байланыс жоқ. Интернетті тексеріп, қайта көр.", fail:"Тіркелу кезінде қате шықты. Сынып кодын тексеріп, қайта көр.", confirm:"Тіркелу аяқталмады: платформа баптауы әлі дайын емес. Мұғаліміңе хабарла."}},
+  ru:{eyebrow:"Читательская грамотность · НИШ, БИЛ", h:"Вход на платформу", lead:"Зарегистрируйся по коду класса от учителя или войди со своим логином.",
+      login:"Вход", reg:"Регистрация", lg:"Логин", pw:"Пароль", pw2:"Повтори пароль", code:"Код класса", codeHint:"6-значный код от учителя",
+      fn:"Имя", ln:"Фамилия", grade:"Класс", gradeOpt:n=>`${n} класс`, city:"Город / село", school:"Школа", lgHint:"Латинские буквы, цифры, точка или дефис: 3–20 символов. Например: aruzhan.s",
+      pwHint:"Не менее 6 символов. Запиши логин и пароль, чтобы не забыть.",
+      consent:"Мои родители (законные представители) согласны с моей регистрацией на платформе и с тем, что учитель будет видеть моё имя, класс, город, школу и результаты тестов.",
+      doLogin:"Войти", doReg:"Зарегистрироваться", wait:"Подожди…", out:"Выйти из аккаунта?",
+      e:{empty:"Заполни все поля.", code:"Неверный код класса. Уточни у учителя.", login:"Логин может содержать только латинские буквы, цифры, точку, дефис или подчёркивание (3–20 символов).",
+         taken:"Этот логин уже занят. Придумай другой.", pw:"Пароль должен быть не короче 6 символов.", pw2:"Пароли не совпадают.", consent:"Отметь согласие родителей.",
+         bad:"Неверный логин или пароль.", net:"Нет связи. Проверь интернет и попробуй снова.", fail:"Ошибка при регистрации. Проверь код класса и попробуй снова.", confirm:"Регистрация не завершена: платформа ещё не настроена. Сообщи учителю."}}
+};
+function renderAuth(){
+  const A=AUTH_T[S.lang], box=document.getElementById("auth"), reg=authMode==="reg";
+  const grades=[4,5,6,7].map(n=>`<option value="${n}">${A.gradeOpt(n)}</option>`).join("");
+  box.innerHTML = `<span class="eyebrow">${esc(A.eyebrow)}</span><h1>${esc(A.h)}</h1><p class="lead">${esc(A.lead)}</p>
+   <div class="authcard">
+    <div class="authtabs" role="group"><button type="button" data-am="login" aria-pressed="${!reg}">${esc(A.login)}</button><button type="button" data-am="reg" aria-pressed="${reg}">${esc(A.reg)}</button></div>
+    ${reg ? `<form class="af" id="regForm" novalidate>
+      <label>${esc(A.code)}<input name="code" class="codein" maxlength="6" autocomplete="off" autocapitalize="characters" required><span class="hint">${esc(A.codeHint)}</span></label>
+      <div class="row2"><label>${esc(A.fn)}<input name="first_name" maxlength="60" autocomplete="given-name" required></label><label>${esc(A.ln)}<input name="last_name" maxlength="60" autocomplete="family-name" required></label></div>
+      <div class="row2"><label>${esc(A.grade)}<select name="grade" required>${grades}</select></label><label>${esc(A.city)}<input name="city" maxlength="80" required></label></div>
+      <label>${esc(A.school)}<input name="school" maxlength="120" required></label>
+      <label>${esc(A.lg)}<input name="login" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" required><span class="hint">${esc(A.lgHint)}</span></label>
+      <div class="row2"><label>${esc(A.pw)}<input name="password" type="password" autocomplete="new-password" required></label><label>${esc(A.pw2)}<input name="password2" type="password" autocomplete="new-password" required></label></div>
+      <span class="hint">${esc(A.pwHint)}</span>
+      <label class="consent"><input type="checkbox" name="consent"> <span>${esc(A.consent)}</span></label>
+      <p class="err" role="alert">${esc(authMsg)}</p>
+      <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doReg)}</button></form>`
+    : `<form class="af" id="loginForm" novalidate>
+      <label>${esc(A.lg)}<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label>${esc(A.pw)}<input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="err" role="alert">${esc(authMsg)}</p>
+      <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doLogin)}</button></form>`}
+   </div>`;
+}
+document.getElementById("auth").addEventListener("click",e=>{ const b=e.target.closest("[data-am]"); if(!b) return; authMode=b.dataset.am; authMsg=""; renderAuth(); });
+document.getElementById("auth").addEventListener("submit",async e=>{
+  e.preventDefault(); if(authBusy) return;
+  const A=AUTH_T[S.lang], f=Object.fromEntries(new FormData(e.target)); for(const k in f) if(typeof f[k]==="string") f[k]=f[k].trim();
+  const form=e.target, btn=form.querySelector("button[type=submit]"), errEl=form.querySelector(".err"), label=btn.textContent;
+  // Қате болса, форма қайта салынбайды: оқушы енгізген мәліметтер (құпиясөз де) орнында қалады
+  const fail=m=>{ authBusy=false; authMsg=m; errEl.textContent=m; btn.disabled=false; btn.textContent=label; };
+  authBusy=true; authMsg=""; errEl.textContent=""; btn.disabled=true; btn.textContent=A.wait;
+  try{
+    if(e.target.id==="loginForm"){
+      if(!f.login||!f.password) return fail(A.e.empty);
+      const {data,error}=await sb.auth.signInWithPassword({email:loginEmail(f.login), password:f.password});
+      if(error) return fail(/fetch|network/i.test(error.message)?A.e.net:A.e.bad);
+      authBusy=false; await enterAs(data.user); return;
+    }
+    f.login=(f.login||"").toLowerCase(); f.code=(f.code||"").toUpperCase();
+    if(!f.code||!f.first_name||!f.last_name||!f.city||!f.school||!f.login||!f.password) return fail(A.e.empty);
+    if(!/^[a-z0-9._-]{3,20}$/.test(f.login)) return fail(A.e.login);
+    if(f.password.length<6) return fail(A.e.pw);
+    if(f.password!==f.password2) return fail(A.e.pw2);
+    if(!f.consent) return fail(A.e.consent);
+    const c=await sb.rpc("check_class_code",{p_code:f.code}); if(c.error) return fail(A.e.net); if(!c.data) return fail(A.e.code);
+    const l=await sb.rpc("login_available",{p_login:f.login}); if(l.error) return fail(A.e.net); if(!l.data) return fail(A.e.taken);
+    const {data,error}=await sb.auth.signUp({email:loginEmail(f.login), password:f.password,
+      options:{data:{role:"student", class_code:f.code, login:f.login, first_name:f.first_name, last_name:f.last_name, grade:f.grade, city:f.city, school:f.school, consent:"true"}}});
+    if(error) return fail(/fetch|network/i.test(error.message)?A.e.net:/registered|exists/i.test(error.message)?A.e.taken:A.e.fail);
+    if(!data.session) return fail(A.e.confirm);
+    authBusy=false; await enterAs(data.user);
+  }catch(err){ console.warn(err); fail(A.e.net); }
+});
+async function enterAs(user){
+  const {data}=await sb.from("students").select("first_name,last_name,grade,city,school,login").eq("user_id",user.id).maybeSingle();
+  USER=user; PROFILE=data||null;
+  const lang=S.lang, theme=null; KEY="oqylym-v1-state:"+user.id; S=load(); S.lang=lang;
+  BANK=bankOf(S.lang,(S.vars||{})[S.lang]||0); view="landing"; showingResults=false; marks=[]; markKw=[]; activeQ=null; scrollQ=null;
+  save(); renderAll(); window.scrollTo({top:0});
+}
+document.getElementById("userBtn").addEventListener("click",async()=>{
+  if(!confirm(AUTH_T[S.lang].out)) return;
+  try{ await sb.auth.signOut(); }catch(e){}
+  location.reload();
+});
+/* Тест әрекеті мен жауаптар серверге жазылады (қателер банкі мен мұғалімнің есебі осыдан құрылады) */
+const attemptReq={};
+function ensureAttempt(bank){
+  const pb=S.banks[bank.bank_id]; if(!pb) return Promise.resolve(null);
+  if(pb.attempt) return Promise.resolve(pb.attempt);
+  return attemptReq[bank.bank_id] ||= sb.from("attempts").insert({bank_id:bank.bank_id, mode:"practice"}).select("id").single()
+    .then(({data,error})=>{ delete attemptReq[bank.bank_id]; if(error){ console.warn(error); return null; } pb.attempt=data.id; save(); return data.id; });
+}
+async function syncItem(it){
+  if(!USER||!sb) return; const bank=BANK, s=st(it.id); if(s.status==="open") return;
+  const aid=await ensureAttempt(bank); if(!aid) return;
+  const {error}=await sb.from("answers").upsert({attempt_id:aid, bank_id:bank.bank_id, item_id:it.id, skill:it.skill, level:it.level,
+    tries:[...s.tries], status:s.status, first_correct:(s.status==="ok"&&s.tries.length===0), updated_at:new Date().toISOString()});
+  if(error) console.warn(error);
+}
+async function syncFinish(){
+  if(!USER||!sb) return; const bank=BANK;
+  for(const x of bank.items) await syncItem(x);
+  const aid=await ensureAttempt(bank); if(!aid) return;
+  const {error}=await sb.from("attempts").update({finished_at:new Date().toISOString(), first_correct:bank.items.filter(isFirst).length, total:bank.items.length}).eq("id",aid);
+  if(error) console.warn(error);
+}
+async function boot(){
+  if(SB_CFG && window.supabase){
+    sb=window.supabase.createClient(SB_CFG.url, SB_CFG.key, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"tilkz-auth"}});
+    try{ const {data:{session}}=await sb.auth.getSession(); if(session){ await enterAs(session.user); return; } }catch(e){ console.warn(e); }
+  }
+  renderAll();
+}
+boot();
 </script>
