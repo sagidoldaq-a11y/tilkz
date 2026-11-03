@@ -944,13 +944,20 @@ function activate(id){
   marksFor(it); renderPaper();
 }
 document.getElementById("qs").addEventListener("pointerdown",e=>{ const c=e.target.closest("[id^='card-']"); if(c) activate(c.id.slice(5)); });
-/* Компьютерде: оқушы бетті айналдырып, келесі сұрақ экранның негізгі бөлігіне (жоғарыдан 40%) шыққанда
-   мәтіндегі белгілер сол сұраққа ауысады – тінтуірмен басу қажет емес. */
+/* Компьютерде: оқушы бетті айналдырғанда мәтіндегі белгілер экранда ең көп көрініп тұрған сұраққа ауысады
+   (сұрақ пен жауап нұсқалары ғана есептеледі, түсініктеме есептелмейді) – тінтуірмен басу қажет емес. */
 let scrollQ=null, scrollRaf=0;
 function syncByScroll(){
   scrollRaf=0; if(phone() || view!=="practice" || showingResults) return;
-  const y=innerHeight*0.4; let id=null;
-  for(const c of document.querySelectorAll("#qs [id^='card-']")){ const r=c.getBoundingClientRect(); if(r.top<=y && r.bottom>=y){ id=c.id.slice(5); break; } }
+  const top=document.querySelector("header.top")?.getBoundingClientRect().bottom||0, bot=innerHeight;
+  let id=null, best=0, bestPx=0;
+  for(const c of document.querySelectorAll("#qs [id^='card-']")){
+    const r=c.getBoundingClientRect(), o=c.querySelector(".opts"), end=o?o.getBoundingClientRect().bottom:r.bottom;
+    const h=end-r.top; if(h<=0) continue;
+    const vis=Math.max(0, Math.min(end,bot)-Math.max(r.top,top)), f=vis/h;
+    if(f>best+0.001 || (Math.abs(f-best)<=0.001 && vis>bestPx)){ best=f; bestPx=vis; id=c.id.slice(5); }
+  }
+  if(best<=0) id=null;
   if(id && id!==scrollQ){ scrollQ=id; activate(id); }
 }
 addEventListener("scroll",()=>{ if(!scrollRaf) scrollRaf=requestAnimationFrame(syncByScroll); },{passive:true});
