@@ -944,6 +944,16 @@ function activate(id){
   marksFor(it); renderPaper();
 }
 document.getElementById("qs").addEventListener("pointerdown",e=>{ const c=e.target.closest("[id^='card-']"); if(c) activate(c.id.slice(5)); });
+/* Компьютерде: оқушы бетті айналдырып, келесі сұрақ экранның негізгі бөлігіне (жоғарыдан 40%) шыққанда
+   мәтіндегі белгілер сол сұраққа ауысады – тінтуірмен басу қажет емес. */
+let scrollQ=null, scrollRaf=0;
+function syncByScroll(){
+  scrollRaf=0; if(phone() || view!=="practice" || showingResults) return;
+  const y=innerHeight*0.4; let id=null;
+  for(const c of document.querySelectorAll("#qs [id^='card-']")){ const r=c.getBoundingClientRect(); if(r.top<=y && r.bottom>=y){ id=c.id.slice(5); break; } }
+  if(id && id!==scrollQ){ scrollQ=id; activate(id); }
+}
+addEventListener("scroll",()=>{ if(!scrollRaf) scrollRaf=requestAnimationFrame(syncByScroll); },{passive:true});
 document.getElementById("qs").addEventListener("focusin",e=>{ const c=e.target.closest("[id^='card-']"); if(c) activate(c.id.slice(5)); });
 function markEvidence(it){ marks = it.evidence.flatMap(frags); markKw=kwOf(it,"ok").kk; renderPaper(); scrollToMark(); }
 document.addEventListener("change",e=>{
@@ -993,7 +1003,7 @@ function renderTabs(){
 }
 document.getElementById("texttabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-tab]"); if(!b) return;
-  S.text=+b.dataset.tab; marks=[]; activeQ=null; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0;
+  S.text=+b.dataset.tab; marks=[]; activeQ=null; scrollQ=null; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0;
 });
 function renderTop(){
   const L=t(), all=BANK.items, sts=all.map(x=>st(x.id));
@@ -1127,7 +1137,7 @@ document.getElementById("results").addEventListener("click",e=>{
 });
 document.getElementById("qs").addEventListener("click",e=>{
   const b=e.target.closest("[data-fin]"); if(!b) return;
-  if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; activeQ=null; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0; }
+  if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; activeQ=null; scrollQ=null; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0; }
   if(b.dataset.fin==="finish" && allDone()){ finalize(); showingResults=true; renderAll(); window.scrollTo({top:0}); }
 });
 function finishBar(){
@@ -1142,7 +1152,7 @@ function finishBar(){
 function setLang(l){
   const nb = bankOf(l, S.vars[l]||0), changed = nb!==BANK;
   S.lang=l; BANK=nb; save();
-  if(changed){ marks=[]; markKw=[]; tmpHl=[]; activeQ=null; showingResults=false; view="landing"; hideBar(); }
+  if(changed){ marks=[]; markKw=[]; tmpHl=[]; activeQ=null; scrollQ=null; showingResults=false; view="landing"; hideBar(); }
   renderAll(); if(changed) window.scrollTo({top:0});
 }
 document.getElementById("langKk").onclick=()=>setLang("kk");
@@ -1183,10 +1193,10 @@ function landingHTML(){
 document.getElementById("landing").addEventListener("click",e=>{
   const b=e.target.closest("[data-land]"); if(!b) return;
   const vi=+b.dataset.v||0, nb=bankOf(S.lang, vi);
-  if(nb!==BANK){ S.vars[S.lang]=vi; BANK=nb; marks=[]; markKw=[]; tmpHl=[]; activeQ=null; hideBar(); save(); }
+  if(nb!==BANK){ S.vars[S.lang]=vi; BANK=nb; marks=[]; markKw=[]; tmpHl=[]; activeQ=null; scrollQ=null; hideBar(); save(); }
   if(b.dataset.land==="start"){ view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
   if(b.dataset.land==="report"){ showingResults=true; view="practice"; renderAll(); window.scrollTo({top:0}); }
-  if(b.dataset.land==="restart"){ S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; marks=[]; activeQ=null; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
+  if(b.dataset.land==="restart"){ S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; marks=[]; activeQ=null; scrollQ=null; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
 });
 document.getElementById("toLanding").addEventListener("click",()=>{ view="landing"; showingResults=false; renderAll(); window.scrollTo({top:0}); });
 /* Жарық / қараңғы тақырып (визиткамен ортақ баптау) */
