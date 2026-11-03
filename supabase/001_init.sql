@@ -182,7 +182,7 @@ insert into public.teacher_invites (email) values ('sagidolda.q@gmail.com') on c
 
 -- Алғашқы сынып. Код автоматты түрде жасалады; оны төмендегі нәтижеден көресіз.
 insert into public.classes (code, name)
-select upper(substr(translate(encode(gen_random_bytes(9), 'base64'), '+/=0O1ILoil', ''), 1, 6)), 'НЗМ, БИЛ – 1-топ'
+select upper(substr(md5(random()::text || clock_timestamp()::text), 1, 6)), 'НЗМ, БИЛ – 1-топ'
 where not exists (select 1 from public.classes);
 
 select code as "Сынып коды", name as "Сынып" from public.classes order by created_at;
