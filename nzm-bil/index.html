@@ -1055,6 +1055,17 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&!e.shiftKey&&e.target.tagName==="TEXTAREA"){ e.preventDefault(); e.target.form.requestSubmit(); }
 });
 
+/* Мәтінді ашу: мәтін де, сұрақтар да басынан көрінеді.
+   «Келесі мәтін» батырмасымен өткенде – мәтіннің бірінші сұрағы (жауап берілмеген болса, біріншісі). */
+function openText(i, first){
+  S.text=i; marks=[]; activeQ=null; scrollQ=null; S.cur ||= {};
+  if(first){ const its=itemsOf(BANK.texts[i].id), k=its.findIndex(x=>!isAnswered(x)); S.cur[i]= k<0 ? 0 : k; }
+  save(); renderAll();
+  window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0; document.getElementById("qs").scrollTop=0;
+  // Ашылған мәтіннің қойындысы көрініп тұрсын (телефонда қойындылар жолағы көлденең айналады)
+  const tb=document.querySelector('#texttabs [aria-selected="true"]'), bar=document.getElementById("texttabs");
+  if(tb && bar) bar.scrollLeft += tb.getBoundingClientRect().left - bar.getBoundingClientRect().left - (bar.clientWidth - tb.offsetWidth)/2;
+}
 /* ---------- Беттің жалпы бөліктері ---------- */
 function renderTabs(){
   const L=t();
@@ -1066,7 +1077,7 @@ function renderTabs(){
 }
 document.getElementById("texttabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-tab]"); if(!b) return;
-  S.text=+b.dataset.tab; marks=[]; activeQ=null; scrollQ=null; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0;
+  openText(+b.dataset.tab, false);
 });
 function renderTop(){
   const L=t(), all=BANK.items, sts=all.map(x=>st(x.id));
@@ -1201,7 +1212,7 @@ document.getElementById("results").addEventListener("click",e=>{
 });
 document.getElementById("qs").addEventListener("click",e=>{
   const b=e.target.closest("[data-fin]"); if(!b) return;
-  if(b.dataset.fin==="next"){ S.text=Math.min(S.text+1,BANK.texts.length-1); marks=[]; activeQ=null; scrollQ=null; save(); renderAll(); window.scrollTo({top:0}); document.getElementById("paper").scrollTop=0; }
+  if(b.dataset.fin==="next"){ openText(Math.min(S.text+1,BANK.texts.length-1), true); }
   if(b.dataset.fin==="finish" && allDone()){ finalize(); syncFinish(); showingResults=true; renderAll(); window.scrollTo({top:0}); }
 });
 function finishBar(){
