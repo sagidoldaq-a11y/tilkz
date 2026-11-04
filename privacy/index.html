@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="google" content="notranslate">
-<title>Құпиялылық саясаты – TilKz AI</title>
+<title>Құпиялылық саясаты – aitil</title>
 <script>(function(){try{var th=localStorage.getItem("tilkz-theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,8 +21,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 header{background:var(--panel);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
 .wrap{max-width:820px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
 header .wrap{display:flex;align-items:center;gap:10px;padding-block:10px;max-width:1080px}
-.brand{font-family:var(--f-text);font-weight:700;font-size:20px;text-decoration:none;color:var(--ink);margin-right:auto}
-.brand span{color:var(--accent);font-family:var(--f-ui)}
+.brand{font-family:var(--f-ui);font-weight:800;font-size:21px;letter-spacing:-.3px;text-decoration:none;color:var(--ink);margin-right:auto}
+.brand span{color:var(--accent)}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--paper)}
 .seg button{border:0;background:transparent;padding:4px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
@@ -43,7 +43,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:28px}
 </head>
 <body>
 <header><div class="wrap">
-  <a class="brand" href="../">TilKz <span>AI</span></a>
+  <a class="brand" href="../"><span>ai</span>til</a>
   <button type="button" class="themebtn" id="themeBtn"></button>
   <div class="seg" role="group" aria-label="Тіл / Язык"><button type="button" data-lang="kk">ҚАЗ</button><button type="button" data-lang="ru">РУС</button></div>
 </div></header>
@@ -53,7 +53,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:28px}
   <h1>Құпиялылық саясаты</h1>
   <p class="date">Күшіне енген күні: 2026 жылғы 4 қараша</p>
   <div class="box">
-    <p class="lead">TilKz AI – қазақ тілін үйретуге арналған оқу платформасы. Біз оқушылар туралы тек оқуға қажетті ең аз деректерді жинаймыз, оларды жарнамаға пайдаланбаймыз және ешкімге сатпаймыз.</p>
+    <p class="lead">aitil – қазақ тілін үйретуге арналған оқу платформасы. Біз оқушылар туралы тек оқуға қажетті ең аз деректерді жинаймыз, оларды жарнамаға пайдаланбаймыз және ешкімге сатпаймыз.</p>
 
     <h2>1. Деректерді кім өңдейді</h2>
     <p>Платформаның иесі және деректерді өңдеуші – Қазбек Сағидолда (бұдан әрі – «біз»). Байланыс: <a href="mailto:sagidolda.q@gmail.com">sagidolda.q@gmail.com</a>, WhatsApp: <a href="https://wa.me/77082141226">+7 708 214 1226</a>.</p>
@@ -110,7 +110,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:28px}
   <h1>Политика конфиденциальности</h1>
   <p class="date">Дата вступления в силу: 4 ноября 2026 года</p>
   <div class="box">
-    <p class="lead">TilKz AI – учебная платформа для изучения казахского языка. Мы собираем об учениках только минимум данных, необходимых для обучения, не используем их для рекламы и никому не продаём.</p>
+    <p class="lead">aitil – учебная платформа для изучения казахского языка. Мы собираем об учениках только минимум данных, необходимых для обучения, не используем их для рекламы и никому не продаём.</p>
 
     <h2>1. Кто обрабатывает данные</h2>
     <p>Владелец платформы и оператор данных – Казбек Сагидолда (далее – «мы»). Контакты: <a href="mailto:sagidolda.q@gmail.com">sagidolda.q@gmail.com</a>, WhatsApp: <a href="https://wa.me/77082141226">+7 708 214 1226</a>.</p>
@@ -163,14 +163,14 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:28px}
   </div>
 </article>
 
-<footer>© 2026 Қазбек Сағидолда · TilKz AI</footer>
+<footer>© 2026 Қазбек Сағидолда · aitil</footer>
 </main>
 <script>
 const LANG_KEY="tilkz-lang";
 let lang="kk"; try{ const l=localStorage.getItem(LANG_KEY); if(l==="kk"||l==="ru") lang=l; }catch(e){}
 function render(){
   document.documentElement.lang=lang;
-  document.title = lang==="ru" ? "Политика конфиденциальности – TilKz AI" : "Құпиялылық саясаты – TilKz AI";
+  document.title = lang==="ru" ? "Политика конфиденциальности – aitil" : "Құпиялылық саясаты – aitil";
   document.querySelectorAll("[data-l]").forEach(a=>a.hidden=a.dataset.l!==lang);
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
   paintTheme();

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Мұғалім кабинеті – TilKz AI</title>
+<title>Мұғалім кабинеті – aitil</title>
 <script>(function(){try{var th=localStorage.getItem("tilkz-theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,8 +37,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 header.top{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
 .top .wrap{display:flex;align-items:center;gap:10px;padding-block:10px}
 .brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;min-width:0}
-.brand a{font-family:var(--f-text);font-weight:700;font-size:22px;text-decoration:none;color:var(--ink);white-space:nowrap}
-.brand a .ai{color:var(--accent);font-family:var(--f-ui);font-size:inherit;letter-spacing:.5px}
+.brand a{font-family:var(--f-ui);font-weight:800;font-size:22px;letter-spacing:-.3px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.brand a .ai{color:var(--accent);font:inherit;letter-spacing:inherit}
 .brand > span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 14px;font-weight:600;font-size:14px;white-space:nowrap}
 .btn:hover{border-color:var(--accent)}
@@ -140,13 +140,13 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><a href="../">TilKz <span class="ai">AI</span></a><span>Мұғалім кабинеті</span></div>
+  <div class="brand"><a href="../"><span class="ai">ai</span>til</a><span>Мұғалім кабинеті</span></div>
   <a class="btn sm" id="stuBtn" href="../nzm-bil/" hidden title="Тестті оқушы көзімен тапсырып көру">Оқушы ретінде тексеру</a>
   <button class="btn sm" id="outBtn" type="button" hidden>Шығу</button>
   <button type="button" class="themebtn" id="themeBtn"></button>
 </div></header>
 <main class="wrap" id="app"></main>
-<footer class="wrap" style="color:var(--muted);font-size:13px;text-align:center;padding-bottom:28px">TilKz AI · <a href="../privacy/" style="color:inherit">Құпиялылық саясаты</a></footer>
+<footer class="wrap" style="color:var(--muted);font-size:13px;text-align:center;padding-bottom:28px">aitil · <a href="../privacy/" style="color:inherit">Құпиялылық саясаты</a></footer>
 <div class="toast" id="toast" hidden></div>
 <script>
 const SB_CFG = /*__SUPABASE__*/null;
@@ -182,7 +182,7 @@ const st = {sort:"name"};
 /* ---------- Кіру ---------- */
 function renderAuth(msg=""){
   const reg=authMode==="reg";
-  app.innerHTML=`<div class="auth"><span class="eyebrow">TilKz AI</span><h1>Мұғалім кабинеті</h1>
+  app.innerHTML=`<div class="auth"><span class="eyebrow">aitil</span><h1>Мұғалім кабинеті</h1>
    <p class="sub">Сынып ашу, оқушылардың нәтижесі мен дағдылары бойынша есеп.</p>
    <div class="panel"><div class="tabs"><button type="button" data-am="login" aria-pressed="${!reg}">Кіру</button><button type="button" data-am="reg" aria-pressed="${reg}">Алғаш рет тіркелу</button></div>
    <form class="af" id="authForm" novalidate>

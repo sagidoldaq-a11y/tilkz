@@ -1,4 +1,4 @@
-<title>TilKz AI</title>
+<title>aitil</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <script>(function(){try{var th=localStorage.getItem("tilkz-theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,9 +37,9 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
 .top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
 .brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
-.brand b{font-family:var(--f-text);font-size:22px;letter-spacing:.2px}
+.brand b{font-family:var(--f-ui);font-weight:800;font-size:22px;letter-spacing:-.3px}
 .brand span{color:var(--muted);font-size:13px}
-.brand b .ai{color:var(--accent);font-size:inherit;font-family:var(--f-ui);font-weight:700;letter-spacing:.5px}
+.brand b .ai{color:var(--accent);font-size:inherit;font-family:inherit;font-weight:inherit;letter-spacing:inherit}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--paper)}
 .seg button{border:0;background:transparent;padding:4px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
@@ -360,7 +360,7 @@ b.kw{font-weight:800}
 
 <header class="top">
   <div class="wrap">
-    <div class="brand"><b>TilKz <span class="ai">AI</span></b><span id="tagline"></span></div>
+    <div class="brand"><b><span class="ai">ai</span>til</b><span id="tagline"></span></div>
     <span class="score" id="score"></span>
     <button class="btn" id="resultsBtn" type="button"></button>
     <a class="btn" id="cabBtn" href="../mugalim/" hidden>Кабинет</a>

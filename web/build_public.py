@@ -24,18 +24,19 @@ assert "/*__BANK" not in body
 SUPABASE = {"url": "https://yqfepngubehrupkitklr.supabase.co", "key": "sb_publishable_R_DvPrvev24GFHUtyGwhRw_r5CopZYH"}
 assert body.count("/*__SUPABASE__*/null") == 1
 body = body.replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
-# «TilKz AI» атауы визиткаға апаратын сілтеме болады
-brand_old = '<div class="brand"><b>TilKz <span class="ai">AI</span></b>'
+# «aitil» логотипі визиткаға апаратын сілтеме болады
+brand_old = '<div class="brand"><b><span class="ai">ai</span>til</b>'
 assert brand_old in body
-body = body.replace(brand_old, '<div class="brand"><a href="../" class="home" title="Басты бет">TilKz <span class="ai">AI</span></a>')
-body = body.replace("</style>", ".brand a.home{font-family:var(--f-text);font-weight:700;font-size:22px;letter-spacing:.2px;text-decoration:none;color:var(--ink)}\n"
-                                 ".brand a.home .ai{color:var(--accent);font-family:var(--f-ui);font-weight:700;letter-spacing:.5px;font-size:inherit}\n"
+body = body.replace(brand_old, '<div class="brand"><a href="../" class="home" title="Басты бет"><span class="ai">ai</span>til</a>')
+body = body.replace("</style>", ".brand a.home{font-family:var(--f-ui);font-weight:800;font-size:22px;letter-spacing:-.3px;text-decoration:none;color:var(--ink)}\n"
+                                 ".brand a.home .ai{color:var(--accent);font:inherit;letter-spacing:inherit}\n"
                                  "@media (max-width:880px){.brand a.home{font-size:19px}}\n@media (orientation:landscape) and (max-height:520px){.brand a.home{font-size:18px}}\n</style>", 1)
-body = body.replace("<title>TilKz AI</title>", "<title>НЗМ, БИЛ. Қазақ тілі – TilKz AI</title>", 1)
+assert "<title>aitil</title>" in body
+body = body.replace("<title>aitil</title>", "<title>НЗМ, БИЛ. Қазақ тілі – aitil</title>", 1)
 head = ('<!doctype html><html lang="kk" translate="no"><head><meta charset="utf-8"><meta name="google" content="notranslate">'
         '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
         '<meta name="description" content="НЗМ, БИЛ емтихандарына дайындық: қазақ тілі, оқу сауаттылығы. Мәтін, тест, түсініктеме, дағдылар бойынша есеп.">'
-        '<meta property="og:title" content="НЗМ, БИЛ. Қазақ тілі – TilKz AI">'
+        '<meta property="og:title" content="НЗМ, БИЛ. Қазақ тілі – aitil">'
         '<meta property="og:description" content="Оқу сауаттылығы бойынша онлайн жаттықтырғыш. Автор: Қазбек Сағидолда">'
         '<meta property="og:image" content="https://sagidoldaq-a11y.github.io/tilkz/img/og.jpg">'
         '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>'
