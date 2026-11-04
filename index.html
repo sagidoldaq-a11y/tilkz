@@ -119,6 +119,24 @@ h2{font-family:var(--f-text);font-size:26px;margin:0 0 16px}
 .copy{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;color:var(--muted)}
 footer{margin:48px 0 28px;color:var(--muted);font-size:13px;text-align:center}
 
+/* Үлкен экран: визитка кеңірек әрі қаріптері сәл ірірек (курс бетімен үйлесімді) */
+@media (min-width:1400px){
+  .wrap{max-width:none;width:min(82%,1560px)}
+  body{font-size:17.5px}
+  .brand{font-size:22px} .seg button{font-size:14px}
+  .eyebrow{font-size:14px}
+  .who h1{font-size:clamp(52px,3.6vw,64px)}
+  .lead{font-size:19px}
+  .cbtn{font-size:15.5px;padding:11px 16px}
+  .stat b{font-size:34px} .stat span,.stat .lbl{font-size:15.5px}
+  h2{font-size:30px} .box h3{font-size:14px}
+  .chip{font-size:15.5px;padding:7px 14px}
+  .tag{font-size:13px}
+  .course h3{font-size:24px} .course p,.course ul{font-size:16.5px}
+  .sub b,.sub span{font-size:15.5px}
+  .note{font-size:16.5px} .citem small{font-size:13px} .copy{font-size:14px}
+  footer{font-size:14px}
+}
 @media (max-width:860px){
   .card{grid-template-columns:minmax(0,1fr)}
   .photo{height:min(92vw,420px)}
