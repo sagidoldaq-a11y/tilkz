@@ -32,7 +32,7 @@ body = body.replace("</style>", ".brand a.home{font-family:var(--f-text);font-we
                                  ".brand a.home .ai{color:var(--accent);font-family:var(--f-ui);font-weight:700;letter-spacing:.5px;font-size:inherit}\n"
                                  "@media (max-width:880px){.brand a.home{font-size:19px}}\n@media (orientation:landscape) and (max-height:520px){.brand a.home{font-size:18px}}\n</style>", 1)
 body = body.replace("<title>TilKz AI</title>", "<title>НЗМ, БИЛ. Қазақ тілі – TilKz AI</title>", 1)
-head = ('<!doctype html><html lang="kk"><head><meta charset="utf-8">'
+head = ('<!doctype html><html lang="kk" translate="no"><head><meta charset="utf-8"><meta name="google" content="notranslate">'
         '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
         '<meta name="description" content="НЗМ, БИЛ емтихандарына дайындық: қазақ тілі, оқу сауаттылығы. Мәтін, тест, түсініктеме, дағдылар бойынша есеп.">'
         '<meta property="og:title" content="НЗМ, БИЛ. Қазақ тілі – TilKz AI">'
@@ -50,6 +50,7 @@ tt = (here / "teacher.template.html").read_text(encoding="utf-8")
 assert tt.count("/*__BANKS__*/[]") == 1 and tt.count("/*__SUPABASE__*/null") == 1
 tt = tt.replace("/*__BANKS__*/[]", json.dumps(banks_all, ensure_ascii=False).replace("</", "<\\/"))
 tt = tt.replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
+assert tt.count("/*__BANKS__*/") == 0
 tout = root / "mugalim"
 tout.mkdir(exist_ok=True)
 (tout / "index.html").write_text(tt, encoding="utf-8")

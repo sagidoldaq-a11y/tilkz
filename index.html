@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="kk">
+<html lang="kk" translate="no">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -246,7 +246,8 @@ const T={
    waKids:"Здравствуйте! Хочу записаться на индивидуальное занятие.", waPrice:"Здравствуйте! Хочу узнать стоимость и расписание занятий.", waCorp:"Здравствуйте! Хочу получить подробную информацию о курсе корпоративного казахского языка.",
    lbl:{wa:"WhatsApp",tg:"Telegram",ig:"Instagram",mail:"Электронная почта"}, write:"Написать"}
 };
-let lang="kk"; try{ lang=localStorage.getItem("tilkz-home-lang")||"kk"; }catch(e){}
+// Тіл барлық беттерге ортақ: қолданушы өзі ауыстырмайынша өзгермейді
+let lang="kk"; try{ const l=localStorage.getItem("tilkz-lang")||localStorage.getItem("tilkz-home-lang"); if(l==="kk"||l==="ru") lang=l; }catch(e){}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const waLink=t=>`https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
 function render(){
@@ -266,7 +267,7 @@ function render(){
     `<div class="citem"><span class="ic">${ICON[k]}</span><div class="tx"><small>${L.lbl[k]}</small><a href="${href}" ${k==="mail"?"":'target="_blank" rel="noopener"'}>${esc(show)}</a></div>
      <button type="button" class="copy" data-copy="${esc(val)}">${L.copy}</button></div>`).join("");
 }
-document.querySelector(".seg").addEventListener("click",e=>{ const b=e.target.closest("[data-lang]"); if(!b) return; lang=b.dataset.lang; try{localStorage.setItem("tilkz-home-lang",lang);}catch(e){} render(); });
+document.querySelector(".seg").addEventListener("click",e=>{ const b=e.target.closest("[data-lang]"); if(!b) return; lang=b.dataset.lang; try{localStorage.setItem("tilkz-lang",lang);}catch(e){} render(); });
 document.addEventListener("click",async e=>{
   const b=e.target.closest("[data-copy]"); if(!b) return;
   try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent=T[lang].copied; setTimeout(()=>b.textContent=T[lang].copy,1500); }
