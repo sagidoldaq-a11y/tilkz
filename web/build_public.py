@@ -44,6 +44,10 @@ head = ('<!doctype html><html lang="kk" translate="no"><head><meta charset="utf-
 out = root / "nzm-bil"
 out.mkdir(exist_ok=True)
 (out / "index.html").write_text(head + body + "</body></html>", encoding="utf-8")
+# 2б) Құпиялылық саясаты
+(root / "privacy").mkdir(exist_ok=True)
+shutil.copyfile(here / "privacy.html", root / "privacy" / "index.html")
+
 # 3) Мұғалім кабинеті
 banks_all = [bank, bank4, bank2, bank3]   # бірінші тіл: 1, 2-нұсқа; екінші тіл: 1, 2-нұсқа
 tt = (here / "teacher.template.html").read_text(encoding="utf-8")

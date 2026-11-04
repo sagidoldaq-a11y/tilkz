@@ -1354,7 +1354,7 @@ const authOn = () => !!sb;
 const loginEmail = v => { v=v.trim().toLowerCase(); return v.includes("@") ? v : v+"@"+LOGIN_DOMAIN; };
 const AUTH_T = {
   kk:{eyebrow:"Оқу сауаттылығы · НЗМ, БИЛ", h:"Платформаға кіру", lead:"Мұғалім берген сынып кодымен тіркел немесе логиніңмен кір.",
-      login:"Кіру", reg:"Тіркелу", tHint:"Мұғалім өз поштасымен кіре алады.", lg:"Логин", pw:"Құпиясөз", pw2:"Құпиясөзді қайтала", code:"Сынып коды", codeHint:"Мұғалімің берген 6 таңбалы код",
+      policy:"Құпиялылық саясаты", policyPre:"Деректеріңнің қалай сақталатыны туралы:", login:"Кіру", reg:"Тіркелу", tHint:"Мұғалім өз поштасымен кіре алады.", lg:"Логин", pw:"Құпиясөз", pw2:"Құпиясөзді қайтала", code:"Сынып коды", codeHint:"Мұғалімің берген 6 таңбалы код",
       fn:"Аты", ln:"Тегі", grade:"Сынып", gradeOpt:n=>`${n}-сынып`, city:"Қала / ауыл", school:"Мектеп", lgHint:"Латын әріптері, сан, нүкте не сызықша: 3–20 таңба. Мысалы: aruzhan.s",
       pwHint:"Кемінде 6 таңба. Логин мен құпиясөзді жазып ал, ұмытпа.",
       consent:"Ата-анам (заңды өкілім) менің платформаға тіркелуіме және аты-жөнім, сыныбым, қалам, мектебім мен тест нәтижелерімнің мұғалімге көрсетілуіне келісім берді.",
@@ -1363,7 +1363,7 @@ const AUTH_T = {
          taken:"Бұл логин бос емес. Басқа логин ойлап тап.", pw:"Құпиясөз кемінде 6 таңба болуы керек.", pw2:"Құпиясөздер бірдей емес.", consent:"Ата-анаңның келісімі туралы белгіні қой.",
          bad:"Логин не құпиясөз қате.", net:"Байланыс жоқ. Интернетті тексеріп, қайта көр.", fail:"Тіркелу кезінде қате шықты. Сынып кодын тексеріп, қайта көр.", confirm:"Тіркелу аяқталмады: платформа баптауы әлі дайын емес. Мұғаліміңе хабарла."}},
   ru:{eyebrow:"Читательская грамотность · НИШ, БИЛ", h:"Вход на платформу", lead:"Зарегистрируйся по коду класса от учителя или войди со своим логином.",
-      login:"Вход", reg:"Регистрация", tHint:"Учитель может войти со своей почтой.", lg:"Логин", pw:"Пароль", pw2:"Повтори пароль", code:"Код класса", codeHint:"6-значный код от учителя",
+      policy:"Политика конфиденциальности", policyPre:"Как хранятся твои данные:", login:"Вход", reg:"Регистрация", tHint:"Учитель может войти со своей почтой.", lg:"Логин", pw:"Пароль", pw2:"Повтори пароль", code:"Код класса", codeHint:"6-значный код от учителя",
       fn:"Имя", ln:"Фамилия", grade:"Класс", gradeOpt:n=>`${n} класс`, city:"Город / село", school:"Школа", lgHint:"Латинские буквы, цифры, точка или дефис: 3–20 символов. Например: aruzhan.s",
       pwHint:"Не менее 6 символов. Запиши логин и пароль, чтобы не забыть.",
       consent:"Мои родители (законные представители) согласны с моей регистрацией на платформе и с тем, что учитель будет видеть моё имя, класс, город, школу и результаты тестов.",
@@ -1387,6 +1387,7 @@ function renderAuth(){
       <div class="row2"><label>${esc(A.pw)}<input name="password" type="password" autocomplete="new-password" required></label><label>${esc(A.pw2)}<input name="password2" type="password" autocomplete="new-password" required></label></div>
       <span class="hint">${esc(A.pwHint)}</span>
       <label class="consent"><input type="checkbox" name="consent"> <span>${esc(A.consent)}</span></label>
+      <span class="hint">${esc(A.policyPre)} <a href="../privacy/" target="_blank" rel="noopener">${esc(A.policy)}</a>.</span>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doReg)}</button></form>`
     : `<form class="af" id="loginForm" novalidate>
@@ -1394,7 +1395,8 @@ function renderAuth(){
       <label>${esc(A.pw)}<input name="password" type="password" autocomplete="current-password" required></label>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doLogin)}</button></form>`}
-   </div>`;
+   </div>
+   <p class="hint" style="text-align:center;margin-top:14px"><a href="../privacy/" target="_blank" rel="noopener">${esc(A.policy)}</a></p>`;
 }
 document.getElementById("auth").addEventListener("click",e=>{ const b=e.target.closest("[data-am]"); if(!b) return; authMode=b.dataset.am; authMsg=""; renderAuth(); });
 document.getElementById("auth").addEventListener("submit",async e=>{

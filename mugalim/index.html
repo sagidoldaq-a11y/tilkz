@@ -146,6 +146,7 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   <button type="button" class="themebtn" id="themeBtn"></button>
 </div></header>
 <main class="wrap" id="app"></main>
+<footer class="wrap" style="color:var(--muted);font-size:13px;text-align:center;padding-bottom:28px">TilKz AI · <a href="../privacy/" style="color:inherit">Құпиялылық саясаты</a></footer>
 <div class="toast" id="toast" hidden></div>
 <script>
 const SB_CFG = {"url": "https://yqfepngubehrupkitklr.supabase.co", "key": "sb_publishable_R_DvPrvev24GFHUtyGwhRw_r5CopZYH"};
@@ -277,6 +278,11 @@ app.addEventListener("click",async e=>{
   if(b.dataset.tab){ tab=b.dataset.tab; route(); }
   if(b.dataset.sort){ st.sort=b.dataset.sort; route(); }
   if(b.dataset.stu){ stuId=b.dataset.stu; view="student"; route(); }
+  if(b.dataset.act==="pw") showPwForm();
+  if(b.dataset.act==="pwsave") savePw();
+  if(b.dataset.act==="pwgen"){ const i=document.getElementById("newPw"); if(i) i.value=genPw(); }
+  if(b.dataset.act==="pwcopy") copy(b.dataset.text,"Көшірілді");
+  if(b.dataset.act==="del") deleteStudent();
 });
 app.addEventListener("click",e=>{ const tr=e.target.closest("tr[data-stu]"); if(tr && !e.target.closest("button")){ stuId=tr.dataset.stu; view="student"; route(); } });
 app.addEventListener("change",e=>{ if(e.target.id==="trackF"){ trackF=e.target.value; route(); } });
@@ -354,6 +360,8 @@ function renderStudent(){
   app.innerHTML=`<div class="crumbs"><button data-nav="classes">Сыныптарым</button> / <button data-nav="class">${esc(cur.name)}</button></div>
    <span class="eyebrow">Оқушы</span><h1>${esc(s.last_name)} ${esc(s.first_name)}</h1>
    <p class="sub">${s.grade}-сынып · ${esc(s.city)}, ${esc(s.school)} · логин: <b>${esc(s.login)}</b> · тіркелген күні ${fmtDate(s.created_at)}</p>
+   <div class="row" style="margin:-6px 0 14px"><button class="btn sm" data-act="pw">🔑 Құпиясөзді ауыстыру</button><button class="btn ghost sm" data-act="del" style="color:var(--bad)">Оқушыны өшіру</button></div>
+   <div id="stuTools"></div>
    <div class="kpis"><div class="kpi"><b>${k.n}</b><span>жауап берген сұрақ</span></div><div class="kpi"><b>${k.p??"—"}${k.p!=null?"%":""}</b><span>бірінші реттен дұрыс</span></div>
      <div class="kpi"><b>${k.fin}</b><span>аяқталған нұсқа</span></div><div class="kpi"><b>${mist.length}</b><span>қателер банкінде</span></div></div>
    <div class="filters">${trackSelect()}</div>
@@ -368,6 +376,38 @@ function renderStudent(){
       return `<div class="qi"><div class="h"><b>${esc(bankLabel(r.bank_id))} · ${it.number}-сұрақ</b><span>${esc(SKILLS[it.skill]||it.skill)} · ${it.level}-деңгей</span>${stat(r)}</div>
         <div class="stem">${esc(it.stem)}</div><div class="ans">${r.tries.map(l=>`<span class="w">✗ Таңдағаны: ${esc(it.options[l]||l)}</span>`).join("")}<span class="k">✓ Дұрыс жауап: ${esc(it.options[it.key])}</span></div></div>`; }).join("")}</div>`
    :`<div class="panel empty">Қате жоқ.</div>`}`;
+}
+
+/* ---------- Оқушының құпиясөзі және өшіру ---------- */
+// Оқушыға айтуға оңай құпиясөз: қысқа қазақ сөзі + 4 сан (мысалы, kitap4827)
+function genPw(){ const W=["alma","kitap","dala","bala","tau","oqu","jyl","aqyl","bilim","oqushy","jaz","kun"];
+  const r=crypto.getRandomValues(new Uint32Array(2)); return W[r[0]%W.length]+String(1000+r[1]%9000); }
+const sbErr = e => /Could not find|PGRST202|does not exist/i.test(e.message||"") ? "Алдымен Supabase-те 002_teacher_tools.sql файлын іске қосу керек." : /NOT_ALLOWED/.test(e.message||"") ? "Бұл оқушы сіздің сыныбыңызда емес." : (e.message||"Қате");
+function showPwForm(){
+  const s=data.students.find(x=>x.user_id===stuId);
+  document.getElementById("stuTools").innerHTML=`<div class="panel" style="margin-bottom:16px"><form class="af" onsubmit="return false">
+    <label>«${esc(s.login)}» оқушысының жаңа құпиясөзі<input id="newPw" value="${genPw()}" autocomplete="off" spellcheck="false"><span class="hint">Кемінде 6 таңба. Ұсынылған құпиясөзді қалдыруға не өзгертуге болады.</span></label>
+    <div class="row"><button class="btn primary sm" data-act="pwsave" type="button">Сақтау</button><button class="btn sm" data-act="pwgen" type="button">Басқасын ұсыну</button></div>
+    <p class="err" id="pwMsg"></p></form></div>`;
+}
+async function savePw(){
+  const s=data.students.find(x=>x.user_id===stuId), pw=document.getElementById("newPw").value.trim(), msg=document.getElementById("pwMsg");
+  if(pw.length<6){ msg.textContent="Құпиясөз кемінде 6 таңба болуы керек."; return; }
+  const {error}=await sb.rpc("teacher_set_password",{p_student:s.user_id, p_password:pw});
+  if(error){ msg.textContent=sbErr(error); return; }
+  const text=`Логин: ${s.login}\nЖаңа құпиясөз: ${pw}`;
+  document.getElementById("stuTools").innerHTML=`<div class="panel" style="margin-bottom:16px;border-color:var(--ok)"><b style="color:var(--ok)">✓ Құпиясөз ауыстырылды</b>
+    <p style="margin:8px 0">Логин: <b>${esc(s.login)}</b> · жаңа құпиясөз: <b style="font-size:18px;letter-spacing:1px">${esc(pw)}</b></p>
+    <p class="meta" style="margin:0 0 10px">Оны оқушыға жеке хабарламамен жіберіңіз. Бұл құпиясөз кабинетте қайта көрсетілмейді.</p>
+    <button class="btn sm" data-act="pwcopy" data-text="${esc(text)}">Көшіру</button></div>`;
+}
+async function deleteStudent(){
+  const s=data.students.find(x=>x.user_id===stuId);
+  const v=prompt(`«${s.last_name} ${s.first_name}» оқушысы және оның барлық нәтижелері біржола өшіріледі. Бұл әрекетті қайтару мүмкін емес.\n\nРастау үшін оқушының логинін жазыңыз: ${s.login}`);
+  if(v===null) return; if(v.trim().toLowerCase()!==s.login){ toast("Логин сәйкес келмеді. Оқушы өшірілмеді."); return; }
+  const {error}=await sb.rpc("teacher_delete_student",{p_student:s.user_id});
+  if(error){ toast(sbErr(error)); return; }
+  toast("Оқушы өшірілді"); await loadClass(cur); view="class"; route();
 }
 
 /* ---------- Іске қосу ---------- */
