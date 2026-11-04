@@ -14,6 +14,8 @@ tpl = (here / "app.template.html").read_text(encoding="utf-8")
 body = tpl.replace("/*__BANK__*/null", json.dumps(bank, ensure_ascii=False).replace("</", "<\\/"))
 bank2 = json.loads((root / "content" / "bank_l2_v1.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L2__*/null", json.dumps(bank2, ensure_ascii=False).replace("</", "<\\/"))
+bank5 = json.loads((root / "content" / "bank_l1_v3.json").read_text(encoding="utf-8"))
+body = body.replace("/*__BANK_L1_V3__*/null", json.dumps(bank5, ensure_ascii=False).replace("</", "<\\/"))
 bank4 = json.loads((root / "content" / "bank_l1_v2.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L1_V2__*/null", json.dumps(bank4, ensure_ascii=False).replace("</", "<\\/"))
 bank3 = json.loads((root / "content" / "bank_l2_v2.json").read_text(encoding="utf-8"))
@@ -50,7 +52,7 @@ out.mkdir(exist_ok=True)
 shutil.copyfile(here / "privacy.html", root / "privacy" / "index.html")
 
 # 3) Мұғалім кабинеті
-banks_all = [bank, bank4, bank2, bank3]   # бірінші тіл: 1, 2-нұсқа; екінші тіл: 1, 2-нұсқа
+banks_all = [bank, bank4, bank5, bank2, bank3]   # бірінші тіл: 1, 2, 3-нұсқа; екінші тіл: 1, 2-нұсқа
 tt = (here / "teacher.template.html").read_text(encoding="utf-8")
 assert tt.count("/*__BANKS__*/[]") == 1 and tt.count("/*__SUPABASE__*/null") == 1
 tt = tt.replace("/*__BANKS__*/[]", json.dumps(banks_all, ensure_ascii=False).replace("</", "<\\/"))
