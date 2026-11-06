@@ -46,7 +46,7 @@ head = ('<!doctype html><html lang="kk" translate="no"><head><meta charset="utf-
         '<meta name="description" content="НЗМ, БИЛ емтихандарына дайындық: қазақ тілі, оқу сауаттылығы. Мәтін, тест, түсініктеме, дағдылар бойынша есеп.">'
         '<meta property="og:title" content="НЗМ, БИЛ. Қазақ тілі – aitil">'
         '<meta property="og:description" content="Оқу сауаттылығы бойынша онлайн жаттықтырғыш. Автор: Қазбек Сағидолда">'
-        '<meta property="og:image" content="https://sagidoldaq-a11y.github.io/tilkz/img/og.jpg">'
+        '<meta property="og:image" content="https://aitil.kz/img/og.jpg">'
         '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>'
         '<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>'
         '</head><body>')

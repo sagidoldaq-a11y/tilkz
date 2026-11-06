@@ -2,8 +2,8 @@
 
 Қазақ тілін үйрететін платформа. Бірінші модуль: **оқу сауаттылығы** (НЗМ, БИЛ емтихандарына дайындалатын 4–6 сынып оқушылары).
 
-Сайт: https://sagidoldaq-a11y.github.io/tilkz/ (визитка)  
-Тест: https://sagidoldaq-a11y.github.io/tilkz/nzm-bil/
+Сайт: https://aitil.kz/ (визитка)  
+Тест: https://aitil.kz/nzm-bil/
 
 ## Құрылымы
 
