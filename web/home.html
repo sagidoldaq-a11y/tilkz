@@ -273,7 +273,7 @@ const T={
    lbl:{wa:"WhatsApp",tg:"Telegram",ig:"Instagram",mail:"Электронная почта"}, write:"Написать"}
 };
 // Тіл барлық беттерге ортақ: қолданушы өзі ауыстырмайынша өзгермейді
-let lang="ru"; try{ const l=localStorage.getItem("tilkz-lang")||localStorage.getItem("tilkz-home-lang"); if(l==="kk"||l==="ru") lang=l; }catch(e){}
+let lang="ru"; try{ const l=localStorage.getItem("tilkz-lang")||localStorage.getItem("tilkz-home-lang"); if(l==="kk"||l==="ru") lang=l; localStorage.setItem("tilkz-lang",lang); }catch(e){}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const waLink=t=>`https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
 function render(){
