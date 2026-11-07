@@ -70,7 +70,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .paper strong{font-weight:700}
 .paper .u{background:var(--hlA);color:var(--hl-ink);border-radius:2px;cursor:pointer;box-decoration-break:clone;-webkit-box-decoration-break:clone}
-.paper .u.uB{background:var(--hlB)} .paper .u.uC{background:var(--hlC)} .paper .u.uD{background:var(--hlD)}
+.paper .u.uN{background:rgba(64,140,255,.22);box-shadow:inset 0 -2px 0 var(--accent);color:inherit} .paper .u.uB{background:var(--hlB)} .paper .u.uC{background:var(--hlC)} .paper .u.uD{background:var(--hlD)}
 .pal{display:inline-flex;gap:6px;align-items:center}
 .pal button,.hlbar .sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;font-weight:800;font-size:13px;color:#18212E;padding:0;display:inline-flex;align-items:center;justify-content:center}
 .pal button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper) inset}
@@ -637,7 +637,7 @@ function renderPaper(){
     const kwf=new Array(plain.length).fill(false);
     for(const [a,b] of kwRanges(plain, markKw)) if(mk[a]) for(let k=a;k<b;k++) kwf[k]=true;
     const uf=new Array(plain.length).fill("");
-    for(const h of [...userHl(tx.id),...tmpHl].filter(h=>h.p===i)) for(let k=h.a;k<h.b&&k<plain.length;k++) uf[k]=h.c||"A";
+    for(const h of [...userHl(tx.id),...tmpHl].filter(h=>h.p===i)) for(let k=h.a;k<h.b&&k<plain.length;k++) uf[k]=h.c||"N";
     let html="", cur=null; const shy=shyMap(plain);
     for(let k=0;k<plain.length;k++){
       if(shy[k]) html+="\u00AD";
@@ -649,7 +649,7 @@ function renderPaper(){
     const pn = tx.numbered_paragraphs ? `<span class="pn">${i+1}</span>` : "";
     return `<p data-pi="${i}">${pn}<span class="pt">${html}</span></p>`;
   }).join("");
-  function open(k){ const uc=k.match(/u([ABCD])/); return (uc?`<span class="u u${uc[1]}">`:"")+(k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
+  function open(k){ const uc=k.match(/u([ABCDN])/); return (uc?`<span class="u u${uc[1]}">`:"")+(k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
   function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":"")+(k.includes("u")?"</span>":""); }
   const sn0 = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note;
   // Сілтемесі бар дереккөз мәтіннің астында көрсетіледі, қысқасы – тақырыптың астында
@@ -661,11 +661,17 @@ function renderPaper(){
      ${S.tipSeen?"":`<div class="mktip" role="note"><p><b>🖍 ${ru_()?"Маркер":"Маркер"}.</b> ${ru_()?"Выдели в тексте предложение с правильным ответом — так его будет легко найти снова.":"Дұрыс жауап тұрған сөйлемді мәтіннен белгілеп қой, сонда оны қайтадан табу оңай болады."}</p>
         <p class="how">${ru_()?"Включи маркер и нажми на слово или проведи пальцем от слова к слову.":"Маркерді қосып, сөзді бас немесе сөзден сөзге қарай сүйре."}</p>
         <button type="button" class="btn primary" data-tipok>${ru_()?"Понятно":"Түсінікті"}</button></div>`}
-     <div class="hltip">${S.marker?`<span class="on">${ru_()?"Маркер включён: выбери цвет варианта (A, B, C, D), нажми на слово или проведи от слова к слову. Нажатие на пометку того же цвета убирает её, другого цвета – перекрашивает.":"Маркер қосулы: нұсқаның түсін таңда (A, B, C, D), сөзді бас немесе сөзден сөзге сүйре. Сол түсті белгіні басса, ол өшеді, басқа түсті басса – түсі ауысады."}</span>`:""}
+     <div class="hltip">${S.marker?`<span class="on">${mkHint()}</span>`:""}
        ${userHl(tx.id).length?`<button type="button" class="hlclear" data-hlclear>${ru_()?"Убрать все пометки":"Белгілерді өшіру"}</button>`:""}</div>${paras}`+foot;
   document.getElementById("paper").classList.toggle("marking", !!S.marker);
 }
 
+function mkHint(){ const k=hlKind(), ru=ru_();
+  const what = k==="abcd" ? (ru?"выбери цвет варианта (A, B, C, D), ":"нұсқаның түсін таңда (A, B, C, D), ")
+             : k==="two" ? (ru?"выбери цвет утверждения (1 или 2), ":"ақпараттың түсін таңда (1 не 2), ")
+             : k==="order" ? (ru?"выбери цвет события (1, 2, 3, 4), ":"оқиғаның түсін таңда (1, 2, 3, 4), ") : "";
+  return ru ? `Маркер включён: ${what}нажми на слово или проведи от слова к слову. Нажатие на пометку ${k?"того же цвета ":""}убирает её${k?", другого цвета – перекрашивает":""}.`
+            : `Маркер қосулы: ${what}сөзді бас немесе сөзден сөзге сүйре. ${k?"Сол түсті белгіні":"Белгіні"} басса, ол өшеді${k?", басқа түсті басса – түсі ауысады":""}.`; }
 /* ---------- Оқушының белгілері (мәтінде сөзді/сөйлемді белгілеу) ---------- */
 const userHl = tid => ((S.hl ||= {})[tid] ||= []);
 function offsetIn(pEl, node, off){             // абзац мәтініндегі орын (нөмірді есептемей)
@@ -693,8 +699,23 @@ function selectionRanges(){
   return out.filter(r=>r.b>r.a);
 }
 const HLC=["A","B","C","D"];
-const curC = () => HLC.includes(S.mkc) ? S.mkc : "A";
-const palHTML = () => `<span class="pal" role="group" aria-label="${ru_()?"Цвет маркера":"Маркер түсі"}">${HLC.map(c=>`<button type="button" class="sw c${c}" data-mkc="${c}" aria-pressed="${curC()===c}" title="${ru_()?"Вариант":"Нұсқа"} ${c}">${c}</button>`).join("")}</span>`;
+/* Түсті маркер тек үш түрлі тапсырмада шығады:
+   abcd – «Қай ақпарат мәтін мазмұнына сәйкес келеді?» (A–D нұсқалары), two – екі тұжырымды тапсырма (1, 2), order – оқиғалар реті (1–4) */
+function qKind(it){
+  if(!it) return null; const st=it.stem||"", list=/\n1\./.test(st);
+  if(list && /реті/i.test(st)) return "order";
+  if(list && /\n2\./.test(st) && /мазмұн(ына\s+(сәйкес|сай)|ы\s+бойынша)/i.test(st)) return "two";
+  if(!list && /мазмұн(ына\s+(сәйкес|сай)|ы\s+бойынша)/i.test(st)) return "abcd";
+  return null;
+}
+function hlKind(){ const tid=BANK.texts[S.text]?.id; let it=BANK.items.find(x=>x.id===activeQ && x.text_id===tid);
+  if(!it) it=itemsOf(tid)[phone()?curIdx():0]; return qKind(it); }
+const kindCols = k => k==="two" ? ["A","B"] : k ? HLC : [];
+const swLabel = (k,c) => k==="abcd" ? c : String(HLC.indexOf(c)+1);
+const curC = () => { const cs=kindCols(hlKind()); return !cs.length ? "N" : cs.includes(S.mkc) ? S.mkc : cs[0]; };
+const swTitle = (k,c) => k==="abcd" ? `${ru_()?"Вариант":"Нұсқа"} ${c}` : k==="two" ? `${swLabel(k,c)}-${ru_()?"е утверждение":"ақпарат"}` : `${ru_()?"Событие":"Оқиға"} ${swLabel(k,c)}`;
+const palHTML = () => { const k=hlKind(), cs=kindCols(k); if(!cs.length) return "";
+  return `<span class="pal" role="group" aria-label="${ru_()?"Цвет маркера":"Маркер түсі"}">${cs.map(c=>`<button type="button" class="sw c${c}" data-mkc="${c}" aria-pressed="${curC()===c}" title="${swTitle(k,c)}">${swLabel(k,c)}</button>`).join("")}</span>`; };
 function addHl(ranges, c){
   c = c || curC();
   const list=userHl(BANK.texts[S.text].id);
@@ -702,8 +723,8 @@ function addHl(ranges, c){
     let a=r.a, b=r.b;
     for(const h of list.filter(h=>h.p===r.p && h.a<=r.b && h.b>=r.a)){
       list.splice(list.indexOf(h),1);
-      if((h.c||"A")===c){ a=Math.min(a,h.a); b=Math.max(b,h.b); }
-      else { if(h.a<r.a) list.push({p:h.p,a:h.a,b:r.a,c:h.c||"A"}); if(h.b>r.b) list.push({p:h.p,a:r.b,b:h.b,c:h.c||"A"}); }
+      if((h.c||"N")===c){ a=Math.min(a,h.a); b=Math.max(b,h.b); }
+      else { if(h.a<r.a) list.push({p:h.p,a:h.a,b:r.a,c:h.c||"N"}); if(h.b>r.b) list.push({p:h.p,a:r.b,b:h.b,c:h.c||"N"}); }
     }
     list.push({p:r.p,a,b,c});
   }
@@ -725,7 +746,9 @@ function onSelect(){
   const rs=selectionRanges(); if(!rs.length){ if(hlPending?.type==="add") hideBar(); return; }
   const rect=getSelection().getRangeAt(0).getBoundingClientRect();
   hlPending={type:"add", ranges:rs};
-  showBar(rect, HLC.map(c=>`<button type="button" class="sw c${c}" data-hl="add" data-c="${c}" title="${ru_()?"Вариант":"Нұсқа"} ${c}">${c}</button>`).join(""));
+  { const k=hlKind(), cs=kindCols(k);
+    showBar(rect, cs.length ? cs.map(c=>`<button type="button" class="sw c${c}" data-hl="add" data-c="${c}" title="${swTitle(k,c)}">${swLabel(k,c)}</button>`).join("")
+                            : `<button type="button" data-hl="add" data-c="N">🖍 ${ru_()?"Выделить":"Белгілеу"}</button>`); }
 }
 let selT=null;
 document.addEventListener("selectionchange",()=>{ clearTimeout(selT); selT=setTimeout(onSelect, 250); });
@@ -733,7 +756,7 @@ document.addEventListener("selectionchange",()=>{ clearTimeout(selT); selT=setTi
 hlBar.addEventListener("pointerdown",e=>e.preventDefault());
 hlBar.addEventListener("click",e=>{
   const b=e.target.closest("[data-hl]"); if(!b||!hlPending) return;
-  if(b.dataset.hl==="add"){ if(b.dataset.c) S.mkc=b.dataset.c; addHl(hlPending.ranges, b.dataset.c); getSelection().removeAllRanges(); }
+  if(b.dataset.hl==="add"){ if(b.dataset.c && b.dataset.c!=="N") S.mkc=b.dataset.c; addHl(hlPending.ranges, b.dataset.c); getSelection().removeAllRanges(); }
   if(b.dataset.hl==="del"){ const list=userHl(BANK.texts[S.text].id); const i=list.indexOf(hlPending.h); if(i>=0) list.splice(i,1); save(); }
   hideBar(); renderPaper();
 });
@@ -787,7 +810,7 @@ const mkEnd=e=>{
   const list=userHl(BANK.texts[S.text].id);
   if(!mkMoved){
     const hit=list.find(h=>h.p===s0.p && s0.o>=h.a && s0.o<=h.b);
-    if(hit && (hit.c||"A")===curC()) list.splice(list.indexOf(hit),1);
+    if(hit && (hit.c||"N")===curC()) list.splice(list.indexOf(hit),1);
     else if(hit) hit.c=curC();
     else { const w=wordAt(s0.p,s0.o); if(w) addHl([w]); }
     save();
