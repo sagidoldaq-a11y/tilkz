@@ -8,7 +8,7 @@
 /* Layout: оқулық беті сияқты — сол жақта мәтін (қағаз), оң жақта тапсырмалар; телефонда ауыстырғыш */
 :root{
   --paper:#F4F6F9; --panel:#FFFFFF; --ink:#18212E; --muted:#596476; --line:#DCE1E8;
-  --accent:#1D5BA6; --accent-soft:#E3ECF7; --mark:#F6D77A; --mark-ink:#18212E;
+  --accent:#1D5BA6; --accent-soft:#E3ECF7; --mark:#F6D77A; --mark-ink:#18212E; --hlA:#A9D6FF; --hlB:#B5EBA8; --hlC:#FFC2DA; --hlD:#FFD199; --hl-ink:#18212E;
   --ok:#1C7A4E; --ok-soft:#E1F2E9; --bad:#B23A30; --bad-soft:#F8E4E2;
   --f-text:"PT Serif", Georgia, "Times New Roman", serif;
   --f-ui:"Noto Sans", "Segoe UI", Roboto, Arial, sans-serif;
@@ -16,11 +16,11 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --paper:#0F141B; --panel:#161D27; --ink:#E5E9EF; --muted:#9BA6B6; --line:#2A3442;
-  --accent:#78AEEE; --accent-soft:#1D2B3D; --mark:#8C6B14; --mark-ink:#FFF6DA;
+  --accent:#78AEEE; --accent-soft:#1D2B3D; --mark:#8C6B14; --mark-ink:#FFF6DA; --hlA:rgba(96,170,255,.42); --hlB:rgba(110,205,95,.40); --hlC:rgba(255,120,175,.40); --hlD:rgba(255,160,60,.42); --hl-ink:inherit;
   --ok:#55C792; --ok-soft:#15302A; --bad:#F2796F; --bad-soft:#3A1E1E; color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#0F141B; --panel:#161D27; --ink:#E5E9EF; --muted:#9BA6B6; --line:#2A3442;
-  --accent:#78AEEE; --accent-soft:#1D2B3D; --mark:#8C6B14; --mark-ink:#FFF6DA;
+  --accent:#78AEEE; --accent-soft:#1D2B3D; --mark:#8C6B14; --mark-ink:#FFF6DA; --hlA:rgba(96,170,255,.42); --hlB:rgba(110,205,95,.40); --hlC:rgba(255,120,175,.40); --hlD:rgba(255,160,60,.42); --hl-ink:inherit;
   --ok:#55C792; --ok-soft:#15302A; --bad:#F2796F; --bad-soft:#3A1E1E; color-scheme:dark}
 html,body{background:var(--paper);color:var(--ink)}
 /* Мәтін теретін өрістерден басқа жерде жыпылықтаған курсор (каретка) көрінбейді */
@@ -69,9 +69,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .paper p .pn{font-family:var(--f-ui);font-size:12px;font-weight:700;color:var(--accent);margin-right:6px;text-indent:0}
 mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .paper strong{font-weight:700}
-.paper .u{background:rgba(64,140,255,.22);box-shadow:inset 0 -2px 0 var(--accent);border-radius:2px;cursor:pointer}
-.phead{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}
-.ptitle{min-width:0}
+.paper .u{background:var(--hlA);color:var(--hl-ink);border-radius:2px;cursor:pointer;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.paper .u.uB{background:var(--hlB)} .paper .u.uC{background:var(--hlC)} .paper .u.uD{background:var(--hlD)}
+.pal{display:inline-flex;gap:6px;align-items:center}
+.pal button,.hlbar .sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;font-weight:800;font-size:13px;color:#18212E;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.pal button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper) inset}
+.sw.cA{background:#A9D6FF} .sw.cB{background:#B5EBA8} .sw.cC{background:#FFC2DA} .sw.cD{background:#FFD199}
+.hlbar .sw{margin:2px;border-color:rgba(255,255,255,.5)}
+.phead{display:flex;align-items:flex-start;gap:10px 12px;justify-content:space-between;flex-wrap:wrap}
+.ptitle{min-width:0;flex:1 1 150px}
+.mkgrp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .mk{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;color:var(--ink)}
 .mk[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
 .mktip{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin:4px 0 12px;font-size:14px;position:relative}
@@ -633,12 +640,12 @@ function renderPaper(){
       const at=plain.indexOf(f); if(at>=0) for(let k=at;k<at+f.length;k++) if(mk[k]!=="m") mk[k]=c; }
     const kwf=new Array(plain.length).fill(false);
     for(const [a,b] of kwRanges(plain, markKw)) if(mk[a]) for(let k=a;k<b;k++) kwf[k]=true;
-    const uf=new Array(plain.length).fill(false);
-    for(const h of [...userHl(tx.id),...tmpHl].filter(h=>h.p===i)) for(let k=h.a;k<h.b&&k<plain.length;k++) uf[k]=true;
+    const uf=new Array(plain.length).fill("");
+    for(const h of [...userHl(tx.id),...tmpHl].filter(h=>h.p===i)) for(let k=h.a;k<h.b&&k<plain.length;k++) uf[k]=h.c||"A";
     let html="", cur=null; const shy=shyMap(plain);
     for(let k=0;k<plain.length;k++){
       if(shy[k]) html+="\u00AD";
-      const key=(uf[k]?"u":"")+(bold[k]?"b":"")+mk[k]+(kwf[k]?"k":"");
+      const key=(uf[k]?"u"+uf[k]:"")+(bold[k]?"b":"")+mk[k]+(kwf[k]?"k":"");
       if(key!==cur){ if(cur!==null) html+=close(cur); html+=open(key); cur=key; }
       html+=esc(plain[k]);
     }
@@ -646,7 +653,7 @@ function renderPaper(){
     const pn = tx.numbered_paragraphs ? `<span class="pn">${i+1}</span>` : "";
     return `<p data-pi="${i}">${pn}<span class="pt">${html}</span></p>`;
   }).join("");
-  function open(k){ return (k.includes("u")?'<span class="u">':"")+(k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
+  function open(k){ const uc=k.match(/u([ABCD])/); return (uc?`<span class="u u${uc[1]}">`:"")+(k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
   function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":"")+(k.includes("u")?"</span>":""); }
   const sn0 = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note;
   // Сілтемесі бар дереккөз мәтіннің астында көрсетіледі, қысқасы – тақырыптың астында
@@ -654,11 +661,11 @@ function renderPaper(){
   const foot = url ? `<p class="srcnote">${ru_()?"Источник":"Дереккөз"}: <a href="${esc(url)}" target="_blank" rel="noopener">${esc(sn0.replace(url,"").replace(/\s*[–—-]\s*$/,""))}</a></p>` : "";
   document.getElementById("paper").innerHTML =
     `<div class="phead"><div class="ptitle"><h2>${esc(tx.title || textLabel(S.text))}</h2>${tx.title||src?`<div class="meta">${tx.title?textLabel(S.text):""}${tx.title?src:src.replace(/^ · /,"")}</div>`:""}</div>
-       <button type="button" class="mk" data-marker aria-pressed="${!!S.marker}" title="${ru_()?"Маркер: отметить слово или предложение":"Маркер: сөзді не сөйлемді белгілеу"}">🖍 ${ru_()?"Маркер":"Маркер"}</button></div>
+       <div class="mkgrp"><button type="button" class="mk" data-marker aria-pressed="${!!S.marker}" title="${ru_()?"Маркер: отметить слово или предложение":"Маркер: сөзді не сөйлемді белгілеу"}">🖍 ${ru_()?"Маркер":"Маркер"}</button>${S.marker?palHTML():""}</div></div>
      ${S.tipSeen?"":`<div class="mktip" role="note"><p><b>🖍 ${ru_()?"Маркер":"Маркер"}.</b> ${ru_()?"Выдели в тексте предложение с правильным ответом — так его будет легко найти снова.":"Дұрыс жауап тұрған сөйлемді мәтіннен белгілеп қой, сонда оны қайтадан табу оңай болады."}</p>
         <p class="how">${ru_()?"Включи маркер и нажми на слово или проведи пальцем от слова к слову.":"Маркерді қосып, сөзді бас немесе сөзден сөзге қарай сүйре."}</p>
         <button type="button" class="btn primary" data-tipok>${ru_()?"Понятно":"Түсінікті"}</button></div>`}
-     <div class="hltip">${S.marker?`<span class="on">${ru_()?"Маркер включён: нажми на слово или проведи от слова к слову. Нажатие на пометку убирает её.":"Маркер қосулы: сөзді бас немесе сөзден сөзге сүйре. Белгіні басса, ол өшеді."}</span>`:""}
+     <div class="hltip">${S.marker?`<span class="on">${ru_()?"Маркер включён: выбери цвет варианта (A, B, C, D), нажми на слово или проведи от слова к слову. Нажатие на пометку того же цвета убирает её, другого цвета – перекрашивает.":"Маркер қосулы: нұсқаның түсін таңда (A, B, C, D), сөзді бас немесе сөзден сөзге сүйре. Сол түсті белгіні басса, ол өшеді, басқа түсті басса – түсі ауысады."}</span>`:""}
        ${userHl(tx.id).length?`<button type="button" class="hlclear" data-hlclear>${ru_()?"Убрать все пометки":"Белгілерді өшіру"}</button>`:""}</div>${paras}`+foot;
   document.getElementById("paper").classList.toggle("marking", !!S.marker);
 }
@@ -689,13 +696,20 @@ function selectionRanges(){
     while(r.a<r.b && /\s/.test(t[r.a])) r.a++; while(r.b>r.a && /\s/.test(t[r.b-1])) r.b--; }
   return out.filter(r=>r.b>r.a);
 }
-function addHl(ranges){
+const HLC=["A","B","C","D"];
+const curC = () => HLC.includes(S.mkc) ? S.mkc : "A";
+const palHTML = () => `<span class="pal" role="group" aria-label="${ru_()?"Цвет маркера":"Маркер түсі"}">${HLC.map(c=>`<button type="button" class="sw c${c}" data-mkc="${c}" aria-pressed="${curC()===c}" title="${ru_()?"Вариант":"Нұсқа"} ${c}">${c}</button>`).join("")}</span>`;
+function addHl(ranges, c){
+  c = c || curC();
   const list=userHl(BANK.texts[S.text].id);
   for(const r of ranges){
-    const same=list.filter(h=>h.p===r.p && h.a<=r.b && h.b>=r.a);
-    const a=Math.min(r.a,...same.map(h=>h.a)), b=Math.max(r.b,...same.map(h=>h.b));
-    for(const h of same) list.splice(list.indexOf(h),1);
-    list.push({p:r.p,a,b});
+    let a=r.a, b=r.b;
+    for(const h of list.filter(h=>h.p===r.p && h.a<=r.b && h.b>=r.a)){
+      list.splice(list.indexOf(h),1);
+      if((h.c||"A")===c){ a=Math.min(a,h.a); b=Math.max(b,h.b); }
+      else { if(h.a<r.a) list.push({p:h.p,a:h.a,b:r.a,c:h.c||"A"}); if(h.b>r.b) list.push({p:h.p,a:r.b,b:h.b,c:h.c||"A"}); }
+    }
+    list.push({p:r.p,a,b,c});
   }
   save();
 }
@@ -715,7 +729,7 @@ function onSelect(){
   const rs=selectionRanges(); if(!rs.length){ if(hlPending?.type==="add") hideBar(); return; }
   const rect=getSelection().getRangeAt(0).getBoundingClientRect();
   hlPending={type:"add", ranges:rs};
-  showBar(rect, `<button type="button" data-hl="add">🖍 ${ru_()?"Выделить":"Белгілеу"}</button>`);
+  showBar(rect, HLC.map(c=>`<button type="button" class="sw c${c}" data-hl="add" data-c="${c}" title="${ru_()?"Вариант":"Нұсқа"} ${c}">${c}</button>`).join(""));
 }
 let selT=null;
 document.addEventListener("selectionchange",()=>{ clearTimeout(selT); selT=setTimeout(onSelect, 250); });
@@ -723,7 +737,7 @@ document.addEventListener("selectionchange",()=>{ clearTimeout(selT); selT=setTi
 hlBar.addEventListener("pointerdown",e=>e.preventDefault());
 hlBar.addEventListener("click",e=>{
   const b=e.target.closest("[data-hl]"); if(!b||!hlPending) return;
-  if(b.dataset.hl==="add"){ addHl(hlPending.ranges); getSelection().removeAllRanges(); }
+  if(b.dataset.hl==="add"){ if(b.dataset.c) S.mkc=b.dataset.c; addHl(hlPending.ranges, b.dataset.c); getSelection().removeAllRanges(); }
   if(b.dataset.hl==="del"){ const list=userHl(BANK.texts[S.text].id); const i=list.indexOf(hlPending.h); if(i>=0) list.splice(i,1); save(); }
   hideBar(); renderPaper();
 });
@@ -769,7 +783,7 @@ paperEl.addEventListener("pointerdown",e=>{
 });
 paperEl.addEventListener("pointermove",e=>{
   if(!mkStart) return; const pt=pointAt(e.clientX,e.clientY); if(!pt) return;
-  if(pt.p!==mkStart.p || Math.abs(pt.o-mkStart.o)>1){ mkMoved=true; tmpHl=spanRanges(mkStart,pt); renderPaper(); }
+  if(pt.p!==mkStart.p || Math.abs(pt.o-mkStart.o)>1){ mkMoved=true; tmpHl=spanRanges(mkStart,pt).map(r=>({...r,c:curC()})); renderPaper(); }
 });
 const mkEnd=e=>{
   if(!mkStart) return; const s0=mkStart; mkStart=null;
@@ -777,7 +791,8 @@ const mkEnd=e=>{
   const list=userHl(BANK.texts[S.text].id);
   if(!mkMoved){
     const hit=list.find(h=>h.p===s0.p && s0.o>=h.a && s0.o<=h.b);
-    if(hit) list.splice(list.indexOf(hit),1);
+    if(hit && (hit.c||"A")===curC()) list.splice(list.indexOf(hit),1);
+    else if(hit) hit.c=curC();
     else { const w=wordAt(s0.p,s0.o); if(w) addHl([w]); }
     save();
   } else if(tmpHl.length) addHl(tmpHl);
@@ -787,6 +802,7 @@ paperEl.addEventListener("pointerup",mkEnd); paperEl.addEventListener("pointerca
 paperEl.addEventListener("click",e=>{
   if(e.target.closest("[data-marker]")){ S.marker=!S.marker; S.tipSeen=true; save(); hideBar(); getSelection().removeAllRanges(); renderPaper(); }
   if(e.target.closest("[data-tipok]")){ S.tipSeen=true; save(); renderPaper(); }
+  const pc=e.target.closest("[data-mkc]"); if(pc){ S.mkc=pc.dataset.mkc; save(); renderPaper(); }
 });
 
 /* ---------- Тапсырмалар ---------- */
