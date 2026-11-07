@@ -225,6 +225,8 @@ b.kw{font-weight:800}
 .land-head h1{font-family:var(--f-text);font-size:clamp(28px,4vw,40px);margin:6px 0 10px}
 .land-head p{color:var(--muted);margin:0 0 22px;max-width:62ch}
 .variants{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.vtag{display:inline-block;vertical-align:middle;margin-left:8px;font-family:var(--f-ui);font-size:12.5px;font-weight:700;line-height:1;letter-spacing:.04em;padding:4px 7px;border-radius:6px;border:1px solid var(--line);color:var(--muted);background:var(--paper)}
+.vtag.bb{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
 .variant{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:6px}
 .variant h2{font-family:var(--f-text);font-size:24px;margin:0}
 .vmeta{margin:0;color:var(--muted);font-size:14px}
@@ -1300,6 +1302,14 @@ document.getElementById("langRu").onclick=()=>setLang("ru");
 
 let view="landing";
 const ruPlural=(n,a,b,c)=>{ const m=n%10, h=n%100; return (m===1&&h!==11)?a:(m>=2&&m<=4&&(h<12||h>14))?b:c; };
+/* Нұсқаның шығу тегі – тек мұғалімге көрінеді: ББ – мұғалім берген нұсқа, ЖИ – жасанды интеллект құрастырған нұсқа */
+const BB_BANKS = new Set(["kaz-L1-sagidolda-2026-v1","kaz-L1-nis-sample-v1","kaz-L2-nis-sample-v1"]);
+function originTag(b){
+  if(!(IS_TEACHER || !sb)) return "";
+  const bb=BB_BANKS.has(b.bank_id), ru=S.lang==="ru";
+  const t = bb ? (ru?"Вариант, предоставленный учителем":"Мұғалім берген нұсқа") : (ru?"Вариант, составленный ИИ":"Жасанды интеллект құрастырған нұсқа");
+  return `<span class="vtag ${bb?"bb":"ai"}" title="${t}">${bb?"ББ":"ЖИ"}</span>`;
+}
 function variantCard(b, vi){
   const keep=BANK; BANK=b;
   const ru=S.lang==="ru", N=BANK.items.length, nT=BANK.texts.length, done=BANK.items.filter(isAnswered).length;
@@ -1318,7 +1328,7 @@ function variantCard(b, vi){
   BANK=keep;
   btns=btns.replace(/data-land=/g, `data-v="${vi}" data-land=`);
   return `<article class="variant">
-      <h2>${ru?`Вариант ${vi+1}`:`${vi+1}-нұсқа`}</h2>
+      <h2>${ru?`Вариант ${vi+1}`:`${vi+1}-нұсқа`}${originTag(b)}</h2>
       <p class="vmeta">${ru?`${nT} ${ruPlural(nT,"текст","текста","текстов")} · ${N} ${ruPlural(N,"вопрос","вопроса","вопросов")}`:`${nT} мәтін · ${N} сұрақ`}</p>
       ${status?`<div class="vprog"><i style="width:${Math.round(100*(finished?N:done)/N)}%"></i></div><p class="vstatus">${status}</p>`:""}
       <div class="actions">${btns}</div></article>`;
