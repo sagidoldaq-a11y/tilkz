@@ -95,6 +95,12 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 2p
 .hlbar button{border:0;background:transparent;color:inherit;font-weight:700;font-size:14px;padding:7px 14px;border-radius:999px}
 .hlbar button:hover{background:rgba(255,255,255,.12)}
 mark.w{background:var(--bad-soft);box-shadow:inset 0 -2px 0 var(--bad)}
+/* Оқиғалар реті талдауындағы дәлелдің нөмірі */
+.oq{display:flex;gap:8px;align-items:flex-start}.oq>blockquote,.oq>.q{flex:1;min-width:0}
+.onum{flex:0 0 auto;width:24px;height:24px;margin-top:8px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;color:#18212E}
+.oq:has(.o1) blockquote{border-left-color:#7DBEFF}.oq:has(.o2) blockquote{border-left-color:#86D676}.oq:has(.o3) blockquote{border-left-color:#FF9CC4}.oq:has(.o4) blockquote{border-left-color:#FFB866}
+.onum.o1{background:#A9D6FF}.onum.o2{background:#B5EBA8}.onum.o3{background:#FFC2DA}.onum.o4{background:#FFD199}
+mark.o1{background:var(--hlA);color:var(--hl-ink)} mark.o2{background:var(--hlB);color:var(--hl-ink)} mark.o3{background:var(--hlC);color:var(--hl-ink)} mark.o4{background:var(--hlD);color:var(--hl-ink)}
 b.kw{font-weight:800}
 .fb blockquote b.kw{color:var(--ink);font-weight:800}
 
@@ -634,7 +640,7 @@ function renderPaper(){
     const bold=[]; let plain=""; let b=false;
     for(let k=0;k<raw.length;k++){ if(raw.startsWith("**",k)){b=!b;k++;continue;} plain+=raw[k]; bold.push(b); }
     const mk=new Array(plain.length).fill("");
-    for(const f0 of marks){ const f=typeof f0==="string"?f0:f0.t, c=typeof f0==="string"?"m":"w";
+    for(const f0 of marks){ const f=typeof f0==="string"?f0:f0.t, c=typeof f0==="string"?"m":f0.o?f0.o:"w";
       const at=plain.indexOf(f); if(at>=0) for(let k=at;k<at+f.length;k++) if(mk[k]!=="m") mk[k]=c; }
     const kwf=new Array(plain.length).fill(false);
     for(const [a,b] of kwRanges(plain, markKw)) if(mk[a]) for(let k=a;k<b;k++) kwf[k]=true;
@@ -651,8 +657,8 @@ function renderPaper(){
     const pn = tx.numbered_paragraphs ? `<span class="pn">${i+1}</span>` : "";
     return `<p data-pi="${i}">${pn}<span class="pt">${html}</span></p>`;
   }).join("");
-  function open(k){ const uc=k.match(/u([ABCDN])/); return (uc?`<span class="u u${uc[1]}">`:"")+(k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':"")+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
-  function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w"))?"</mark>":"")+(k.includes("u")?"</span>":""); }
+  function open(k){ const uc=k.match(/u([ABCDN])/); return (uc?`<span class="u u${uc[1]}">`:"")+(k.includes("m")?'<mark>':k.includes("w")?'<mark class="w">':(k.match(/[1-4]/)?`<mark class="o${k.match(/[1-4]/)[0]}">`:""))+(k.includes("b")?"<strong>":"")+(k.includes("k")?'<b class="kw">':""); }
+  function close(k){ return (k.includes("k")?"</b>":"")+(k.includes("b")?"</strong>":"")+((k.includes("m")||k.includes("w")||/[1-4]/.test(k))?"</mark>":"")+(k.includes("u")?"</span>":""); }
   const sn0 = (ru_() && tx.source_note_ru) ? tx.source_note_ru : tx.source_note;
   // Сілтемесі бар дереккөз мәтіннің астында көрсетіледі, қысқасы – тақырыптың астында
   const url = (sn0||"").match(/https?:\/\/\S+/)?.[0], sn = url ? "" : sn0, src = sn ? ` · ${esc(sn)}` : "";
@@ -885,7 +891,7 @@ function cardHTML(it){
         ${dev.length?`<p><b>${S.lang==="ru"?"В тексте:":"Мәтінде:"}</b></p>${dev.map(e=>quoteHTML(e,"","w",kwOf(it,lw))).join("")}`:""}</div>`;
     }
     const analysis=`<div class="fb ${good?"ok":"reveal"}" role="status"><h4>${good?L.ok:L.revealH+": "+shownLetter(it,it.key)+") "+esc(it.options[it.key])}</h4>
-      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map(e=>{ const m=e.match(/\s*\((\d+)-(азатжол|бөлім)[^)]*\)$/); return quoteHTML(stripLoc(e), m?(ru_()?`(${m[2]==="бөлім"?"часть":"абзац"} ${m[1]})`:m[0].trim()):"", "", kwOf(it,"ok")); }).join("")}
+      <p>${esc(explOf(it))}</p><p><b>${L.evidence}</b></p>${it.evidence.map((e,i)=>{ const m=e.match(/\s*\((\d+)-(азатжол|бөлім)[^)]*\)$/), on=orderMarks(it)?(it.options[it.key].split(/[,\s]+/)[i]):null; return (on?`<div class="oq"><span class="onum o${on}" title="${ru_()?"Событие":"Оқиға"} ${on}">${on}</span>`:"")+quoteHTML(stripLoc(e), m?(ru_()?`(${m[2]==="бөлім"?"часть":"абзац"} ${m[1]})`:m[0].trim()):"", "", kwOf(it,"ok"))+(on?"</div>":""); }).join("")}
       <p><b>${L.others}</b></p><ul>${wrongs}${rest}</ul></div>`;
     if(good) fb=analysis;
     else {
@@ -1041,10 +1047,18 @@ function scrollToMark(){
   const top = m.getBoundingClientRect().top - paper.getBoundingClientRect().top + paper.scrollTop - paper.clientHeight/3;
   paper.scrollTo({top:Math.max(0,top), behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
 }
+/* Оқиғалар реті: дәлелдер мәтіндегі ретпен берілген, дұрыс жауап («3, 1, 2, 4») әр дәлелдің оқиға нөмірін көрсетеді.
+   Талдауда әр дәлел сол нөмірдің маркер түсімен боялады (1 – көк, 2 – жасыл, 3 – қызғылт, 4 – қызғылт сары). */
+function orderMarks(it){
+  if(qKind(it)!=="order") return null;
+  const seq=(it.options[it.key]||"").split(/[,\s]+/).filter(Boolean);
+  if(seq.length!==it.evidence.length || !seq.every(n=>/^[1-4]$/.test(n))) return null;
+  return it.evidence.flatMap((e,i)=>frags(e).map(t=>({t,o:seq[i]})));
+}
 function setRevealMarks(it){
   const lw=st(it.id).tries.at(-1);
   // Талдау ашық болса тек дұрыс жауаптың дәлелі (сары), жабық болса тек қате жауаптың дәлелі (қызғылт)
-  if(openAn[it.id]){ marks=it.evidence.flatMap(frags); markKw=[...kwOf(it,"ok").kk]; }
+  if(openAn[it.id]){ marks=orderMarks(it) || it.evidence.flatMap(frags); markKw=[...kwOf(it,"ok").kk]; }
   else { marks=devOf(it,lw).map(t=>({t,w:true})); markKw=[...kwOf(it,lw).kk]; }
 }
 /* Мәтіндегі белгілер тек оқушы қазір істеп отырған сұраққа тиесілі:
