@@ -155,6 +155,14 @@ const LOGIN_DOMAIN = "oqushy.tilkz.app";
 const SKILL_GROUPS = {A:"Ақпаратты табу", B:"Мәтінді түсіну", C:"Негізгі ой мен құрылым", D:"Автор және жанр"};
 const app = document.getElementById("app");
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* Оқушының мектебі (кодпен тіркелгендер) не WhatsApp нөмірлері (кодсыз тіркелгендер) */
+const fmtPh = p => p ? `+${p[0]} ${p.slice(1,4)} ${p.slice(4,7)} ${p.slice(7,9)} ${p.slice(9)}` : "";
+const waLink = p => `<a href="https://wa.me/${p}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${fmtPh(p)}</a>`;
+function whereOf(s, full){
+  const place=[s.city,s.school].filter(Boolean).map(esc).join(", ");
+  const ph=[s.phone?`${full?"оқушы: ":""}${waLink(s.phone)}`:"", s.parent_phone&&s.parent_phone!==s.phone?`${full?"ата-анасы: ":"ата-ана: "}${waLink(s.parent_phone)}`:""].filter(Boolean).join(full?" · ":"<br>");
+  return [place,ph].filter(Boolean).join(full?" · ":"<br>") || "—";
+}
 const pct = (a,b) => b ? Math.round(100*a/b) : null;
 const band = p => p==null ? "none" : p>=75 ? "good" : p>=50 ? "mid" : "weak";
 const COLOR = {good:"var(--good)", mid:"var(--mid)", weak:"var(--weak)"};
@@ -231,7 +239,9 @@ async function loadClasses(){
 }
 async function loadClass(c){
   app.innerHTML=`<p class="sub">Жүктеліп жатыр…</p>`;
-  const students=await fetchAll(()=>sb.from("students").select("user_id,login,first_name,last_name,grade,city,school,created_at").eq("class_id",c.id).order("last_name"));
+  // 003 көшіруі іске қосылмаған болса (phone бағандары жоқ), бұрынғы бағандармен оқиды
+  let students=await fetchAll(()=>sb.from("students").select("user_id,login,first_name,last_name,grade,city,school,phone,parent_phone,created_at").eq("class_id",c.id).order("last_name")).catch(()=>null);
+  if(!students) students=await fetchAll(()=>sb.from("students").select("user_id,login,first_name,last_name,grade,city,school,created_at").eq("class_id",c.id).order("last_name"));
   const ids=students.map(s=>s.user_id);
   let attempts=[], answers=[];
   if(ids.length){
@@ -317,11 +327,11 @@ function renderClass(){
     const key={name:r=>(r.s.last_name+" "+r.s.first_name).toLowerCase(), p:r=>r.k.p==null?-1:r.k.p, n:r=>-r.k.n, last:r=>r.k.last?-new Date(r.k.last):0}[st.sort];
     rows.sort((a,b)=>{ const x=key(a), y=key(b); return x<y?-1:x>y?1:0; }); if(st.sort==="p") rows.reverse();
     body = S.length ? `<div class="tablewrap"><table><thead><tr>
-       <th><button data-sort="name">Аты-жөні ${st.sort==="name"?"↓":""}</button></th><th>Сынып</th><th>Қала, мектеп</th>
+       <th><button data-sort="name">Аты-жөні ${st.sort==="name"?"↓":""}</button></th><th>Сынып</th><th>Мектеп / WhatsApp</th>
        <th><button data-sort="n">Жауап берген ${st.sort==="n"?"↓":""}</button></th><th><button data-sort="p">Бірден дұрыс ${st.sort==="p"?"↑":""}</button></th>
        <th>Аяқталған нұсқа</th><th><button data-sort="last">Соңғы белсенділік ${st.sort==="last"?"↓":""}</button></th><th>Логин</th></tr></thead><tbody>
        ${rows.map(({s,k})=>`<tr class="click" data-stu="${s.user_id}"><td><b>${esc(s.last_name)} ${esc(s.first_name)}</b></td><td class="n">${s.grade}</td>
-         <td>${esc(s.city)}, ${esc(s.school)}</td><td class="n">${k.n}</td><td class="n">${pill(k.p)}</td><td class="n">${k.fin}</td><td>${fmtDT(k.last||null)}</td><td>${esc(s.login)}</td></tr>`).join("")}
+         <td>${whereOf(s)}</td><td class="n">${k.n}</td><td class="n">${pill(k.p)}</td><td class="n">${k.fin}</td><td>${fmtDT(k.last||null)}</td><td>${esc(s.login)}</td></tr>`).join("")}
        </tbody></table></div>` : `<div class="panel empty">Бұл сыныпқа әлі ешкім тіркелмеген. Оқушыларға <b>${esc(c.code)}</b> кодын жіберіңіз.</div>`;
   } else if(tab==="skills"){
     body = skillBars(all) + `<p class="meta" style="margin-top:14px">Әр дағды бойынша оқушылардың бірінші реттен дұрыс жауап берген үлесі. Ең әлсіз дағдылар жоғарыда.</p>`;
@@ -359,7 +369,7 @@ function renderStudent(){
   const stat = r => r.first_correct ? `<span class="status ok">✓ бірден дұрыс</span>` : r.status==="ok" ? `<span class="status second">↻ екінші мүмкіндікте дұрыс</span>` : r.status==="revealed" ? `<span class="status bad">✗ қате</span>` : `<span class="status bad">… бір рет қателесті</span>`;
   app.innerHTML=`<div class="crumbs"><button data-nav="classes">Сыныптарым</button> / <button data-nav="class">${esc(cur.name)}</button></div>
    <span class="eyebrow">Оқушы</span><h1>${esc(s.last_name)} ${esc(s.first_name)}</h1>
-   <p class="sub">${s.grade}-сынып · ${esc(s.city)}, ${esc(s.school)} · логин: <b>${esc(s.login)}</b> · тіркелген күні ${fmtDate(s.created_at)}</p>
+   <p class="sub">${s.grade}-сынып · ${whereOf(s,true)} · логин: <b>${esc(s.login)}</b> · тіркелген күні ${fmtDate(s.created_at)}</p>
    <div class="row" style="margin:-6px 0 14px"><button class="btn sm" data-act="pw">🔑 Құпиясөзді ауыстыру</button><button class="btn ghost sm" data-act="del" style="color:var(--bad)">Оқушыны өшіру</button></div>
    <div id="stuTools"></div>
    <div class="kpis"><div class="kpi"><b>${k.n}</b><span>жауап берген сұрақ</span></div><div class="kpi"><b>${k.p??"—"}${k.p!=null?"%":""}</b><span>бірінші реттен дұрыс</span></div>

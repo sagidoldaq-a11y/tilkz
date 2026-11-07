@@ -1414,47 +1414,51 @@ const SB_CFG = /*__SUPABASE__*/null;
 const LOGIN_DOMAIN = "oqushy.tilkz.app";   // оқушының поштасы жоқ: логин ішкі «пошта» түрінде сақталады
 let sb=null, USER=null, PROFILE=null, IS_TEACHER=false, authMode="login", authMsg="", authBusy=false;
 const authOn = () => !!sb;
-const loginEmail = v => { v=v.trim().toLowerCase(); return v.includes("@") ? v : v+"@"+LOGIN_DOMAIN; };
+/* Қазақстан нөмірі: +7 701 123 45 67, 8 701…, 701… → 77011234567 (дұрыс болмаса – null) */
+const normPhone = v => { let d=(v||"").replace(/\D/g,""); if(d.length===11 && d[0]==="8") d="7"+d.slice(1); if(d.length===10) d="7"+d; return /^7\d{10}$/.test(d) ? d : null; };
+const loginEmail = v => { v=v.trim().toLowerCase(); if(v.includes("@")) return v;
+  if(!/[a-z]/.test(v)) { const ph=normPhone(v); if(ph) v=ph; }
+  return v+"@"+LOGIN_DOMAIN; };
 const AUTH_T = {
-  kk:{eyebrow:"Оқу сауаттылығы · НЗМ, БИЛ", h:"Платформаға кіру", lead:"Мұғалім берген сынып кодымен тіркел немесе логиніңмен кір.",
-      policy:"Құпиялылық саясаты", policyPre:"Деректеріңнің қалай сақталатыны туралы:", login:"Кіру", reg:"Тіркелу", tHint:"Мұғалім өз поштасымен кіре алады.", lg:"Логин", pw:"Құпиясөз", pw2:"Құпиясөзді қайтала", code:"Сынып коды", codeHint:"Мұғалімің берген 6 таңбалы код",
+  kk:{eyebrow:"Оқу сауаттылығы · НЗМ, БИЛ", h:"Платформаға кіру", lead:"Тіркелу тегін және оңай. Бұрын тіркелген болсаң, нөміріңмен не логиніңмен кір.",
+      policy:"Құпиялылық саясаты", policyPre:"Деректеріңнің қалай сақталатыны туралы:", login:"Кіру", reg:"Тіркелу", tHint:"Тіркелгенде жазған WhatsApp нөмірің немесе бұрынғы логинің. Мұғалім өз поштасымен кіреді.", lg:"Логин", lgPh:"Нөмір немесе логин",
+      ph:"Өзіңнің WhatsApp нөмірің", phHint:"Егер өз нөмірің болмаса, ата-анаңның нөмірін жаз. Бұл нөмір – сенің логиның.", pph:"Ата-анаңның WhatsApp нөмірі", pwNew:"Құпиясөз ойлап тап", pw:"Құпиясөз", pw2:"Құпиясөзді қайтала", code:"Сынып коды", codeHint:"Мұғалімің берген 6 таңбалы код",
       fn:"Аты", ln:"Тегі", grade:"Сынып", gradeOpt:n=>`${n}-сынып`, city:"Қала / ауыл", school:"Мектеп", lgHint:"Латын әріптері, сан, нүкте не сызықша: 3–20 таңба. Мысалы: aruzhan.s",
-      pwHint:"Кемінде 6 таңба. Логин мен құпиясөзді жазып ал, ұмытпа.",
-      consent:"Ата-анам (заңды өкілім) менің платформаға тіркелуіме және аты-жөнім, сыныбым, қалам, мектебім мен тест нәтижелерімнің мұғалімге көрсетілуіне келісім берді.",
+      pwHint:"Кемінде 6 таңба. Келесі жолы нөміріңмен және осы құпиясөзбен кіресің, ұмытпа.",
+      consent:"Ата-анам (заңды өкілім) менің платформаға тіркелуіме және аты-жөнім, сыныбым, WhatsApp нөмірлерім мен тест нәтижелерімнің мұғалімге көрсетілуіне келісім берді.",
       doLogin:"Кіру", doReg:"Тіркелу", wait:"Күте тұр…", out:"Аккаунттан шығасың ба?",
       e:{empty:"Барлық өрісті толтыр.", code:"Сынып коды қате. Мұғаліміңнен қайта сұра.", login:"Логин тек латын әріптері, сандар, нүкте, сызықша не астыңғы сызықтан тұрады (3–20 таңба).",
-         taken:"Бұл логин бос емес. Басқа логин ойлап тап.", pw:"Құпиясөз кемінде 6 таңба болуы керек.", pw2:"Құпиясөздер бірдей емес.", consent:"Ата-анаңның келісімі туралы белгіні қой.",
-         bad:"Логин не құпиясөз қате.", net:"Байланыс жоқ. Интернетті тексеріп, қайта көр.", fail:"Тіркелу кезінде қате шықты. Сынып кодын тексеріп, қайта көр.", confirm:"Тіркелу аяқталмады: платформа баптауы әлі дайын емес. Мұғаліміңе хабарла."}},
-  ru:{eyebrow:"Читательская грамотность · НИШ, БИЛ", h:"Вход на платформу", lead:"Зарегистрируйся по коду класса от учителя или войди со своим логином.",
-      policy:"Политика конфиденциальности", policyPre:"Как хранятся твои данные:", login:"Вход", reg:"Регистрация", tHint:"Учитель может войти со своей почтой.", lg:"Логин", pw:"Пароль", pw2:"Повтори пароль", code:"Код класса", codeHint:"6-значный код от учителя",
+         taken:"Бұл нөмірмен бұрын тіркелген. Аккаунтың болса, «Кіру» бетінен кір. Болмаса, басқа нөмір жаз.", phone:"Нөмір қате. Мысалы: +7 701 123 45 67", pphone:"Ата-анаңның нөмірі қате. Мысалы: +7 701 123 45 67", pw:"Құпиясөз кемінде 6 таңба болуы керек.", pw2:"Құпиясөздер бірдей емес.", consent:"Ата-анаңның келісімі туралы белгіні қой.",
+         bad:"Логин не құпиясөз қате.", net:"Байланыс жоқ. Интернетті тексеріп, қайта көр.", fail:"Тіркелу кезінде қате шықты. Мәліметтерді тексеріп, қайта көр.", confirm:"Тіркелу аяқталмады: платформа баптауы әлі дайын емес. Мұғаліміңе хабарла."}},
+  ru:{eyebrow:"Читательская грамотность · НИШ, БИЛ", h:"Вход на платформу", lead:"Регистрация бесплатная и простая. Если ты уже зарегистрирован, войди по номеру или логину.",
+      policy:"Политика конфиденциальности", policyPre:"Как хранятся твои данные:", login:"Вход", reg:"Регистрация", tHint:"Номер WhatsApp, указанный при регистрации, или прежний логин. Учитель входит со своей почтой.", lg:"Логин", lgPh:"Номер или логин",
+      ph:"Твой номер WhatsApp", phHint:"Если у тебя нет своего номера, напиши номер родителей. Этот номер – твой логин.", pph:"Номер WhatsApp родителей", pwNew:"Придумай пароль", pw:"Пароль", pw2:"Повтори пароль", code:"Код класса", codeHint:"6-значный код от учителя",
       fn:"Имя", ln:"Фамилия", grade:"Класс", gradeOpt:n=>`${n} класс`, city:"Город / село", school:"Школа", lgHint:"Латинские буквы, цифры, точка или дефис: 3–20 символов. Например: aruzhan.s",
-      pwHint:"Не менее 6 символов. Запиши логин и пароль, чтобы не забыть.",
-      consent:"Мои родители (законные представители) согласны с моей регистрацией на платформе и с тем, что учитель будет видеть моё имя, класс, город, школу и результаты тестов.",
+      pwHint:"Не менее 6 символов. В следующий раз войдёшь по номеру и этому паролю, не забудь.",
+      consent:"Мои родители (законные представители) согласны с моей регистрацией на платформе и с тем, что учитель будет видеть моё имя, класс, номера WhatsApp и результаты тестов.",
       doLogin:"Войти", doReg:"Зарегистрироваться", wait:"Подожди…", out:"Выйти из аккаунта?",
       e:{empty:"Заполни все поля.", code:"Неверный код класса. Уточни у учителя.", login:"Логин может содержать только латинские буквы, цифры, точку, дефис или подчёркивание (3–20 символов).",
-         taken:"Этот логин уже занят. Придумай другой.", pw:"Пароль должен быть не короче 6 символов.", pw2:"Пароли не совпадают.", consent:"Отметь согласие родителей.",
-         bad:"Неверный логин или пароль.", net:"Нет связи. Проверь интернет и попробуй снова.", fail:"Ошибка при регистрации. Проверь код класса и попробуй снова.", confirm:"Регистрация не завершена: платформа ещё не настроена. Сообщи учителю."}}
+         taken:"С этим номером уже зарегистрировались. Если у тебя есть аккаунт, войди на вкладке «Вход». Если нет, укажи другой номер.", phone:"Неверный номер. Например: +7 701 123 45 67", pphone:"Неверный номер родителей. Например: +7 701 123 45 67", pw:"Пароль должен быть не короче 6 символов.", pw2:"Пароли не совпадают.", consent:"Отметь согласие родителей.",
+         bad:"Неверный логин или пароль.", net:"Нет связи. Проверь интернет и попробуй снова.", fail:"Ошибка при регистрации. Проверь данные и попробуй снова.", confirm:"Регистрация не завершена: платформа ещё не настроена. Сообщи учителю."}}
 };
 function renderAuth(){
   const A=AUTH_T[S.lang], box=document.getElementById("auth"), reg=authMode==="reg";
-  const grades=[4,5,6,7].map(n=>`<option value="${n}">${A.gradeOpt(n)}</option>`).join("");
+  const grades=`<option value="" selected disabled>${S.lang==="ru"?"Выбери класс":"Сыныбыңды таңда"}</option>`+[4,5,6,7,8,9,10,11].map(n=>`<option value="${n}">${A.gradeOpt(n)}</option>`).join("");
   box.innerHTML = `<span class="eyebrow">${esc(A.eyebrow)}</span><h1>${esc(A.h)}</h1><p class="lead">${esc(A.lead)}</p>
    <div class="authcard">
     <div class="authtabs" role="group"><button type="button" data-am="login" aria-pressed="${!reg}">${esc(A.login)}</button><button type="button" data-am="reg" aria-pressed="${reg}">${esc(A.reg)}</button></div>
     ${reg ? `<form class="af" id="regForm" novalidate>
-      <label>${esc(A.code)}<input name="code" class="codein" maxlength="6" autocomplete="off" autocapitalize="characters" required><span class="hint">${esc(A.codeHint)}</span></label>
       <div class="row2"><label>${esc(A.fn)}<input name="first_name" maxlength="60" autocomplete="given-name" required></label><label>${esc(A.ln)}<input name="last_name" maxlength="60" autocomplete="family-name" required></label></div>
-      <div class="row2"><label>${esc(A.grade)}<select name="grade" required>${grades}</select></label><label>${esc(A.city)}<input name="city" maxlength="80" required></label></div>
-      <label>${esc(A.school)}<input name="school" maxlength="120" required></label>
-      <label>${esc(A.lg)}<input name="login" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" required><span class="hint">${esc(A.lgHint)}</span></label>
-      <div class="row2"><label>${esc(A.pw)}<input name="password" type="password" autocomplete="new-password" required></label><label>${esc(A.pw2)}<input name="password2" type="password" autocomplete="new-password" required></label></div>
-      <span class="hint">${esc(A.pwHint)}</span>
+      <label>${esc(A.grade)}<select name="grade" required>${grades}</select></label>
+      <label>${esc(A.ph)}<input name="phone" type="tel" inputmode="tel" autocomplete="username" placeholder="+7 7__ ___ __ __" required><span class="hint">${esc(A.phHint)}</span></label>
+      <label>${esc(A.pph)}<input name="parent_phone" type="tel" inputmode="tel" autocomplete="off" placeholder="+7 7__ ___ __ __" required></label>
+      <label>${esc(A.pwNew)}<input name="password" type="password" autocomplete="new-password" required><span class="hint">${esc(A.pwHint)}</span></label>
       <label class="consent"><input type="checkbox" name="consent"> <span>${esc(A.consent)}</span></label>
       <span class="hint">${esc(A.policyPre)} <a href="../privacy/" target="_blank" rel="noopener">${esc(A.policy)}</a>.</span>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doReg)}</button></form>`
     : `<form class="af" id="loginForm" novalidate>
-      <label>${esc(A.lg)}<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required><span class="hint">${esc(A.tHint)}</span></label>
+      <label>${esc(A.lgPh)}<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required><span class="hint">${esc(A.tHint)}</span></label>
       <label>${esc(A.pw)}<input name="password" type="password" autocomplete="current-password" required></label>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doLogin)}</button></form>`}
@@ -1476,23 +1480,23 @@ document.getElementById("auth").addEventListener("submit",async e=>{
       if(error) return fail(/fetch|network/i.test(error.message)?A.e.net:A.e.bad);
       authBusy=false; await enterAs(data.user); return;
     }
-    f.login=(f.login||"").toLowerCase(); f.code=(f.code||"").toUpperCase();
-    if(!f.code||!f.first_name||!f.last_name||!f.city||!f.school||!f.login||!f.password) return fail(A.e.empty);
-    if(!/^[a-z0-9._-]{3,20}$/.test(f.login)) return fail(A.e.login);
+    // Кодсыз тіркелу: логин – оқушының өз нөмірі (болмаса ата-анасының нөмірі)
+    if(!f.first_name||!f.last_name||!f.grade||!f.phone||!f.parent_phone||!f.password) return fail(A.e.empty);
+    const ph=normPhone(f.phone), pph=normPhone(f.parent_phone);
+    if(!ph) return fail(A.e.phone);
+    if(!pph) return fail(A.e.pphone);
     if(f.password.length<6) return fail(A.e.pw);
-    if(f.password!==f.password2) return fail(A.e.pw2);
     if(!f.consent) return fail(A.e.consent);
-    const c=await sb.rpc("check_class_code",{p_code:f.code}); if(c.error) return fail(A.e.net); if(!c.data) return fail(A.e.code);
-    const l=await sb.rpc("login_available",{p_login:f.login}); if(l.error) return fail(A.e.net); if(!l.data) return fail(A.e.taken);
-    const {data,error}=await sb.auth.signUp({email:loginEmail(f.login), password:f.password,
-      options:{data:{role:"student", class_code:f.code, login:f.login, first_name:f.first_name, last_name:f.last_name, grade:f.grade, city:f.city, school:f.school, consent:"true"}}});
+    const l=await sb.rpc("login_available",{p_login:ph}); if(l.error) return fail(A.e.net); if(!l.data) return fail(A.e.taken);
+    const {data,error}=await sb.auth.signUp({email:loginEmail(ph), password:f.password,
+      options:{data:{role:"student", mode:"open", phone:ph, parent_phone:pph, first_name:f.first_name, last_name:f.last_name, grade:f.grade, consent:"true"}}});
     if(error) return fail(/fetch|network/i.test(error.message)?A.e.net:/registered|exists/i.test(error.message)?A.e.taken:A.e.fail);
     if(!data.session) return fail(A.e.confirm);
     authBusy=false; await enterAs(data.user);
   }catch(err){ console.warn(err); fail(A.e.net); }
 });
 async function enterAs(user){
-  const {data}=await sb.from("students").select("first_name,last_name,grade,city,school,login").eq("user_id",user.id).maybeSingle();
+  const {data}=await sb.from("students").select("first_name,last_name,grade,login").eq("user_id",user.id).maybeSingle();
   USER=user; PROFILE=data||null;
   if(!PROFILE){ const t=await sb.from("teachers").select("user_id").eq("user_id",user.id).maybeSingle(); IS_TEACHER=!!t.data; }
   const lang=S.lang, theme=null; KEY="oqylym-v1-state:"+user.id; S=load(); S.lang=lang;
