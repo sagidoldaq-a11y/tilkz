@@ -67,4 +67,13 @@ assert tt.count("/*__BANKS__*/") == 0
 tout = root / "mugalim"
 tout.mkdir(exist_ok=True)
 (tout / "index.html").write_text(tt, encoding="utf-8")
-print("ok", root / "index.html", out / "index.html", tout / "index.html")
+# 4) «Мемлекеттік қызметтегі қазақ тілі» тренажері: сабақтың мазмұны JSON-нан өзгеріссіз енгізіледі
+gov_lesson = json.loads((root / "content" / "gov-kz-L1-refusal-v1.json").read_text(encoding="utf-8"))
+gt = (here / "gov.template.html").read_text(encoding="utf-8")
+assert gt.count("/*__LESSON__*/null") == 1 and gt.count("/*__SUPABASE__*/null") == 1
+gt = gt.replace("/*__LESSON__*/null", json.dumps(gov_lesson, ensure_ascii=False).replace("</", "<\\/"))
+gt = gt.replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
+gout = root / "gov"
+gout.mkdir(exist_ok=True)
+(gout / "index.html").write_text(gt, encoding="utf-8")
+print("ok", root / "index.html", out / "index.html", tout / "index.html", gout / "index.html")
