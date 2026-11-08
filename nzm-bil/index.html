@@ -3,7 +3,7 @@
 <script>(function(){try{var th=localStorage.getItem("tilkz-theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&display=swap">
 <style>
 /* Layout: оқулық беті сияқты — сол жақта мәтін (қағаз), оң жақта тапсырмалар; телефонда ауыстырғыш */
 :root{
@@ -256,6 +256,43 @@ b.kw{font-weight:800}
 .row.weak .bar i{background:var(--bad)}
 .row.none{color:var(--muted)}
 
+/* ===== aitil 2026: жаңа дизайн қабаты (басты беттің токендері) ===== */
+:root{--paper:#F5F6F8;--panel:#FFFFFF;--ink:#16233A;--muted:#5B6577;--line:#E8EBF0;--accent:#1F56A8;--accent-soft:#EAF1FB;
+  --ok:#0F7A55;--ok-soft:#E6F4EE;--bad:#B4500B;--bad-soft:#FDF0E6;--r:20px;
+  --f-text:"Literata",Georgia,"Times New Roman",serif;--f-ui:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --shadow:0 1px 2px rgba(22,35,58,.05),0 12px 32px -20px rgba(22,35,58,.18)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#0E1626;--panel:#162135;--ink:#EEF2F8;--muted:#9AA6B8;--line:#26324A;--accent:#5B92E5;--accent-soft:#1D2D4A;--ok:#4CC593;--ok-soft:#173A2E;--bad:#F0954E;--bad-soft:#3A2414;--shadow:0 12px 32px -20px rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--paper:#0E1626;--panel:#162135;--ink:#EEF2F8;--muted:#9AA6B8;--line:#26324A;--accent:#5B92E5;--accent-soft:#1D2D4A;--ok:#4CC593;--ok-soft:#173A2E;--bad:#F0954E;--bad-soft:#3A2414;--shadow:0 12px 32px -20px rgba(0,0,0,.6)}
+body{-webkit-font-smoothing:antialiased}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #FFC93C;outline-offset:2px}
+.btn{border-radius:12px;min-height:44px;padding:10px 18px;font-size:15px;transition:filter .15s,transform .1s}
+.btn.primary{min-height:48px;padding:12px 24px;font-size:16px}
+.btn.primary:not(:disabled):hover{filter:brightness(1.08)} .btn:not(:disabled):active{transform:scale(.98)}
+.btn.ghost{min-height:44px}
+.seg{border:0;background:var(--line);padding:4px} .seg button{padding:6px 12px;min-height:32px}
+.themebtn{border:0;background:var(--line);width:40px;height:40px}
+.paper,.card,.variant,.finbar,.results,.authcard{border:0;box-shadow:var(--shadow);border-radius:var(--r)}
+.card.is-ok{box-shadow:inset 0 0 0 1.5px var(--ok),var(--shadow)} .card.is-bad{box-shadow:inset 0 0 0 1.5px var(--bad),var(--shadow)}
+.paper p{text-align:left;max-width:66ch;line-height:1.8}
+.texttabs button{border:0;border-radius:12px;box-shadow:var(--shadow);padding:10px 14px}
+.texttabs button[aria-selected="true"]{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.stem{font-size:18px;line-height:1.4}
+.opt{border-radius:14px;padding:12px 14px;min-height:52px;align-items:center;border-width:1.5px}
+.opt .l{border-radius:9px;flex-basis:30px;height:30px}
+.fb,.skillbox,.assist{border-radius:14px}
+.land-head .eyebrow,.auth .eyebrow,.legend h3,.rep-sec h3,.rgroup h3{text-transform:none;letter-spacing:0;font-size:14px}
+.land-head h1,.auth h1,.variant h2,.rep-sum h2,.results h2{font-family:var(--f-ui);letter-spacing:-.02em;font-weight:700}
+.land-head h1{font-size:clamp(32px,4.4vw,44px);line-height:1.1}
+.land-head p{font-size:17px}
+.variants{gap:16px}
+.variant{padding:24px;gap:8px}
+.variant h2{font-size:22px}
+.vprog{height:6px;border-radius:999px} .vprog i{border-radius:999px}
+.fprog{height:6px;border-radius:999px}
+.finbar p{margin-top:8px}
+.r-big,.kpi b{font-family:var(--f-ui)}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+
 .splitter,.qnav{display:none}
 /* Телефон тігінен (және тар экрандар): мәтін жоғарыда, сұрақ төменде. Көлденең телефонға арналған баптау төменде. */
 @media (max-width:880px) and (orientation:portrait), (max-width:880px) and (min-height:521px){
@@ -423,7 +460,7 @@ const UI = {
       score:(a,b,c)=>`Бір реттен дұрыс: <b>${a}</b> / ${b} · жауап берілді: ${c}`, check:"Тексеру", show:"Жауапты көрсету",
       helper:"Көмекші", hideHelper:"Көмекшіні жабу", inText:"Мәтіннен көрсету", reset:"Қайта орындау", qcount:n=>`${n} сұрақ`, done:"орындалды",
       level:n=>`${n}-деңгей`, neg:"Болымсыз сұрақ", ok:"Дұрыс!", bad:"Бұл жауап дұрыс емес", why:"Неліктен?", because:"Себебі ",
-      tryAgain:"", second:"Екінші мүмкіндікті пайдаланамын", secondNow:"Екінші мүмкіндік: мәтінге қайта қарап, қалған 3 жауаптың бірін таңда. Бұл соңғы мүмкіндік.",
+      tryAgain:"", second:"Қайта таңдау", secondNow:"Мәтінді қайта оқып, қалған 3 жауаптың бірін таңда. Бұл соңғы мүмкіндік.",
       revealH:"Дұрыс жауап", evidence:"Мәтіндегі дәлел:", others:"Қалған нұсқалар неге қате:", ownWords:"Енді неге дұрыс екенін өз сөзіңмен көмекшіге түсіндіріп көр.",
       quick:["Қайдан бастаймын?","Сұрақты түсінбедім","Мына сөздің мағынасы не?"], quickAfter:["Неге менің жауабым қате?","Неге дұрыс екенін түсіндіріп берейін"],
       hello:"Сәлем! Мен жауапты айтып бермеймін, бірақ оны мәтіннен өзің табуға көмектесемін.", ph:"Көмекшіге сұрағыңды жаз…", send:"Жіберу", stop:"Тоқтату", thinking:"Ойланып жатыр…",
@@ -436,7 +473,7 @@ const UI = {
       score:(a,b,c)=>`Верно с первого раза: <b>${a}</b> / ${b} · отвечено: ${c}`, check:"Проверить", show:"Показать ответ",
       helper:"Помощник", hideHelper:"Закрыть помощника", inText:"Показать в тексте", reset:"Пройти заново", qcount:n=>`${n} вопр.`, done:"выполнено",
       level:n=>`Уровень ${n}`, neg:"Отрицательный вопрос", ok:"Верно!", bad:"Ответ неверный", why:"Почему?", because:"",
-      tryAgain:"", second:"Использую вторую попытку", secondNow:"Вторая попытка: перечитай текст и выбери один из оставшихся 3 ответов. Это последняя попытка.",
+      tryAgain:"", second:"Выбрать ещё раз", secondNow:"Перечитай текст и выбери из оставшихся 3 ответов. Это последняя попытка.",
       revealH:"Правильный ответ", evidence:"Доказательство в тексте:", others:"Почему остальные варианты неверны:", ownWords:"Теперь объясни помощнику своими словами, почему этот ответ верный.",
       quick:["С чего начать?","Не понимаю вопрос","Что значит это слово?"], quickAfter:["Почему мой ответ неверный?","Хочу объяснить, почему ответ верный"],
       hello:"Привет! Я не скажу ответ, но помогу тебе самому найти его в тексте.", ph:"Напиши вопрос помощнику…", send:"Отправить", stop:"Стоп", thinking:"Думает…",
@@ -1304,9 +1341,9 @@ function finishBar(){
   const ru=S.lang==="ru", done=BANK.items.filter(isAnswered).length, N=BANK.items.length, last=S.text===BANK.texts.length-1;
   const textDone=itemsOf(BANK.texts[S.text].id).every(isAnswered);
   const next = !last && textDone ? `<button class="btn" type="button" data-fin="next">${ru?"Следующий текст →":"Келесі мәтін →"}</button>` : "";
-  const fin = `<button class="btn primary" type="button" data-fin="finish" ${allDone()?"":"disabled"}>${ru?"Завершить":"Аяқтау"}</button>`;
-  const note = allDone() ? (ru?"Ты ответил(а) на все вопросы. Нажми «Завершить», чтобы увидеть отчёт.":"Барлық сұраққа жауап бердің. Есепті көру үшін «Аяқтау» батырмасын бас.")
-                         : (ru?`Отвечено ${done} из ${N}. Кнопка «Завершить» откроется, когда ответишь на все вопросы.`:(done===0?`Әлі ешбір сұраққа жауап бермедің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`:`${N} сұрақтың ${kkDat(done)} жауап бердің. Барлық сұраққа жауап бергенде «Аяқтау» батырмасы ашылады.`));
+  const fin = allDone() ? `<button class="btn primary" type="button" data-fin="finish">${ru?"Завершить":"Аяқтау"}</button>` : "";
+  const note = allDone() ? (ru?"Все ответы готовы. Открой отчёт.":"Барлық жауап дайын. Есепті аш.")
+                         : (ru?`Ответов: ${done}/${N}`:`Жауап: ${done}/${N}`);
   return `<div class="finbar"><div class="fprog"><i style="width:${Math.round(100*done/N)}%"></i></div><p>${note}</p><div class="actions">${next}${fin}</div></div>`;
 }
 function setLang(l){
@@ -1338,7 +1375,7 @@ function variantCard(b, vi){
     btns=`<button class="btn primary" type="button" data-land="report">${ru?"Посмотреть отчёт":"Есепті көру"}</button>
           <button class="btn" type="button" data-land="restart">${ru?"Пройти заново":"Қайта орындау"}</button>`;
   } else if(done>0){
-    status=ru?`Отвечено ${done} из ${N} вопросов.`:`${N} сұрақтың ${kkDat(done)} жауап бердің.`;
+    status=ru?`Ответов: <b>${done}/${N}</b>`:`Жауап: <b>${done}/${N}</b>`;
     btns=`<button class="btn primary" type="button" data-land="start">${ru?"Продолжить":"Жалғастыру"}</button>`;
   } else {
     btns=`<button class="btn primary" type="button" data-land="start">${ru?"Начать":"Бастау"}</button>`;
@@ -1355,7 +1392,7 @@ function landingHTML(){
   const ru=S.lang==="ru", l2 = BANK.track==="second_language";
   return `<div class="land-head"><span class="eyebrow">${ru?"Читательская грамотность":"Оқу сауаттылығы"} · ${l2?(ru?"казахский язык как второй":"қазақ тілі (екінші тіл)"):(ru?"казахский язык как первый":"қазақ тілі (бірінші тіл)")}</span>
       <h1>НЗМ, БИЛ. Қазақ тілі</h1>
-      <p>${ru?"Выбери вариант. В каждом варианте — тексты и вопросы в формате экзамена. После каждого ответа — объяснение и доказательство из текста, в конце — отчёт по навыкам. В тексте можно делать пометки 🖍 маркером.":"Нұсқаны таңда. Әр нұсқада емтихан форматындағы мәтіндер мен сұрақтар бар. Әр жауаптан кейін түсініктеме мен мәтіннен дәлел беріледі, соңында дағдылар бойынша есеп шығады. Мәтінге 🖍 маркермен белгі қоюға болады."}</p></div>
+      <p>${ru?"Выбери вариант. После каждого ответа — объяснение и доказательство из текста. В конце — отчёт по навыкам.":"Нұсқаны таңда. Әр жауаптан кейін түсініктеме мен мәтіннен дәлел. Соңында дағдылар бойынша есеп."}</p></div>
     <div class="variants">${(BANKS[S.lang]||BANKS.kk).map(variantCard).join("")}</div>`;
 }
 document.getElementById("landing").addEventListener("click",e=>{
