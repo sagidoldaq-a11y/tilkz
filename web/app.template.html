@@ -292,6 +292,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{
 .finbar p{margin-top:8px}
 .r-big,.kpi b{font-family:var(--f-ui)}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
+a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--ink)}
+.userbtn{max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.usermenu{position:fixed;z-index:40;background:var(--panel);border-radius:14px;box-shadow:0 12px 32px -12px rgba(22,35,58,.35);padding:6px}
 
 .splitter,.qnav{display:none}
 /* Телефон тігінен (және тар экрандар): мәтін жоғарыда, сұрақ төменде. Көлденең телефонға арналған баптау төменде. */
@@ -1413,7 +1416,7 @@ function renderAll(){
   document.getElementById("auth").hidden=!gate;
   const ub=document.getElementById("userBtn"); ub.hidden=!USER;
   document.getElementById("cabBtn").hidden=!IS_TEACHER;
-  if(USER){ const nm=PROFILE?`${PROFILE.first_name} ${PROFILE.last_name}`:(IS_TEACHER?(S.lang==="ru"?"Учитель":"Мұғалім"):(USER.email||"")); ub.textContent="👤 "+nm; ub.title=S.lang==="ru"?"Выйти из аккаунта":"Аккаунттан шығу"; }
+  if(USER){ const nm=PROFILE?`${PROFILE.first_name} ${PROFILE.last_name}`:(IS_TEACHER?(S.lang==="ru"?"Учитель":"Мұғалім"):(USER.email||"")); ub.textContent=nm; ub.title=nm; ub.setAttribute("aria-haspopup","menu"); }
   if(gate){
     paintTheme(); document.documentElement.lang = S.lang==="ru"?"ru":"kk";
     document.getElementById("tagline").textContent=L.tagline;
@@ -1541,11 +1544,19 @@ async function enterAs(user){
   BANK=bankOf(S.lang,(S.vars||{})[S.lang]||0); view="landing"; showingResults=false; marks=[]; markKw=[]; activeQ=null; scrollQ=null;
   save(); renderAll(); window.scrollTo({top:0});
 }
-document.getElementById("userBtn").addEventListener("click",async()=>{
-  if(!confirm(AUTH_T[S.lang].out)) return;
-  try{ await sb.auth.signOut(); }catch(e){}
-  location.reload();
+/* Аккаунт мәзірі: бетті бұғаттайтын confirm() орнына шағын мәзір */
+document.getElementById("userBtn").addEventListener("click",e=>{
+  e.stopPropagation(); let m=document.getElementById("userMenu");
+  if(m){ m.remove(); return; }
+  const ru=S.lang==="ru", r=e.currentTarget.getBoundingClientRect();
+  m=document.createElement("div"); m.id="userMenu"; m.className="usermenu"; m.setAttribute("role","menu");
+  m.style.top=(r.bottom+8)+"px"; m.style.right=Math.max(8,innerWidth-r.right)+"px";
+  m.innerHTML=`<button type="button" class="btn" role="menuitem" id="signOut">${ru?"Выйти из аккаунта":"Аккаунттан шығу"}</button>`;
+  document.body.appendChild(m);
+  const so=m.querySelector("#signOut"); so.onclick=async()=>{ try{ await sb.auth.signOut(); }catch(err){} location.reload(); }; so.focus();
 });
+document.addEventListener("click",e=>{ const m=document.getElementById("userMenu"); if(m && !m.contains(e.target)) m.remove(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const m=document.getElementById("userMenu"); if(m) m.remove(); } });
 /* Тест әрекеті мен жауаптар серверге жазылады (қателер банкі мен мұғалімнің есебі осыдан құрылады) */
 const attemptReq={};
 function ensureAttempt(bank){
