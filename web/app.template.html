@@ -375,8 +375,9 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
 .af input,.af select{font:inherit;font-weight:400;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);width:100%;box-sizing:border-box}
 .af input:focus,.af select:focus{outline:2px solid var(--accent);outline-offset:1px}
 .af .hint{font-weight:400;font-size:12.5px;color:var(--muted)}
-.af .consent{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:13.5px;line-height:1.45}
-.af .consent input{width:auto;margin-top:3px;flex:0 0 auto}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:12px;font-weight:600;font-size:15px;min-height:48px;color:var(--ink)}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .af .err{color:var(--bad);font-size:14px;min-height:1em;margin:0}
 .af .ok{color:var(--ok);font-size:14px;margin:0}
 .af .btn{justify-self:start;padding:10px 22px}
@@ -1466,53 +1467,63 @@ const AUTH_T = {
       ph:"Оқушының WhatsApp нөмірі", phHint:"Оқушының жеке нөмірі болмаса, ата-анасының нөмірі жазылады. Бұл нөмір – платформаға кіруге арналған логин.", pph:"Ата-анасының WhatsApp нөмірі", pwNew:"Құпиясөз", pw:"Құпиясөз", pw2:"Құпиясөзді қайталау", code:"Сынып коды", codeHint:"Мұғалім берген 6 таңбалы код",
       fn:"Оқушының аты", ln:"Оқушының тегі", grade:"Сынып", gradePick:"— сынып —", gradeOpt:n=>`${n}-сынып`, city:"Қала / ауыл", school:"Мектеп", lgHint:"Латын әріптері, сан, нүкте не сызықша: 3–20 таңба. Мысалы: aruzhan.s",
       pwHint:"Кемінде 6 таңба. Келесі жолы нөмір мен осы құпиясөз арқылы кіріледі.",
-      consent:"Оқушының ата-анасы (заңды өкілі) оның платформаға тіркелуіне және аты-жөнінің, сыныбының, WhatsApp нөмірлерінің, тест нәтижелерінің мұғалімге көрсетілуіне келісім береді.",
+      googleReg:"Google арқылы тіркелу", google:"Google арқылы кіру", or:"немесе",
       doLogin:"Кіру", doReg:"Тіркелу", wait:"Жүктелуде…", out:"Аккаунттан шығу керек пе?",
       e:{empty:"Барлық өріс толтырылуы керек.", code:"Сынып коды қате.", login:"Логин тек латын әріптері, сандар, нүкте, сызықша не астыңғы сызықтан тұрады (3–20 таңба).",
          taken:"Бұл нөмірмен тіркелген аккаунт бар. Ол «Кіру» бетінен ашылады. Жаңа оқушы үшін басқа нөмір керек.", phone:"Оқушының нөмірі қате. Мысалы: +7 701 123 45 67", pphone:"Ата-анасының нөмірі қате. Мысалы: +7 701 123 45 67", pw:"Құпиясөз кемінде 6 таңба болуы керек.", pw2:"Құпиясөздер бірдей емес.", consent:"Ата-ананың келісімі туралы белгі қойылмаған.",
-         bad:"Логин не құпиясөз қате.", net:"Байланыс жоқ. Интернет қосылымын тексеріп, қайталап көру керек.", fail:"Тіркелу кезінде қате шықты. Мәліметтерді тексеріп, қайталап көру керек.", confirm:"Тіркелу аяқталмады: платформа баптауы әлі дайын емес. Мұғалімге хабарласу керек."}},
+         bad:"Логин не құпиясөз қате.", google:"Google арқылы кіру әзірге қосылмаған. Логин мен құпиясөзбен кіріңіз.", net:"Байланыс жоқ. Интернет қосылымын тексеріп, қайталап көру керек.", fail:"Тіркелу кезінде қате шықты. Мәліметтерді тексеріп, қайталап көру керек.", confirm:"Тіркелу аяқталмады: платформа баптауы әлі дайын емес. Мұғалімге хабарласу керек."}},
   ru:{eyebrow:"Читательская грамотность · НИШ, БИЛ", h:"Вход на платформу", lead:"Регистрация бесплатная и простая. Уже зарегистрированные входят по номеру или логину.",
       policy:"Политика конфиденциальности", policyPre:"Как хранятся данные:", login:"Вход", reg:"Регистрация", tHint:"Номер WhatsApp, указанный при регистрации, или прежний логин. Учителя входят по своей почте.", lg:"Логин", lgPh:"Номер или логин",
       ph:"Номер WhatsApp ученика", phHint:"Если у ученика нет своего номера, указывается номер родителей. Этот номер – логин для входа на платформу.", pph:"Номер WhatsApp родителей", pwNew:"Пароль", pw:"Пароль", pw2:"Повтор пароля", code:"Код класса", codeHint:"6-значный код от учителя",
       fn:"Имя ученика", ln:"Фамилия ученика", grade:"Класс", gradePick:"— класс —", gradeOpt:n=>`${n} класс`, city:"Город / село", school:"Школа", lgHint:"Латинские буквы, цифры, точка или дефис: 3–20 символов. Например: aruzhan.s",
       pwHint:"Не менее 6 символов. Для следующего входа нужны номер и этот пароль.",
-      consent:"Родители (законные представители) ученика согласны с его регистрацией на платформе и с тем, что учитель будет видеть имя, класс, номера WhatsApp и результаты тестов ученика.",
+      googleReg:"Зарегистрироваться через Google", google:"Войти через Google", or:"или",
       doLogin:"Войти", doReg:"Зарегистрироваться", wait:"Загрузка…", out:"Выйти из аккаунта?",
       e:{empty:"Заполнены не все поля.", code:"Неверный код класса.", login:"Логин может содержать только латинские буквы, цифры, точку, дефис или подчёркивание (3–20 символов).",
          taken:"Аккаунт с этим номером уже есть – вход через вкладку «Вход». Для нового ученика нужен другой номер.", phone:"Неверный номер ученика. Пример: +7 701 123 45 67", pphone:"Неверный номер родителей. Пример: +7 701 123 45 67", pw:"Пароль должен быть не короче 6 символов.", pw2:"Пароли не совпадают.", consent:"Не отмечено согласие родителей.",
-         bad:"Неверный логин или пароль.", net:"Нет связи. Нужно проверить подключение к интернету и повторить попытку.", fail:"Ошибка при регистрации. Нужно проверить данные и повторить попытку.", confirm:"Регистрация не завершена: платформа ещё не настроена. Нужно сообщить учителю."}}
+         bad:"Неверный логин или пароль.", google:"Вход через Google пока не подключён. Войдите по логину и паролю.", net:"Нет связи. Нужно проверить подключение к интернету и повторить попытку.", fail:"Ошибка при регистрации. Нужно проверить данные и повторить попытку.", confirm:"Регистрация не завершена: платформа ещё не настроена. Нужно сообщить учителю."}}
 };
 function renderAuth(){
   const A=AUTH_T[S.lang], box=document.getElementById("auth"), reg=authMode==="reg";
-  const grades=`<option value="" selected disabled>${esc(A.gradePick)}</option>`+[4,5,6,7,8,9,10,11].map(n=>`<option value="${n}">${A.gradeOpt(n)}</option>`).join("");
+  const grades=`<option value="" selected disabled>${esc(A.gradePick)}</option>`+[4,5,6].map(n=>`<option value="${n}">${A.gradeOpt(n)}</option>`).join("");
   box.innerHTML = `<span class="eyebrow">${esc(A.eyebrow)}</span><h1>${esc(A.h)}</h1><p class="lead">${esc(A.lead)}</p>
    <div class="authcard">
     <div class="authtabs" role="group"><button type="button" data-am="login" aria-pressed="${!reg}">${esc(A.login)}</button><button type="button" data-am="reg" aria-pressed="${reg}">${esc(A.reg)}</button></div>
+    ${GOOGLE_ON?`<div class="af gsec"><button class="gbtn" type="button" data-google="1">${GICON}<span>${esc(reg?A.googleReg:A.google)}</span></button><div class="or">${esc(A.or)}</div></div>`:""}
     ${reg ? `<form class="af" id="regForm" novalidate>
       <div class="row2"><label>${esc(A.fn)}<input name="first_name" maxlength="60" autocomplete="given-name" required></label><label>${esc(A.ln)}<input name="last_name" maxlength="60" autocomplete="family-name" required></label></div>
       <label>${esc(A.grade)}<select name="grade" required>${grades}</select></label>
-      <label>${esc(A.ph)}<input name="phone" type="tel" inputmode="tel" autocomplete="username" placeholder="+7 7__ ___ __ __" required><span class="hint">${esc(A.phHint)}</span></label>
+      <label>${esc(A.ph)}<input name="phone" type="tel" inputmode="tel" autocomplete="username" placeholder="+7 7__ ___ __ __" required>${authMsg?`<span class="hint">${esc(A.phHint)}</span>`:""}</label>
       <label>${esc(A.pph)}<input name="parent_phone" type="tel" inputmode="tel" autocomplete="off" placeholder="+7 7__ ___ __ __" required></label>
       <label>${esc(A.pwNew)}<input name="password" type="password" autocomplete="new-password" required><span class="hint">${esc(A.pwHint)}</span></label>
-      <label class="consent"><input type="checkbox" name="consent"> <span>${esc(A.consent)}</span></label>
       <span class="hint">${esc(A.policyPre)} <a href="../privacy/" target="_blank" rel="noopener">${esc(A.policy)}</a>.</span>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doReg)}</button></form>`
     : `<form class="af" id="loginForm" novalidate>
-      <label>${esc(A.lgPh)}<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required><span class="hint">${esc(A.tHint)}</span></label>
+      <label>${esc(A.lgPh)}<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required>${authMsg?`<span class="hint">${esc(A.tHint)}</span>`:""}</label>
       <label>${esc(A.pw)}<input name="password" type="password" autocomplete="current-password" required></label>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doLogin)}</button></form>`}
    </div>
    <p class="hint" style="text-align:center;margin-top:14px"><a href="../privacy/" target="_blank" rel="noopener">${esc(A.policy)}</a></p>`;
 }
-document.getElementById("auth").addEventListener("click",e=>{ const b=e.target.closest("[data-am]"); if(!b) return; authMode=b.dataset.am; authMsg=""; renderAuth(); });
+const GICON='<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+let GOOGLE_ON=false;
+async function checkProviders(){ try{ const r=await fetch(SB_CFG.url+"/auth/v1/settings",{headers:{apikey:SB_CFG.key}}); const d=await r.json(); GOOGLE_ON=!!(d.external&&d.external.google); }catch(e){ GOOGLE_ON=false; } }
+document.getElementById("auth").addEventListener("click",async e=>{
+  if(e.target.closest("[data-google]")){
+    const {error}=await sb.auth.signInWithOAuth({provider:"google", options:{redirectTo:location.origin+location.pathname}});
+    if(error){ authMsg=AUTH_T[S.lang].e.google; renderAuth(); } return; }
+  const b=e.target.closest("[data-am]"); if(!b) return; authMode=b.dataset.am; authMsg=""; renderAuth(); });
 document.getElementById("auth").addEventListener("submit",async e=>{
   e.preventDefault(); if(authBusy) return;
   const A=AUTH_T[S.lang], f=Object.fromEntries(new FormData(e.target)); for(const k in f) if(typeof f[k]==="string") f[k]=f[k].trim();
   const form=e.target, btn=form.querySelector("button[type=submit]"), errEl=form.querySelector(".err"), label=btn.textContent;
   // Қате болса, форма қайта салынбайды: оқушы енгізген мәліметтер (құпиясөз де) орнында қалады
-  const fail=m=>{ authBusy=false; authMsg=m; errEl.textContent=m; btn.disabled=false; btn.textContent=label; };
+  const fail=m=>{ authBusy=false; authMsg=m; errEl.textContent=m; btn.disabled=false; btn.textContent=label;
+    // Кеңес тек сәтсіздік болғанда шығады: тіркеле алмаса – нөмір туралы, кіре алмаса – логин туралы
+    const key = form.id==="regForm" ? "phone" : "login", lab = form.querySelector(`[name=${key}]`)?.closest("label");
+    if(lab && !lab.querySelector(".hint")) lab.insertAdjacentHTML("beforeend", `<span class="hint">${esc(form.id==="regForm"?A.phHint:A.tHint)}</span>`); };
   authBusy=true; authMsg=""; errEl.textContent=""; btn.disabled=true; btn.textContent=A.wait;
   try{
     if(e.target.id==="loginForm"){
@@ -1527,7 +1538,6 @@ document.getElementById("auth").addEventListener("submit",async e=>{
     if(!ph) return fail(A.e.phone);
     if(!pph) return fail(A.e.pphone);
     if(f.password.length<6) return fail(A.e.pw);
-    if(!f.consent) return fail(A.e.consent);
     const l=await sb.rpc("login_available",{p_login:ph}); if(l.error) return fail(A.e.net); if(!l.data) return fail(A.e.taken);
     const {data,error}=await sb.auth.signUp({email:loginEmail(ph), password:f.password,
       options:{data:{role:"student", mode:"open", phone:ph, parent_phone:pph, first_name:f.first_name, last_name:f.last_name, grade:f.grade, consent:"true"}}});
@@ -1584,6 +1594,7 @@ async function boot(){
     sb=window.supabase.createClient(SB_CFG.url, SB_CFG.key, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"tilkz-auth"}});
     try{ const {data:{session}}=await sb.auth.getSession(); if(session){ await enterAs(session.user); return; } }catch(e){ console.warn(e); }
   }
+  await checkProviders();
   renderAll();
 }
 boot();
