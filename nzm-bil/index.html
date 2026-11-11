@@ -1497,14 +1497,14 @@ function renderAuth(){
     ${reg ? `<form class="af" id="regForm" novalidate>
       <div class="row2"><label>${esc(A.fn)}<input name="first_name" maxlength="60" autocomplete="given-name" required></label><label>${esc(A.ln)}<input name="last_name" maxlength="60" autocomplete="family-name" required></label></div>
       <label>${esc(A.grade)}<select name="grade" required>${grades}</select></label>
-      <label>${esc(A.ph)}<input name="phone" type="tel" inputmode="tel" autocomplete="username" placeholder="+7 7__ ___ __ __" required>${authMsg?`<span class="hint">${esc(A.phHint)}</span>`:""}</label>
-      <label>${esc(A.pph)}<input name="parent_phone" type="tel" inputmode="tel" autocomplete="off" placeholder="+7 7__ ___ __ __" required></label>
+      <label>${esc(A.ph)}<input name="phone" type="tel" inputmode="tel" autocomplete="username" value="+7 " required>${authMsg?`<span class="hint">${esc(A.phHint)}</span>`:""}</label>
+      <label>${esc(A.pph)}<input name="parent_phone" type="tel" inputmode="tel" autocomplete="off" value="+7 " required></label>
       <label>${esc(A.pwNew)}<input name="password" type="password" autocomplete="new-password" required><span class="hint">${esc(A.pwHint)}</span></label>
       <span class="hint">${esc(A.policyPre)} <a href="../privacy/" target="_blank" rel="noopener">${esc(A.policy)}</a>.</span>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doReg)}</button></form>`
     : `<form class="af" id="loginForm" novalidate>
-      <label>${esc(A.lgPh)}<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required>${authMsg?`<span class="hint">${esc(A.tHint)}</span>`:""}</label>
+      <label>${esc(A.lgPh)}<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" value="+7 " required>${authMsg?`<span class="hint">${esc(A.tHint)}</span>`:""}</label>
       <label>${esc(A.pw)}<input name="password" type="password" autocomplete="current-password" required></label>
       <p class="err" role="alert">${esc(authMsg)}</p>
       <button class="btn primary" type="submit" ${authBusy?"disabled":""}>${esc(authBusy?A.wait:A.doLogin)}</button></form>`}
@@ -1512,6 +1512,19 @@ function renderAuth(){
    <p class="hint" style="text-align:center;margin-top:14px"><a href="../privacy/" target="_blank" rel="noopener">${esc(A.policy)}</a></p>`;
 }
 const GICON='<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+/* Телефон өрісі: "+7 " префиксі тұрақты, қолданушы қалған цифрларды жазады (775 444 5566 → +7 775 444 55 66).
+   Латын әріпі енгізілсе, бұл логин – префикс алынады. */
+function fmtPhoneInput(el){
+  const v = el.value;
+  if(/[a-zA-Z]/.test(v)){ el.value = v.replace(/^\+7\s*/, ""); return; }
+  const rest = v.replace(/^\+7\s*/, "");
+  let d = rest.replace(/\D/g, "");
+  if(d.length>10) d = d.slice(d.length-10);
+  if(!d){ el.value = "+7 "; return; }
+  el.value = "+7 " + d.slice(0,3) + (d.length>3 ? " "+d.slice(3,6) : "") + (d.length>6 ? " "+d.slice(6,8) : "") + (d.length>8 ? " "+d.slice(8,10) : "");
+}
+document.addEventListener("focusin", e=>{ if(e.target.matches && e.target.matches('input[name=phone],input[name=parent_phone],input[name=login]') && !e.target.value) e.target.value = "+7 "; });
+document.addEventListener("input", e=>{ if(e.target.matches && e.target.matches('input[name=phone],input[name=parent_phone],input[name=login]')) fmtPhoneInput(e.target); });
 let GOOGLE_ON=false;
 async function checkProviders(){ try{ const r=await fetch(SB_CFG.url+"/auth/v1/settings",{headers:{apikey:SB_CFG.key}}); const d=await r.json(); GOOGLE_ON=!!(d.external&&d.external.google); }catch(e){ GOOGLE_ON=false; } }
 document.getElementById("auth").addEventListener("click",async e=>{
