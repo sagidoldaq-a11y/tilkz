@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="google" content="notranslate">
-<title>Құпиялылық саясаты – aitil</title>
+<title>Құпиялық саясаты – aitil</title>
 <script>(function(){try{var th=localStorage.getItem("tilkz-theme");if(th)document.documentElement.dataset.theme=th;}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,7 +50,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:28px}
 <main class="wrap">
 
 <article lang="kk" data-l="kk">
-  <h1>Құпиялылық саясаты</h1>
+  <h1>Құпиялық саясаты</h1>
   <p class="date">Күшіне енген күні: 2026 жылғы 4 қараша</p>
   <div class="box">
     <p class="lead">aitil – қазақ тілін үйретуге арналған оқу платформасы. Біз оқушылар туралы тек оқуға қажетті ең аз деректі жинаймыз, оларды жарнамаға пайдаланбаймыз және ешкімге сатпаймыз.</p>
@@ -170,7 +170,7 @@ const LANG_KEY="tilkz-lang";
 let lang="kk"; try{ const l=localStorage.getItem(LANG_KEY); if(l==="kk"||l==="ru") lang=l; }catch(e){}
 function render(){
   document.documentElement.lang=lang;
-  document.title = lang==="ru" ? "Политика конфиденциальности – aitil" : "Құпиялылық саясаты – aitil";
+  document.title = lang==="ru" ? "Политика конфиденциальности – aitil" : "Құпиялық саясаты – aitil";
   document.querySelectorAll("[data-l]").forEach(a=>a.hidden=a.dataset.l!==lang);
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
   paintTheme();

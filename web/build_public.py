@@ -53,7 +53,7 @@ head = ('<!doctype html><html lang="kk" translate="no"><head><meta charset="utf-
 out = root / "nzm-bil"
 out.mkdir(exist_ok=True)
 (out / "index.html").write_text(head + body + "</body></html>", encoding="utf-8")
-# 2б) Құпиялылық саясаты
+# 2б) Құпиялық саясаты
 (root / "privacy").mkdir(exist_ok=True)
 shutil.copyfile(here / "privacy.html", root / "privacy" / "index.html")
 
