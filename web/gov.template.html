@@ -73,7 +73,7 @@ h2{font-family:var(--f-text);font-size:24px;line-height:1.25;margin:0 0 8px}
 .note{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 14px;font-size:14.5px}
 .note a{color:inherit;font-weight:700}
 /* Сабақ бөлімдері */
-.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:4px 0 18px}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:6px;margin:4px 0 18px}
 .tabs button{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 6px;font-size:13.5px;font-weight:700;color:var(--muted);line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:2px}
 .tabs button small{font-weight:600;font-size:11.5px}
 .tabs button[aria-current="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
@@ -154,6 +154,17 @@ audio{width:100%}
   .tabs button{font-size:12.5px;padding:7px 4px} .flip .kk{font-size:27px} .flip .ru{font-size:23px}
   .userbtn{max-width:40vw}
 }
+
+/* 2-сабақ: блиц, сұрақ түрлері, құлыпталған сабақ, дереккөздер */
+.lesson.locked{opacity:.65}
+.lesson .lockrow{margin:0}
+.blword{display:block;font-family:var(--f-text);font-size:32px;font-weight:700;color:var(--accent);text-align:center;padding:6px 0}
+.qt-ex{font-family:var(--f-text);font-size:24px;line-height:1.35;padding:8px 0}
+.phr-avoid .phr .k{color:var(--bad)}
+.sources{margin-top:22px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+.sources b{font-size:12.5px;text-transform:uppercase;letter-spacing:.6px}
+.sources a{color:var(--accent);text-decoration:none}
+.sources a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -166,98 +177,100 @@ audio{width:100%}
 <main class="wrap" id="app"></main>
 <script>
 "use strict";
-/* Сабақтың мазмұны content/gov-kz-L1-refusal-v1.json файлынан өзгеріссіз енгізіледі (build_public.py) */
-const LESSON = /*__LESSON__*/null;
+/* Сабақтардың мазмұны content/*.json файлдарынан өзгеріссіз енгізіледі (build_public.py) */
+const LESSONS = /*__LESSONS__*/null;
 const SB_CFG = /*__SUPABASE__*/null;
-const BANK_ID = LESSON.id;               // attempts/answers кестелеріндегі bank_id
-const SECS = ["vocabulary","phrases","reading","speaking"];
+const LETTERS = "ABCD";
+const fmtT = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+let LESSON = null, BANK_ID = null, VQ = [], GQ = [], RQ = [], hasQT = false, hasWarm = false;
+function setLesson(id){
+  LESSON = LESSONS.find(l=>l.id===id) || LESSONS[0];
+  BANK_ID = LESSON.id;
+  const itemsOf = sec => LESSON.items.filter(x=>x.section===sec);
+  VQ = itemsOf("vocabulary"); GQ = itemsOf("grammar"); RQ = itemsOf("reading");
+  hasQT = !!LESSON.question_types; hasWarm = !!LESSON.warmup;
+}
 const L = l => ({
   kk:{lessons:"Сабақтар", module:"модуль", lesson:"сабақ", start:"Бастау", cont:"Жалғастыру", again:"Қайта бастау",
       progress:(a,n)=>`${n} тапсырманың ${a} орындалды`, firstOk:(a,n)=>`Бірден дұрыс: ${a} / ${n}`,
-      secs:["Сөздік","Тірек сөйлемдер","Мәтін","Сөйлеу"],
+      secs:{vocab:"Сөздік", qtypes:"Сұрақтар", phrases:"Тірек сөйлемдер", grammar:"Грамматика", reading:"Мәтін", speaking:"Сөйлеу"},
+      blitz:"Блиц", blitzLead:"Журналист сұрайды, сіз 10 секунд ішінде сол сөзбен жауап бересіз.", word:"Сөз", blitzNext:"Келесі сұрақ ›", toVocab:"Сөздікке өту ›",
       cards:"Сөз карточкалары", card:(i,n)=>`Карточка ${i} / ${n}`, tapFront:"Аудару үшін бас", tapBack:"Қайта аудару үшін бас",
       prev:"‹ Алдыңғы", next:"Келесі ›", toTasks:"Тапсырмаларға өту", vtasks:"Сөздік тапсырмалары", gtasks:"Грамматика", rtasks:"Мәтін бойынша сұрақтар",
       q:(i,n)=>`Сұрақ ${i} / ${n}`, ok:"Дұрыс!", bad:"Қате. Тағы бір рет көр.", hint:"Кеңес", revealed:"Дұрыс жауап", expl:"Түсіндірме",
-      secDone:"Бөлім аяқталды", nextSec:"Келесі бөлім ›", toLesson:"Сабаққа оралу",
-      steps:"Қадам", pressure:"Қысым жасалғанда", group:(i,n)=>`${i} / ${n}`,
+      secDone:"Бөлім аяқталды", nextSec:"Келесі бөлім ›", qtKind:(i,n)=>`${i} / ${n}`, whyHard:"Неге қиын",
+      steps:"Қадам", pressure:"Қысым жасалғанда", avoid:"Нені айтпау керек", group:(i,n)=>`${i} / ${n}`,
       readText:"Мәтінді оқу", toQs:"Сұрақтарға өту", peek:"Мәтінді ашу",
-      situations:"Жағдайлар", sec:"сек", min:"мин", level:"деңгей", done:"Орындалды",
-      know:"Басшы біледі", citizen:"Азамат", nextLine:"Азаматтың келесі сөзі ›",
-      recStart:"🎙 Жазуды бастау", recStop:"■ Тоқтату", recAgain:"Қайта жазу", recording:"Жазылып жатыр",
+      situations:"Жағдайлар", level:"деңгей", done:"Орындалды", know:"Басшы біледі", citizen:"Азамат", journalist:"Журналист",
+      nextLine:"Азаматтың келесі сөзі ›", recStart:"🎙 Жазуды бастау", recStop:"■ Тоқтату", recAgain:"Қайта жазу", recording:"Жазылып жатыр",
       noMic:"Микрофон қосылмады. Жауапты дауыстап айтып, таймерді іске қосуға болады.", noMicGo:"Таймермен жалғастыру", timerStop:"■ Дайын",
       yourRec:"Сіздің жазбаңыз (тек осы құрылғыда сақталады)", self:"Өзіңді тексер", model:"Үлгі жауапты көру", modelH:"Үлгі жауап",
-      saved:"Нәтижелер сақталады.", notSaved:"Нәтиже тек осы құрылғыда сақталады. Серверге сақтау үшін", login:"платформаға кіру керек",
-      results:"Нәтиже", finished:"Сабақтың тапсырмалары орындалды!",
-      aLead:"Сабақтарға кіру үшін аккаунт керек. Тіркелу тегін.", aLogin:"Кіру", aReg:"Тіркелу", google:"Google арқылы кіру", googleReg:"Google арқылы тіркелу", or:"немесе",
-      email:"Email, телефон нөмірі не логин", emailReg:"Email", name:"Аты-жөні", pw:"Құпиясөз", pwHint:"Кемінде 6 таңба.", doLogin:"Кіру", doReg:"Тіркелу", wait:"Жүктелуде…",
-      policyPre:"Тіркелу арқылы", policy:"құпиялық саясатымен", policyPost:"келісесіз.", out:"Аккаунттан шығу керек пе?",
-      e:{empty:"Барлық өріс толтырылуы керек.", bad:"Логин не құпиясөз қате.", pw:"Құпиясөз кемінде 6 таңба болуы керек.", email:"Email қате жазылған.", taken:"Бұл email-мен тіркелген аккаунт бар. «Кіру» бетінен кіруге болады.", net:"Байланыс жоқ. Интернетті тексеріп, қайталап көру керек.", fail:"Тіркелу кезінде қате шықты. Қайталап көру керек.", google:"Google арқылы кіру әзірге қосылмаған. Email арқылы тіркелуге болады."}},
+      notSaved:"Нәтиже тек осы құрылғыда сақталады. Серверге сақтау үшін", login:"платформаға кіру керек",
+      finished:"Сабақтың тапсырмалары орындалды!", sources:"Дереккөздер", unlock:(n)=>`${n}-сабақты аяқтаған соң ашылады`, lessonN:(n)=>`${n}-сабақ`,
+      out:"Аккаунттан шығу керек пе?"},
   ru:{lessons:"Уроки", module:"модуль", lesson:"урок", start:"Начать", cont:"Продолжить", again:"Начать заново",
       progress:(a,n)=>`Выполнено ${a} из ${n} заданий`, firstOk:(a,n)=>`Верно с первого раза: ${a} / ${n}`,
-      secs:["Словарь","Опорные фразы","Текст","Говорение"],
+      secs:{vocab:"Словарь", qtypes:"Вопросы", phrases:"Опорные фразы", grammar:"Грамматика", reading:"Текст", speaking:"Говорение"},
+      blitz:"Блиц", blitzLead:"Журналист спрашивает, вы отвечаете словом из урока за 10 секунд.", word:"Слово", blitzNext:"Следующий вопрос ›", toVocab:"К словарю ›",
       cards:"Карточки слов", card:(i,n)=>`Карточка ${i} / ${n}`, tapFront:"Нажми, чтобы перевернуть", tapBack:"Нажми, чтобы вернуть",
       prev:"‹ Назад", next:"Далее ›", toTasks:"К заданиям", vtasks:"Задания по словарю", gtasks:"Грамматика", rtasks:"Вопросы по тексту",
       q:(i,n)=>`Вопрос ${i} / ${n}`, ok:"Верно!", bad:"Неверно. Попробуй ещё раз.", hint:"Подсказка", revealed:"Правильный ответ", expl:"Объяснение",
-      secDone:"Раздел завершён", nextSec:"Следующий раздел ›", toLesson:"К уроку",
-      steps:"Шаг", pressure:"Если на вас давят", group:(i,n)=>`${i} / ${n}`,
+      secDone:"Раздел завершён", nextSec:"Следующий раздел ›", qtKind:(i,n)=>`${i} / ${n}`, whyHard:"Почему это сложно",
+      steps:"Шаг", pressure:"Если на вас давят", avoid:"Чего не говорить", group:(i,n)=>`${i} / ${n}`,
       readText:"Читать текст", toQs:"К вопросам", peek:"Открыть текст",
-      situations:"Ситуации", sec:"сек", min:"мин", level:"уровень", done:"Выполнено",
-      know:"Басшы біледі", citizen:"Азамат", nextLine:"Следующая реплика ›",
-      recStart:"🎙 Начать запись", recStop:"■ Стоп", recAgain:"Записать заново", recording:"Идёт запись",
+      situations:"Ситуации", level:"уровень", done:"Выполнено", know:"Руководитель знает", citizen:"Гражданин", journalist:"Журналист",
+      nextLine:"Следующая реплика ›", recStart:"🎙 Начать запись", recStop:"■ Стоп", recAgain:"Записать заново", recording:"Идёт запись",
       noMic:"Микрофон не подключился. Можно ответить вслух и запустить только таймер.", noMicGo:"Продолжить с таймером", timerStop:"■ Готово",
       yourRec:"Ваша запись (хранится только на этом устройстве)", self:"Проверь себя", model:"Показать образец ответа", modelH:"Образец ответа",
-      saved:"Результаты сохраняются.", notSaved:"Результат хранится только на этом устройстве. Чтобы сохранять на сервере,", login:"нужно войти на платформу",
-      results:"Результат", finished:"Задания урока выполнены!",
-      aLead:"Для доступа к урокам нужен аккаунт. Регистрация бесплатная.", aLogin:"Вход", aReg:"Регистрация", google:"Войти через Google", googleReg:"Зарегистрироваться через Google", or:"или",
-      email:"Email, номер телефона или логин", emailReg:"Email", name:"Имя и фамилия", pw:"Пароль", pwHint:"Не менее 6 символов.", doLogin:"Войти", doReg:"Зарегистрироваться", wait:"Загрузка…",
-      policyPre:"Регистрируясь, вы соглашаетесь с", policy:"политикой конфиденциальности", policyPost:".", out:"Выйти из аккаунта?",
-      e:{empty:"Заполнены не все поля.", bad:"Неверный логин или пароль.", pw:"Пароль должен быть не короче 6 символов.", email:"Неверный email.", taken:"Аккаунт с этим email уже есть – можно войти через вкладку «Вход».", net:"Нет связи. Нужно проверить интернет и повторить попытку.", fail:"Ошибка при регистрации. Нужно повторить попытку.", google:"Вход через Google пока не подключён. Можно зарегистрироваться по email."}}
+      notSaved:"Результат хранится только на этом устройстве. Чтобы сохранять на сервере,", login:"нужно войти на платформу",
+      finished:"Задания урока выполнены!", sources:"Источники", unlock:(n)=>`Откроется после урока ${n}`, lessonN:(n)=>`Урок ${n}`,
+      out:"Выйти из аккаунта?"}
 })[S.lang];
 
-/* ---------- Күй (бар курстағыдай localStorage-та сақталады) ---------- */
+/* ---------- Күй: localStorage-та, пайдаланушыға бөлек ---------- */
 let USER=null, sb=null, KEY="gov-v1:anon";
-const blank = () => ({lang:"kk", items:{}, attempt:null, view:"home", sec:0, pos:{}, card:0, flipped:false, grp:0, sit:null, checks:{}, model:{}, recDone:{}, line:{}});
-function load(){ try{ return Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){ return blank(); } }
+const blank = () => ({lang:"kk", lesson:null, items:{}, attempts:{}, view:"home", sec:null, pos:{}, card:0, flipped:false, grp:0, sit:null, checks:{}, model:{}, recDone:{}, line:{}, bi:0, qt:0});
+function load(){ try{ const s=Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)||"{}")); if(s.sec!==null && typeof s.sec!=="string") s.sec=null; return s; }catch(e){ return blank(); } }
 let S=load();
 try{ const l=localStorage.getItem("tilkz-lang"); if(l==="kk"||l==="ru") S.lang=l; }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ru = () => S.lang==="ru";
-const LETTERS = "ABCD";
-const itemsOf = sec => LESSON.items.filter(x=>x.section===sec);
-const VQ = itemsOf("vocabulary"), GQ = itemsOf("grammar"), RQ = itemsOf("reading");
 const st = id => (S.items[id] ||= {tries:[], status:"open"});
 const isDone = it => ["ok","revealed"].includes(st(it.id).status);
 const isFirst = it => st(it.id).status==="ok" && st(it.id).tries.length===0;
 const doneCount = () => LESSON.items.filter(isDone).length;
+const lessonDone = l => l.items.every(x=>["ok","revealed"].includes((S.items[x.id]||{}).status));
+const lessonOpen = i => LESSONS.slice(0,i).every(lessonDone);
+const listFor = k => k==="vocab" ? VQ.concat(hasQT?[]:GQ) : k==="grammar" ? GQ : RQ;
 
-/* ---------- Серверге жазу: курс бетіндегі ensureAttempt / syncItem логикасымен бірдей ---------- */
-let attemptReq=null;
-function ensureAttempt(){
-  if(S.attempt) return Promise.resolve(S.attempt);
-  return attemptReq ||= sb.from("attempts").insert({bank_id:BANK_ID, mode:"practice"}).select("id").single()
-    .then(({data,error})=>{ attemptReq=null; if(error){ console.warn(error); return null; } S.attempt=data.id; save(); return data.id; });
+/* ---------- Серверге жазу (курс бетіндегі логикамен бірдей) ---------- */
+let attemptReq={};
+function ensureAttempt(bank){
+  if(S.attempts[bank]) return Promise.resolve(S.attempts[bank]);
+  return attemptReq[bank] ||= sb.from("attempts").insert({bank_id:bank, mode:"practice"}).select("id").single()
+    .then(({data,error})=>{ delete attemptReq[bank]; if(error){ console.warn(error); return null; } S.attempts[bank]=data.id; save(); return data.id; });
 }
-/* Сұраулар кезекпен жіберіледі: жылдам басқанда «wrong1» жазбасы «ok» жазбасынан кейін жетіп, оны басып кетпеуі үшін */
 let syncQ=Promise.resolve();
-function syncItem(it){ syncQ=syncQ.then(()=>syncItemNow(it)).catch(e=>console.warn(e)); return syncQ; }
-async function syncItemNow(it){
+function syncItem(it, bank){ syncQ=syncQ.then(()=>syncItemNow(it,bank)).catch(e=>console.warn(e)); return syncQ; }
+async function syncItemNow(it, bank){
   if(!USER||!sb) return; const s=st(it.id); if(s.status==="open") return;
-  const aid=await ensureAttempt(); if(!aid) return;
-  const {error}=await sb.from("answers").upsert({attempt_id:aid, bank_id:BANK_ID, item_id:it.id, skill:it.skill, level:it.level,
+  const aid=await ensureAttempt(bank); if(!aid) return;
+  const {error}=await sb.from("answers").upsert({attempt_id:aid, bank_id:bank, item_id:it.id, skill:it.skill, level:it.level,
     tries:[...s.tries], status:s.status, first_correct:isFirst(it), updated_at:new Date().toISOString()});
   if(error) console.warn(error);
 }
-function syncFinish(){ syncQ=syncQ.then(syncFinishNow).catch(e=>console.warn(e)); return syncQ; }
-async function syncFinishNow(){
-  if(!USER||!sb) return; const aid=await ensureAttempt(); if(!aid) return;
-  const {error}=await sb.from("attempts").update({finished_at:new Date().toISOString(), first_correct:LESSON.items.filter(isFirst).length, total:LESSON.items.length}).eq("id",aid);
+function syncFinish(bank, items){ syncQ=syncQ.then(()=>syncFinishNow(bank, items)).catch(e=>console.warn(e)); return syncQ; }
+async function syncFinishNow(bank, items){
+  if(!USER||!sb) return; const aid=await ensureAttempt(bank); if(!aid) return;
+  const {error}=await sb.from("attempts").update({finished_at:new Date().toISOString(), first_correct:items.filter(isFirst).length, total:items.length}).eq("id",aid);
   if(error) console.warn(error);
 }
 
 /* ---------- Экрандар ---------- */
 const app=document.getElementById("app");
 function render(){
+  setLesson(S.lesson);
   document.documentElement.lang=S.lang;
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.lang===S.lang));
   const ub=document.getElementById("user"); ub.hidden=!USER; ub.textContent = USER ? "👤 "+USER.name : "";
@@ -265,39 +278,94 @@ function render(){
   window.scrollTo({top:0});
 }
 const T = () => L();
-const courseTitle = () => ru() ? LESSON.course.title_ru : LESSON.course.title;
-const moduleTitle = () => ru() ? LESSON.course.module.title_ru : LESSON.course.module.title;
-const lessonTitle = () => ru() ? LESSON.lesson.title_ru : LESSON.lesson.title;
+const courseTitle = () => ru() ? LESSONS[0].course.title_ru : LESSONS[0].course.title;
+const moduleTitle = () => ru() ? LESSONS[0].course.module.title_ru : LESSONS[0].course.module.title;
+const lessonTitle = (l=LESSON) => ru() ? l.lesson.title_ru : l.lesson.title;
 function saveNote(){ const t=T(); return USER ? "" : `<p class="note">${t.notSaved} <a href="../nzm-bil/">${t.login}</a>.</p>`; }
+function openLesson(id){
+  if(REC.on) stopRec();
+  S.lesson=id; setLesson(id); S.view="lesson"; S.sec=secList()[0].k;
+  S.pos={}; S.card=0; S.flipped=false; S.grp=0; S.sit=null; S.bi=0; S.qt=0; MICERR=null; save(); render();
+}
+function goHome(){ if(REC.on) stopRec(); S.view="home"; S.sit=null; save(); render(); }
 
 function homeHTML(){
-  const t=T(), n=LESSON.items.length, a=doneCount(), m=LESSON.course.module;
-  return `<span class="eyebrow">aitil</span><h1>${esc(courseTitle())}</h1>
-   <div class="card module"><div class="mnum">${ru()?`${t.module} ${m.number}`:`${m.number}-${t.module}`}</div><h2>${esc(moduleTitle())}</h2>
-     <div class="lesson"><h3>${ru()?`Урок ${LESSON.lesson.number}. `:`${LESSON.lesson.number}-${t.lesson}. `}${esc(lessonTitle())}</h3>
-       <p class="goal">${esc(LESSON.lesson.goal)}</p>
+  const t=T(), m=LESSONS[0].course.module;
+  const cards = LESSONS.map((l,i)=>{
+    const open = lessonOpen(i), n=l.items.length, a=l.items.filter(x=>["ok","revealed"].includes((S.items[x.id]||{}).status)).length;
+    const num = ru() ? `${t.lessonN(l.lesson.number)}` : `${l.lesson.number}-${t.lesson}`;
+    return `<div class="lesson ${open?"":"locked"}"><h3>${esc(num)}. ${esc(lessonTitle(l))}</h3>
+       <p class="goal">${esc(l.lesson.goal)}</p>
        <div class="bar"><i style="width:${Math.round(100*a/n)}%"></i></div>
-       <p class="meta">${t.progress(a,n)}${a===n?` · ${t.firstOk(LESSON.items.filter(isFirst).length,n)}`:""}</p>
-       <div class="row"><button class="btn primary" type="button" data-go="lesson">${a?t.cont:t.start}</button></div></div></div>
+       <p class="meta">${t.progress(a,n)}${a===n?` · ${t.firstOk(l.items.filter(isFirst).length,n)}`:""}</p>
+       ${open
+         ? `<div class="row"><button class="btn primary" type="button" data-lesson="${l.id}">${a?t.cont:t.start}</button></div>`
+         : `<p class="meta" style="margin:0">🔒 ${t.unlock(LESSONS[i-1].lesson.number)}</p>`}</div>`; }).join("");
+  return `<span class="eyebrow">aitil</span><h1>${esc(courseTitle())}</h1>
+   <div class="card module"><div class="mnum">${ru()?`${t.module} ${m.number}`:`${m.number}-${t.module}`}</div><h2>${esc(moduleTitle())}</h2>${cards}</div>
    <div style="margin-top:14px">${saveNote()}</div>`;
 }
 
+/* Бөлімдер тізімі сабаққа байланысты */
+function secList(){
+  const t=T(), a=[];
+  if(hasWarm) a.push({k:"blitz", l:t.blitz});
+  a.push({k:"vocab", l:t.secs.vocab});
+  if(hasQT) a.push({k:"qtypes", l:t.secs.qtypes});
+  a.push({k:"phrases", l:t.secs.phrases});
+  if(hasQT) a.push({k:"grammar", l:t.secs.grammar});
+  a.push({k:"reading", l:t.secs.reading});
+  a.push({k:"speaking", l:t.secs.speaking});
+  return a;
+}
+function secState(k){
+  const sp=LESSON.speaking;
+  if(k==="blitz") return [LESSON.warmup.items.filter(w=>S.recDone[w.id]).length, LESSON.warmup.items.length];
+  if(k==="vocab") { const l=listFor("vocab"); return [l.filter(isDone).length, l.length]; }
+  if(k==="grammar") return [GQ.filter(isDone).length, GQ.length];
+  if(k==="reading") return [RQ.filter(isDone).length, RQ.length];
+  if(k==="speaking") return [sp.filter(x=>S.recDone[x.id]).length, sp.length];
+  if(k==="qtypes") return [null, LESSON.question_types.length];
+  if(k==="phrases") return [null, phraseGroups().length];
+  return [null,null];
+}
 function lessonHTML(){
-  const t=T();
-  const prog = [VQ.length+GQ.length, 0, RQ.length, 0];
-  const done = [VQ.concat(GQ).filter(isDone).length, null, RQ.filter(isDone).length, LESSON.speaking.filter(x=>S.recDone[x.id]).length];
-  const tabs = t.secs.map((s,i)=>{ const sub = i===1 ? `${LESSON.key_phrases.length}` : i===3 ? `${done[3]}/${LESSON.speaking.length}` : `${done[i]}/${prog[i]}`;
-    const fin = (i===0||i===2) ? done[i]===prog[i] : i===3 ? done[3]===LESSON.speaking.length : false;
-    return `<button type="button" data-sec="${i}" aria-current="${S.sec===i}" class="${fin?"done":""}">${esc(s)}<small>${fin?"✓":sub}</small></button>`; }).join("");
-  const body = [vocabHTML, phrasesHTML, readingHTML, speakingHTML][S.sec]();
+  const t=T(), n=LESSON.lesson.number;
+  const tabs = secList().map(s=>{ const [a,b]=secState(s.k); const fin = a!==null && a===b && b>0;
+    const sub = a!==null ? `${a}/${b}` : `${b}`;
+    return `<button type="button" data-sec="${s.k}" aria-current="${S.sec===s.k}" class="${fin?"done":""}">${esc(s.l)}<small>${fin?"✓":sub}</small></button>`; }).join("");
+  const body = {blitz:blitzHTML, vocab:vocabHTML, qtypes:qtypesHTML, phrases:phrasesHTML, grammar:grammarHTML, reading:readingHTML, speaking:speakingHTML}[S.sec || secList()[0].k]();
+  const src = (LESSON.sources||[]).length ? `<div class="sources"><b>${t.sources}</b>${LESSON.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.publisher)} — ${esc(s.title)} (${s.year})</a>`).join("")}</div>` : "";
   return `<button class="btn ghost back" type="button" data-go="home">‹ ${t.lessons}</button>
-    <span class="eyebrow">${esc(moduleTitle())}</span><h1 style="font-size:24px">${ru()?`Урок ${LESSON.lesson.number}. `:`${LESSON.lesson.number}-${t.lesson}. `}${esc(lessonTitle())}</h1>
-    <nav class="tabs">${tabs}</nav>${body}`;
+    <span class="eyebrow">${esc(ru()?LESSONS[0].course.module.title_ru:LESSONS[0].course.module.title)}</span>
+    <h1 style="font-size:24px">${ru()?`${t.lessonN(n)}. `:`${n}-${t.lesson}. `}${esc(lessonTitle())}</h1>
+    <nav class="tabs">${tabs}</nav>${body}${src}`;
 }
 
-/* --- Сөздік: карточкалар → сөздік тапсырмалары → грамматика --- */
+/* --- Блиц-сұхбат (ұпайсыз, тек дауыспен жауап және үлгі) --- */
+function blitzHTML(){
+  const t=T(), W=LESSON.warmup.items, i=Math.min(S.bi, W.length-1), w=W[i], done=!!S.recDone[w.id], rec=REC.sid===w.id?REC:null;
+  const spk = LESSON.warmup.speaker_label || t.journalist;
+  let ctrl;
+  if(rec && rec.on) ctrl=`<div class="timer run" aria-live="polite"><span class="recdot"></span>${fmtT(rec.left)}</div><p class="meta" style="text-align:center;margin:0">${rec.audio===false?"":t.recording}</p>
+      <button class="btn rec" type="button" data-rec="stop">${rec.audio===false?t.timerStop:t.recStop}</button>`;
+  else if(MICERR===w.id) ctrl=`<div class="timer">${fmtT(LESSON.warmup.time_limit_sec)}</div><p class="note">${t.noMic}</p><button class="btn primary" type="button" data-rec="timer" data-rid="${w.id}">${t.noMicGo}</button>`;
+  else if(!done) ctrl=`<div class="timer">${fmtT(LESSON.warmup.time_limit_sec)}</div><button class="btn primary" type="button" data-rec="start" data-rid="${w.id}">${t.recStart}</button>`;
+  else ctrl=`${AUDIO[w.id]?`<div><p class="meta" style="margin:0 0 6px">${t.yourRec}</p><audio controls src="${AUDIO[w.id]}"></audio></div>`:""}
+      <div><h2 style="font-size:19px">${t.modelH}</h2><div class="model">${esc(w.model_answer)}</div></div>
+      <button class="btn" type="button" data-rec="start" data-rid="${w.id}">${t.recAgain}</button>`;
+  return `<div class="step"><span>${t.blitz}</span><span>${i+1} / ${W.length}</span></div>
+    <p class="meta" style="margin:0 0 10px">${esc(t.blitzLead)}</p>
+    <div class="card stack"><div class="bubble"><small>${esc(spk)}</small>${esc(w.question)}</div>
+      <div class="box know"><b class="lbl">${t.word}</b><span class="blword">${esc(w.word)}</span></div>
+      ${ctrl}</div>
+    <div class="nav"><button class="btn" type="button" data-bi="${i-1}" ${i===0?"disabled":""}>${t.prev}</button>
+      ${i<W.length-1 ? `<button class="btn primary" type="button" data-bi="${i+1}">${t.blitzNext}</button>` : `<button class="btn primary" type="button" data-sec="vocab">${t.toVocab}</button>`}</div>`;
+}
+
+/* --- Сөздік: карточкалар → сөздік тапсырмалары (және 1-сабақта грамматика) --- */
 function vocabHTML(){
-  const t=T(), p=S.pos.vocabulary ?? "cards";
+  const t=T(), p=S.pos.vocab ?? "cards";
   if(p==="cards"){
     const V=LESSON.vocabulary, i=Math.min(S.card, V.length-1), v=V[i];
     return `<div class="step"><span>${t.cards}</span><span>${t.card(i+1,V.length)}</span></div>
@@ -305,16 +373,23 @@ function vocabHTML(){
         <div class="in"><div class="face front"><div class="ru">${esc(v.ru)}</div><div class="tap">${t.tapFront}</div></div>
         <div class="face back"><div class="kk">${esc(v.word)}</div><div class="col">${esc(v.collocation)}</div><div class="ex">${esc(v.example)}</div><div class="tap">${t.tapBack}</div></div></div></div>
       <div class="nav"><button class="btn" type="button" data-card="-1" ${i===0?"disabled":""}>${t.prev}</button>
-        ${i<V.length-1 ? `<button class="btn primary" type="button" data-card="1">${t.next}</button>` : `<button class="btn primary" type="button" data-vpos="0">${t.toTasks}</button>`}</div>`;
+        ${i<V.length-1 ? `<button class="btn primary" type="button" data-card="1">${t.next}</button>` : `<button class="btn primary" type="button" data-pk="vocab" data-p="0">${t.toTasks}</button>`}</div>`;
   }
-  const list=VQ.concat(GQ); if(p>=list.length) return secDoneHTML(0);
-  const it=list[p], g=it.section==="grammar";
-  const num = g ? p-VQ.length : p, tot = g ? GQ.length : VQ.length;
-  return itemHTML(it, `${g?t.gtasks:t.vtasks}`, t.q(num+1,tot), "vpos", p, list.length);
+  return taskScreen("vocab", t.vtasks, p);
 }
-
-/* --- Бір тапсырма бір экранда --- */
-function itemHTML(it, title, counter, posKey, p, n){
+/* Тапсырма экраны: k – бөлім кілті, p – индекс (vocab/reading үшін алғашқы экран «cards»/«text») */
+function taskScreen(k, title, p){
+  const t=T(), list=listFor(k);
+  if(p>=list.length) return secDoneHTML(k);
+  const it=list[p], isG = it.section==="grammar";
+  const num = isG ? GQ.indexOf(it)+1 : (k==="vocab" ? VQ.indexOf(it)+1 : RQ.indexOf(it)+1);
+  const tot = isG ? GQ.length : (k==="vocab" ? VQ.length : RQ.length);
+  const ttl = isG ? t.gtasks : title;
+  const peek = it.section==="reading" ? `<details class="peek"><summary>${t.peek}</summary>${textHTML()}</details>` : "";
+  const prevP = p>0 ? p-1 : (k==="vocab"?"cards":k==="reading"?"text":0);
+  return itemHTML(it, ttl, t.q(num,tot), k, p, prevP, list.length, peek);
+}
+function itemHTML(it, title, counter, k, p, prevP, n, peek){
   const t=T(), s=st(it.id), fin=isDone(it);
   const opts=it.options.map((o,j)=>{ const L_=LETTERS[j];
     let cls=""; if(fin && j===it.answer) cls="ok"; else if(s.tries.includes(L_)) cls="bad";
@@ -323,73 +398,94 @@ function itemHTML(it, title, counter, posKey, p, n){
   if(s.status==="ok") fb=`<div class="fb ok" role="status"><h4>${t.ok}</h4><p style="margin:0">${esc(it.explanation)}</p></div>`;
   else if(s.status==="revealed") fb=`<div class="fb bad" role="status"><h4>${t.revealed}: ${LETTERS[it.answer]}) ${esc(it.options[it.answer])}</h4><p style="margin:0">${esc(it.explanation)}</p></div>`;
   else if(s.status==="wrong1") fb=`<div class="fb hint" role="status"><h4>${t.bad}</h4><p style="margin:0"><b>${t.hint}:</b> ${esc(it.hint)}</p></div>`;
-  const peek = it.section==="reading" ? `<details class="peek"><summary>${t.peek}</summary>${textHTML()}</details>` : "";
-  return `<div class="step"><span>${esc(title)}</span><span>${counter}</span></div>${peek}
+  return `<div class="step"><span>${esc(title)}</span><span>${counter}</span></div>${peek||""}
     <div class="card"><p class="prompt">${esc(it.prompt)}</p><div class="opts">${opts}</div>${fb}</div>
-    <div class="nav"><button class="btn" type="button" data-${posKey}="${p-1}" ${p===0?"disabled":""}>${t.prev}</button>
-      <button class="btn ${fin?"primary":""}" type="button" data-${posKey}="${p+1}" ${fin?"":"disabled"}>${t.next}</button></div>`;
+    <div class="nav"><button class="btn" type="button" data-pk="${k}" data-p="${prevP}" ${(k!=="vocab" && k!=="reading" && p===0)?"disabled":""}>${t.prev}</button>
+      <button class="btn ${fin?"primary":""}" type="button" data-pk="${k}" data-p="${p+1}" ${fin?"":"disabled"}>${t.next}</button></div>`;
 }
-function secDoneHTML(i){
-  const t=T(), list = i===0 ? VQ.concat(GQ) : RQ, f=list.filter(isFirst).length;
+function secDoneHTML(k){
+  const t=T(), list=listFor(k), f=list.filter(isFirst).length;
   const all = doneCount()===LESSON.items.length;
+  const nextKey = (()=>{ const a=secList().map(x=>x.k), i=a.indexOf(k); return a[i+1]; })();
   return `<div class="card stack" style="text-align:center"><h2>${all?t.finished:t.secDone}</h2>
     <div class="score">${f} / ${list.length}</div><p class="meta" style="margin:0">${t.firstOk(f,list.length)}</p>
-    ${all?`<p class="meta" style="margin:0">${t.firstOk(LESSON.items.filter(isFirst).length, LESSON.items.length)}</p>`:""}
-    <div class="row" style="justify-content:center"><button class="btn" type="button" data-reset="${i}">${t.again}</button>
-    <button class="btn primary" type="button" data-sec="${i+1}">${t.nextSec}</button></div></div>${saveNote()}`;
+    <div class="row" style="justify-content:center"><button class="btn" type="button" data-reset="${k}">${t.again}</button>
+    ${nextKey?`<button class="btn primary" type="button" data-sec="${nextKey}">${t.nextSec}</button>`:""}</div></div>${saveNote()}`;
 }
 
-/* --- Тірек сөйлемдер: 4 қадам + қысым --- */
+/* --- Журналистің 5 сұрақ түрі (2-сабақ): ірі әріппен мысал, астында неге қиын --- */
+function qtypesHTML(){
+  const t=T(), Q=LESSON.question_types, i=Math.min(S.qt, Q.length-1), q=Q[i];
+  return `<div class="step"><span>${t.secs.qtypes}</span><span>${t.qtKind(i+1,Q.length)}</span></div>
+    <div class="card stack"><h2 style="margin:0">${esc(q.title)}</h2>
+      <div class="qt-ex">${esc(q.example)}</div>
+      <div class="box know"><b class="lbl">${t.whyHard}</b>${esc(q.why_hard)}</div></div>
+    <div class="nav"><button class="btn" type="button" data-qt="${i-1}" ${i===0?"disabled":""}>${t.prev}</button>
+      ${i<Q.length-1 ? `<button class="btn primary" type="button" data-qt="${i+1}">${t.next}</button>` : `<button class="btn primary" type="button" data-sec="phrases">${t.secs.phrases} ›</button>`}</div>`;
+}
+
+/* --- Тірек сөйлемдер: қадамдар, қысым, «Нені айтпау керек» --- */
 function phraseGroups(){
-  const g=LESSON.lesson.steps.map((s,i)=>({title:`${T().steps} ${i+1}. ${s}`, list:LESSON.key_phrases.filter(p=>p.step===i+1)}));
-  g.push({title:T().pressure, list:LESSON.key_phrases.filter(p=>p.step==="pressure")});
-  return g.filter(x=>x.list.length);
+  const t=T(), g=LESSON.lesson.steps.map((s,i)=>({title:`${t.steps} ${i+1}. ${s}`, list:LESSON.key_phrases.filter(p=>p.step===i+1)}));
+  g.push({title:t.pressure, list:LESSON.key_phrases.filter(p=>p.step==="pressure")});
+  if(LESSON.avoid_phrases) g.push({title:t.avoid, avoid:LESSON.avoid_phrases, list:[]});
+  return g.filter(x=>x.list.length || (x.avoid&&x.avoid.length));
 }
 function phrasesHTML(){
   const t=T(), G=phraseGroups(), i=Math.min(S.grp,G.length-1), g=G[i];
-  return `<div class="step"><span>${t.secs[1]}</span><span>${t.group(i+1,G.length)}</span></div>
-    <div class="card"><h2>${esc(g.title)}</h2>${g.list.map(p=>`<div class="phr"><div class="k">${esc(p.kk)}</div><div class="r">${esc(p.ru)}</div></div>`).join("")}</div>
+  const body = g.avoid
+    ? `<div class="phr-avoid">${g.avoid.map(a=>`<div class="phr"><div class="k">${esc(a)}</div></div>`).join("")}</div>`
+    : g.list.map(p=>`<div class="phr"><div class="k">${esc(p.kk)}</div><div class="r">${esc(p.ru)}</div></div>`).join("");
+  return `<div class="step"><span>${t.secs.phrases}</span><span>${t.group(i+1,G.length)}</span></div>
+    <div class="card"><h2>${esc(g.title)}</h2>${body}</div>
     <div class="nav"><button class="btn" type="button" data-grp="${i-1}" ${i===0?"disabled":""}>${t.prev}</button>
-      ${i<G.length-1?`<button class="btn primary" type="button" data-grp="${i+1}">${t.next}</button>`:`<button class="btn primary" type="button" data-sec="2">${t.nextSec}</button>`}</div>`;
+      ${i<G.length-1?`<button class="btn primary" type="button" data-grp="${i+1}">${t.next}</button>`:`<button class="btn primary" type="button" data-sec="${hasQT ? "grammar" : "reading"}">${t.nextSec}</button>`}</div>`;
 }
 
-/* --- Мәтін: орысша аудармасыз --- */
+/* --- Грамматика (2-сабақ: жеке бөлім) --- */
+function grammarHTML(){
+  const p=S.pos.grammar ?? 0;
+  return taskScreen("grammar", T().gtasks, p);
+}
+
+/* --- Мәтін --- */
 function textHTML(){ return `<div class="text">${LESSON.reading.paragraphs.map((p,i)=>`<p><span class="pn">${i+1}</span>${esc(p)}</p>`).join("")}</div>`; }
 function readingHTML(){
   const t=T(), p=S.pos.reading ?? "text";
   if(p==="text") return `<div class="step"><span>${t.readText}</span></div>
     <div class="card"><h2>${esc(LESSON.reading.title)}</h2>${textHTML()}</div>
-    <div class="nav"><span></span><button class="btn primary" type="button" data-rpos="0">${t.toQs}</button></div>`;
-  if(p>=RQ.length) return secDoneHTML(2);
-  return itemHTML(RQ[p], t.rtasks, t.q(p+1,RQ.length), "rpos", p, RQ.length);
+    <div class="nav"><span></span><button class="btn primary" type="button" data-pk="reading" data-p="0">${t.toQs}</button></div>`;
+  return taskScreen("reading", t.rtasks, +p);
 }
 
-/* --- Сөйлеу --- */
-const fmtT = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+/* --- Сөйлеу (speaker_label болса – екінші репличка жауап жазылғаннан кейін шығады) --- */
 function speakingHTML(){
   const t=T();
   if(!S.sit) return `<div class="step"><span>${t.situations}</span></div><div class="stack">${LESSON.speaking.map(x=>`
     <button type="button" class="sit" data-sit="${x.id}"><span><span class="t">${esc(x.title)}</span><br><span class="m">${x.level}-${t.level} · ${fmtT(x.time_limit_sec)}</span></span>${S.recDone[x.id]?`<span class="st">✓ ${t.done}</span>`:""}</button>`).join("")}</div>`;
-  const x=LESSON.speaking.find(y=>y.id===S.sit), ln=Math.min(S.line[x.id]||0, x.citizen_lines.length-1), rec=REC.sid===x.id?REC:null, done=!!S.recDone[x.id];
-  const lines=x.citizen_lines.slice(0,ln+1).map(l=>`<div class="bubble"><small>${t.citizen}</small>${esc(l)}</div>`).join("");
-  const left = rec ? rec.left : x.time_limit_sec;
+  const x=LESSON.speaking.find(y=>y.id===S.sit), done=!!S.recDone[x.id], rec=REC.sid===x.id?REC:null;
+  const spk = x.speaker_label || t.citizen, step = !!x.speaker_label;
+  const ln=Math.min(S.line[x.id]||0, x.citizen_lines.length-1);
+  const shown = step ? (done ? x.citizen_lines : x.citizen_lines.slice(0,1)) : x.citizen_lines.slice(0,ln+1);
+  const lines=shown.map(l=>`<div class="bubble"><small>${esc(spk)}</small>${esc(l)}</div>`).join("");
+  const more = (!step && ln<x.citizen_lines.length-1) ? `<button class="btn" type="button" data-line="1">${t.nextLine}</button>` : "";
   let ctrl;
-  if(rec && rec.on) ctrl=`<div class="timer run" aria-live="polite"><span class="recdot"></span>${fmtT(left)}</div><p class="meta" style="text-align:center;margin:0">${rec.audio===false?"":t.recording}</p>
+  if(rec && rec.on) ctrl=`<div class="timer run" aria-live="polite"><span class="recdot"></span>${fmtT(rec.left)}</div><p class="meta" style="text-align:center;margin:0">${rec.audio===false?"":t.recording}</p>
       <button class="btn rec" type="button" data-rec="stop">${rec.audio===false?t.timerStop:t.recStop}</button>`;
-  else if(MICERR===x.id) ctrl=`<div class="timer">${fmtT(x.time_limit_sec)}</div><p class="note">${t.noMic}</p><button class="btn primary" type="button" data-rec="timer">${t.noMicGo}</button>`;
-  else if(!done) ctrl=`<div class="timer">${fmtT(x.time_limit_sec)}</div><button class="btn primary" type="button" data-rec="start">${t.recStart}</button>`;
+  else if(MICERR===x.id) ctrl=`<div class="timer">${fmtT(x.time_limit_sec)}</div><p class="note">${t.noMic}</p><button class="btn primary" type="button" data-rec="timer" data-rid="${x.id}">${t.noMicGo}</button>`;
+  else if(!done) ctrl=`<div class="timer">${fmtT(x.time_limit_sec)}</div><button class="btn primary" type="button" data-rec="start" data-rid="${x.id}">${t.recStart}</button>`;
   else ctrl=`<div class="stack">${AUDIO[x.id]?`<div><p class="meta" style="margin:0 0 6px">${t.yourRec}</p><audio controls src="${AUDIO[x.id]}"></audio></div>`:""}
       <div class="check"><h2 style="font-size:19px">${t.self}</h2>${LESSON.self_check.map((c,i)=>`<label><input type="checkbox" data-chk="${i}" ${(S.checks[x.id]||[])[i]?"checked":""}><span>${esc(c)}</span></label>`).join("")}</div>
       ${S.model[x.id]?`<div><h2 style="font-size:19px">${t.modelH}</h2><div class="model">${esc(x.model_answer)}</div></div>`:`<button class="btn primary" type="button" data-model="1">${t.model}</button>`}
-      <button class="btn" type="button" data-rec="start">${t.recAgain}</button></div>`;
+      <button class="btn" type="button" data-rec="start" data-rid="${x.id}">${t.recAgain}</button></div>`;
   return `<button class="btn ghost back" type="button" data-sit="">‹ ${t.situations}</button>
     <div class="card stack"><h2>${esc(x.title)}</h2><p style="margin:0">${esc(x.situation)}</p>
       <div class="box know"><b class="lbl">${t.know}</b>${esc(x.facts_for_leader)}</div>
-      ${lines}${ln<x.citizen_lines.length-1?`<button class="btn" type="button" data-line="1">${t.nextLine}</button>`:""}</div>
+      ${lines}${more}</div>
     <div class="card stack" style="margin-top:14px">${ctrl}</div>`;
 }
 
-/* ---------- Дауыс жазу (MediaRecorder). Жазба серверге жіберілмейді: IndexedDB-де, тек осы құрылғыда ---------- */
+/* ---------- Дауыс жазу (MediaRecorder). Жазба IndexedDB-де, тек осы құрылғыда ---------- */
 let REC={}, MICERR=null; const AUDIO={};
 const idb = () => new Promise((res,rej)=>{ const r=indexedDB.open("aitil-gov",1); r.onupgradeneeded=()=>r.result.createObjectStore("rec"); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); });
 async function putRec(id,blob){ try{ const db=await idb(); db.transaction("rec","readwrite").objectStore("rec").put(blob, KEY+":"+id); }catch(e){} }
@@ -397,17 +493,18 @@ async function getRec(id){ try{ const db=await idb(); return await new Promise(r
 function tick(){ if(!REC.on) return; REC.left=Math.max(0, REC.total-Math.floor((Date.now()-REC.t0)/1000));
   const el=document.querySelector(".timer.run"); if(el) el.innerHTML=`<span class="recdot"></span>${fmtT(REC.left)}`;
   if(REC.left<=0) stopRec(); }
-async function startRec(x, withMic){
-  MICERR=null; REC={sid:x.id, on:true, t0:Date.now(), total:x.time_limit_sec, left:x.time_limit_sec, audio:withMic};
+function findRec(id){ return LESSON.speaking.find(y=>y.id===id) || LESSON.warmup.items.find(w=>w.id===id) && {id, time_limit_sec:LESSON.warmup.time_limit_sec}; }
+async function startRec(id, withMic){
+  const x=findRec(id); MICERR=null; REC={sid:id, on:true, t0:Date.now(), total:x.time_limit_sec, left:x.time_limit_sec, audio:withMic};
   if(withMic){
     try{
       const stream=await navigator.mediaDevices.getUserMedia({audio:true});
       const mr=new MediaRecorder(stream), chunks=[];
       mr.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
       mr.onstop=async()=>{ stream.getTracks().forEach(tr=>tr.stop()); const blob=new Blob(chunks,{type:mr.mimeType||"audio/webm"});
-        if(AUDIO[x.id]) URL.revokeObjectURL(AUDIO[x.id]); AUDIO[x.id]=URL.createObjectURL(blob); await putRec(x.id, blob); render(); };
+        if(AUDIO[id]) URL.revokeObjectURL(AUDIO[id]); AUDIO[id]=URL.createObjectURL(blob); await putRec(id, blob); render(); };
       REC.mr=mr; mr.start(); REC.t0=Date.now();
-    }catch(e){ console.warn(e); REC={}; MICERR=x.id; render(); return; }
+    }catch(e){ console.warn(e); REC={}; MICERR=id; render(); return; }
   }
   REC.iv=setInterval(tick, 250); render();
 }
@@ -419,36 +516,39 @@ app.addEventListener("click", async e=>{
   const b=e.target.closest("button,[data-flip]"); const flip=e.target.closest("#flip");
   if(flip && !b){ S.flipped=!S.flipped; save(); flip.classList.toggle("on", S.flipped); return; }
   if(!b) return; const d=b.dataset;
-  if(d.go){ S.view=d.go; save(); render(); return; }
-  if(d.sec!=null){ S.sec=+d.sec; if(S.sec===3) S.sit=null; save(); render(); return; }
+  if(d.lesson){ openLesson(d.lesson); return; }
+  if(d.go==="home"){ goHome(); return; }
+  if(d.sec){ S.sec=d.sec; if(d.sec==="speaking") S.sit=null; save(); render(); return; }
   if(d.card){ S.card=Math.max(0, Math.min(LESSON.vocabulary.length-1, S.card+ +d.card)); S.flipped=false; save(); render(); return; }
-  if(d.vpos!=null){ S.pos.vocabulary=+d.vpos<0?"cards":+d.vpos; save(); render(); return; }
-  if(d.rpos!=null){ S.pos.reading=+d.rpos<0?"text":+d.rpos; save(); render(); return; }
-  if(d.reset!=null){ if(d.reset==="0"){ resetList(VQ.concat(GQ)); S.pos.vocabulary=0; } else { resetList(RQ); S.pos.reading=0; } save(); render(); return; }
+  if(d.pk){ S.pos[d.pk] = d.p==="cards"||d.p==="text" ? d.p : +d.p; save(); render(); return; }
+  if(d.reset){ resetList(listFor(d.reset)); S.pos[d.reset]= d.reset==="vocab"?"cards":d.reset==="reading"?"text":0; save(); render(); return; }
+  if(d.qt!=null){ S.qt=Math.max(0, +d.qt); save(); render(); return; }
   if(d.grp!=null){ S.grp=+d.grp; save(); render(); return; }
+  if(d.bi!=null){ S.bi=Math.max(0, +d.bi); const w=LESSON.warmup.items[Math.min(S.bi, LESSON.warmup.items.length-1)]; save();
+    if(!AUDIO[w.id]){ const bl=await getRec(w.id); if(bl) AUDIO[w.id]=URL.createObjectURL(bl); } render(); return; }
   if(d.ans!=null){ answer(LESSON.items.find(x=>x.id===d.id), +d.ans); return; }
   if(d.sit!=null){ if(REC.on) stopRec(); S.sit=d.sit||null; MICERR=null; save(); if(S.sit && !AUDIO[S.sit]){ const bl=await getRec(S.sit); if(bl) AUDIO[S.sit]=URL.createObjectURL(bl); } render(); return; }
   if(d.line){ S.line[S.sit]=(S.line[S.sit]||0)+1; save(); render(); return; }
-  const x=LESSON.speaking.find(y=>y.id===S.sit);
-  if(d.rec==="start"){ startRec(x, !!(navigator.mediaDevices && window.MediaRecorder)); return; }
-  if(d.rec==="timer"){ startRec(x, false); return; }
+  if(d.rec==="start"){ startRec(d.rid, !!(navigator.mediaDevices && window.MediaRecorder)); return; }
+  if(d.rec==="timer"){ startRec(d.rid, false); return; }
   if(d.rec==="stop"){ stopRec(); return; }
   if(d.model){ S.model[S.sit]=true; save(); render(); return; }
 });
 app.addEventListener("keydown", e=>{ if(e.target.id==="flip" && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); e.target.click(); } });
 app.addEventListener("change", e=>{ const c=e.target.closest("[data-chk]"); if(!c) return; (S.checks[S.sit] ||= [])[+c.dataset.chk]=c.checked; save(); });
-function resetList(list){ for(const it of list) delete S.items[it.id]; if(doneCount()===0) S.attempt=null; }
+function resetList(list){ for(const it of list) delete S.items[it.id]; if(doneCount()===0) S.attempts[LESSON.id]=null; save(); }
 function answer(it, j){
-  const s=st(it.id); if(isDone(it)) return; const Lt=LETTERS[j];
+  const s=st(it.id); if(isDone(it)) return; const Lt=LETTERS[j], bank=LESSON.id, items=LESSON.items;
   if(j===it.answer) s.status="ok";
   else if(!s.tries.length){ s.tries.push(Lt); s.status="wrong1"; }
   else { s.tries.push(Lt); s.status="revealed"; }
-  save(); render(); syncItem(it);
-  if(doneCount()===LESSON.items.length) syncFinish();
+  save(); render(); syncItem(it, bank);
+  if(items.every(x=>isDone(x))) syncFinish(bank, items);
 }
 document.querySelector(".seg").addEventListener("click", e=>{ const b=e.target.closest("[data-lang]"); if(!b) return; S.lang=b.dataset.lang; try{localStorage.setItem("tilkz-lang",S.lang);}catch(e){} save(); render(); });
 document.getElementById("themeBtn").addEventListener("click", ()=>{ const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   const th=dark?"light":"dark"; document.documentElement.dataset.theme=th; try{localStorage.setItem("tilkz-theme",th);}catch(e){} });
+
 
 /* ---------- Кіру / тіркелу: Google (OAuth) не email + құпиясөз. Бұрынғы оқушылар нөмірі не логинімен кіреді ---------- */
 const LOGIN_DOMAIN = "oqushy.tilkz.app";
@@ -527,6 +627,7 @@ async function enterAs(u){
 
 /* ---------- Кіру: курс бетімен ортақ сессия (tilkz-auth) ---------- */
 async function boot(){
+  setLesson(S.lesson);
   if(SB_CFG && window.supabase){
     sb=window.supabase.createClient(SB_CFG.url, SB_CFG.key, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"tilkz-auth"}});
     try{ const {data:{session}}=await sb.auth.getSession(); if(session){ await enterAs(session.user); return; } }catch(e){ console.warn(e); }

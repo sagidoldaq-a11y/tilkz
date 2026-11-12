@@ -68,10 +68,10 @@ tout = root / "mugalim"
 tout.mkdir(exist_ok=True)
 (tout / "index.html").write_text(tt, encoding="utf-8")
 # 4) «Мемлекеттік қызметтегі қазақ тілі» тренажері: сабақтың мазмұны JSON-нан өзгеріссіз енгізіледі
-gov_lesson = json.loads((root / "content" / "gov-kz-L1-refusal-v1.json").read_text(encoding="utf-8"))
+gov_lessons = [json.loads((root / "content" / fn).read_text(encoding="utf-8")) for fn in ("gov-kz-L1-refusal-v1.json", "gov-kz-L2-journalist-v1.json")]
 gt = (here / "gov.template.html").read_text(encoding="utf-8")
-assert gt.count("/*__LESSON__*/null") == 1 and gt.count("/*__SUPABASE__*/null") == 1
-gt = gt.replace("/*__LESSON__*/null", json.dumps(gov_lesson, ensure_ascii=False).replace("</", "<\\/"))
+assert gt.count("/*__LESSONS__*/null") == 1 and gt.count("/*__SUPABASE__*/null") == 1
+gt = gt.replace("/*__LESSONS__*/null", json.dumps(gov_lessons, ensure_ascii=False).replace("</", "<\\/"))
 gt = gt.replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
 gout = root / "gov"
 gout.mkdir(exist_ok=True)
