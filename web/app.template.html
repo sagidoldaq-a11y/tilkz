@@ -1324,7 +1324,7 @@ function renderResults(){
     <section class="rep-sec"><h3>${ru?"Навыки подробно":"Дағдылар бойынша толық"}</h3><div class="hbars">${sbars}</div>
       <p class="muted" style="margin-top:10px">${ru?"«—» и штриховка: в этом варианте нет вопросов на этот навык.":"«—» және штрихталған жолақ: бұл нұсқада осы дағдыға сұрақ жоқ."}</p></section>
     ${legendHTML().replace('<details class="legend" open>','<details class="legend">')}
-    <div class="actions"><button class="btn primary" type="button" id="backBtn">${ru?"Посмотреть ответы":"Жауаптарды қарау"}</button><button class="btn ghost" type="button" id="resetBtn">${L.reset}</button></div>`;
+    <div class="actions"><button class="btn primary" type="button" id="backBtn">${ru?"Посмотреть ответы":"Жауаптарды қарау"}</button></div>`;
 }
 let showingResults=false;
 document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; if(!showingResults) finalize(); showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
@@ -1559,12 +1559,34 @@ document.getElementById("auth").addEventListener("submit",async e=>{
     authBusy=false; await enterAs(data.user);
   }catch(err){ console.warn(err); fail(A.e.net); }
 });
+/* Серверде сақталған жауаптарды қалпына келтіру: құрылғы ауысса, сақтау тазаланса да оқушы тоқтаған жерінен жалғасады.
+   Әр сұрақтың соңғы жауабы алынады; ашық (аяқталмаған) нұсқа келесі жауаптар соған жазылатындай бекітіледі. */
+async function restoreFromServer(){
+  try{
+    const [a,t]=await Promise.all([
+      sb.from("answers").select("attempt_id,bank_id,item_id,status,tries,updated_at").eq("user_id",USER.id).order("updated_at",{ascending:true}),
+      sb.from("attempts").select("id,bank_id,started_at,finished_at").eq("user_id",USER.id).order("started_at",{ascending:false})]);
+    if(a.error||t.error){ console.warn(a.error||t.error); return; }
+    const open={};                                   // bank → ашық нұсқа (аяқталмаған соңғысы)
+    for(const x of t.data||[]) if(!x.finished_at && !open[x.bank_id]) open[x.bank_id]=x.id;
+    for(const r of a.data||[]){
+      const pb = S.banks[r.bank_id] ||= {text:0, items:{}, order:{}, cur:{}, hl:{}, attempt:null};
+      const loc = pb.items[r.item_id];
+      if(!loc || loc.status==="open" || !(loc.tries||[]).length && r.status!=="open"){
+        pb.items[r.item_id] = {sel:null, tries:[...(r.tries||[])], status:r.status};
+      }
+    }
+    for(const bank of Object.keys(S.banks)){ if(open[bank]) S.banks[bank].attempt=open[bank]; else if(S.banks[bank].attempt && !(t.data||[]).some(x=>x.id===S.banks[bank].attempt && !x.finished_at)) S.banks[bank].attempt=null; }
+    save();
+  }catch(e){ console.warn(e); }
+}
 async function enterAs(user){
   const {data}=await sb.from("students").select("first_name,last_name,grade,login").eq("user_id",user.id).maybeSingle();
   USER=user; PROFILE=data||null;
   if(!PROFILE){ const t=await sb.from("teachers").select("user_id").eq("user_id",user.id).maybeSingle(); IS_TEACHER=!!t.data; }
   const lang=S.lang, theme=null; KEY="oqylym-v1-state:"+user.id; S=load(); S.lang=lang;
   BANK=bankOf(S.lang,(S.vars||{})[S.lang]||0); view="landing"; showingResults=false; marks=[]; markKw=[]; activeQ=null; scrollQ=null;
+  await restoreFromServer();
   save(); renderAll(); window.scrollTo({top:0});
 }
 /* Аккаунт мәзірі: бетті бұғаттайтын confirm() орнына шағын мәзір */
@@ -1605,9 +1627,15 @@ async function syncFinish(){
 async function boot(){
   if(SB_CFG && window.supabase){
     sb=window.supabase.createClient(SB_CFG.url, SB_CFG.key, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"tilkz-auth"}});
+    // Сессия сақталған болса, күту белгісі көрсетіледі; әйтпесе кіру/тест беті бірден шығады
+    let hasSession=false; try{ hasSession=!!localStorage.getItem("tilkz-auth"); }catch(e){}
+    if(hasSession){ const g=document.getElementById("auth"); g.hidden=false; g.innerHTML=`<p class="sub" style="margin:40px 0;text-align:center">${AUTH_T[S.lang].wait}</p>`; for(const id of ["landing","practice","results","banner"]) document.getElementById(id).hidden=true; }
+    else renderAll();
+    checkProviders().then(()=>{ if(!USER && !hasSession) renderAll(); });
     try{ const {data:{session}}=await sb.auth.getSession(); if(session){ await enterAs(session.user); return; } }catch(e){ console.warn(e); }
+    renderAll();
+    return;
   }
-  await checkProviders();
   renderAll();
 }
 boot();

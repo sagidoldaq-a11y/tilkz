@@ -313,7 +313,10 @@ function studentStats(uid){
   const first=rows.filter(r=>r.first_correct).length;
   const fin=data.attempts.filter(a=>a.user_id===uid && a.finished_at && inTrack(a)).length;
   const last=data.answers.filter(r=>r.user_id===uid).reduce((m,r)=>r.updated_at>m?r.updated_at:m,"");
-  return {n:rows.length, first, p:pct(first,rows.length), fin, last};
+  const mine=data.attempts.filter(a=>a.user_id===uid && inTrack(a));
+  const start=mine.reduce((m,a)=>(!m||a.started_at<m)?a.started_at:m,"");
+  const finish=mine.reduce((m,a)=>a.finished_at&&(!m||a.finished_at>m)?a.finished_at:m,"");
+  return {n:rows.length, first, p:pct(first,rows.length), fin, last, start, finish};
 }
 function trackSelect(){ return `<label>Бағыт: <select id="trackF"><option value="all"${trackF==="all"?" selected":""}>Барлығы</option><option value="first_language"${trackF==="first_language"?" selected":""}>Бірінші тіл (қазақ сыныптары)</option><option value="second_language"${trackF==="second_language"?" selected":""}>Екінші тіл (орыс сыныптары)</option></select></label>`; }
 
@@ -324,14 +327,14 @@ function renderClass(){
   let body="";
   if(tab==="students"){
     const rows=S.map(s=>({s, k:studentStats(s.user_id)}));
-    const key={name:r=>(r.s.last_name+" "+r.s.first_name).toLowerCase(), p:r=>r.k.p==null?-1:r.k.p, n:r=>-r.k.n, last:r=>r.k.last?-new Date(r.k.last):0}[st.sort];
+    const key={name:r=>(r.s.last_name+" "+r.s.first_name).toLowerCase(), p:r=>r.k.p==null?-1:r.k.p, n:r=>-r.k.n, last:r=>r.k.last?-new Date(r.k.last):0, start:r=>r.k.start?-new Date(r.k.start):0, finish:r=>r.k.finish?-new Date(r.k.finish):0}[st.sort];
     rows.sort((a,b)=>{ const x=key(a), y=key(b); return x<y?-1:x>y?1:0; }); if(st.sort==="p") rows.reverse();
     body = S.length ? `<div class="tablewrap"><table><thead><tr>
        <th><button data-sort="name">Аты-жөні ${st.sort==="name"?"↓":""}</button></th><th>Сынып</th><th>Мектеп / WhatsApp</th>
        <th><button data-sort="n">Жауап берген ${st.sort==="n"?"↓":""}</button></th><th><button data-sort="p">Бірден дұрыс ${st.sort==="p"?"↑":""}</button></th>
-       <th>Аяқталған нұсқа</th><th><button data-sort="last">Соңғы белсенділік ${st.sort==="last"?"↓":""}</button></th><th>Логин</th></tr></thead><tbody>
+       <th>Аяқталған нұсқа</th><th><button data-sort="start">Бастаған ${st.sort==="start"?"↓":""}</button></th><th><button data-sort="finish">Аяқтаған ${st.sort==="finish"?"↓":""}</button></th><th><button data-sort="last">Соңғы жауап ${st.sort==="last"?"↓":""}</button></th><th>Логин</th></tr></thead><tbody>
        ${rows.map(({s,k})=>`<tr class="click" data-stu="${s.user_id}"><td><b>${esc(s.last_name)} ${esc(s.first_name)}</b></td><td class="n">${s.grade}</td>
-         <td>${whereOf(s)}</td><td class="n">${k.n}</td><td class="n">${pill(k.p)}</td><td class="n">${k.fin}</td><td>${fmtDT(k.last||null)}</td><td>${esc(s.login)}</td></tr>`).join("")}
+         <td>${whereOf(s)}</td><td class="n">${k.n}</td><td class="n">${pill(k.p)}</td><td class="n">${k.fin}</td><td>${fmtDT(k.start||null)}</td><td>${fmtDT(k.finish||null)}</td><td>${fmtDT(k.last||null)}</td><td>${esc(s.login)}</td></tr>`).join("")}
        </tbody></table></div>` : `<div class="panel empty">Бұл сыныпқа әлі ешкім тіркелмеген. Оқушыларға <b>${esc(c.code)}</b> кодын жіберіңіз.</div>`;
   } else if(tab==="skills"){
     body = skillBars(all) + `<p class="meta" style="margin-top:14px">Әр дағды бойынша оқушылардың бірінші реттен дұрыс жауап берген үлесі. Ең әлсіз дағдылар жоғарыда.</p>`;
@@ -376,9 +379,9 @@ function renderStudent(){
      <div class="kpi"><b>${k.fin}</b><span>аяқталған нұсқа</span></div><div class="kpi"><b>${mist.length}</b><span>қателер банкінде</span></div></div>
    <div class="filters">${trackSelect()}</div>
    <div class="twocol"><div><h2>Дағдылар</h2>${skillBars(rows)}</div>
-    <div><h2>Тест әрекеттері</h2>${atts.length?`<div class="tablewrap"><table><thead><tr><th>Нұсқа</th><th>Басталды</th><th>Нәтиже</th></tr></thead><tbody>
+    <div><h2>Тест әрекеттері</h2>${atts.length?`<div class="tablewrap"><table><thead><tr><th>Нұсқа</th><th>Басталды</th><th>Аяқталды</th><th>Нәтиже</th></tr></thead><tbody>
       ${atts.map(a=>{ const n=data.answers.filter(r=>r.attempt_id===a.id).length, tot=(bankById[a.bank_id]||{items:[]}).items.length;
-        return `<tr><td>${esc(bankLabel(a.bank_id))}</td><td>${fmtDT(a.started_at)}</td><td>${a.finished_at?`${a.first_correct}/${a.total} ${pill(pct(a.first_correct,a.total))}`:`<span class="meta">орындалуда: ${n}/${tot}</span>`}</td></tr>`; }).join("")}
+        return `<tr><td>${esc(bankLabel(a.bank_id))}</td><td>${fmtDT(a.started_at)}</td><td>${fmtDT(a.finished_at)}</td><td>${a.finished_at?`${a.first_correct}/${a.total} ${pill(pct(a.first_correct,a.total))}`:`<span class="meta">орындалуда: ${n}/${tot}</span>`}</td></tr>`; }).join("")}
       </tbody></table></div>`:`<div class="panel empty">Әлі тест бастамаған.</div>`}</div></div>
    <h2 style="margin-top:22px">Қателер банкі (${mist.length})</h2>
    <p class="sub">Оқушы бірінші реттен дұрыс жауап бере алмаған сұрақтар. Кейін осылар бойынша оқушыға жеке нұсқа құрастырылады.</p>
