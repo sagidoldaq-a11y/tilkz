@@ -1372,8 +1372,7 @@ function variantCard(b, vi){
   let status="", btns="";
   if(finished){
     status=ru?`Выполнено. Результат: <b>${first} из ${N}</b> баллов.`:`Орындалды. Нәтиже: <b>${kkAbl(N)} ${first} ұпай</b>.`;
-    btns=`<button class="btn primary" type="button" data-land="report">${ru?"Посмотреть отчёт":"Есепті көру"}</button>
-          <button class="btn" type="button" data-land="restart">${ru?"Пройти заново":"Қайта орындау"}</button>`;
+    btns=`<button class="btn primary" type="button" data-land="report">${ru?"Посмотреть отчёт":"Есепті көру"}</button>`;
   } else if(done>0){
     status=ru?`Ответов: <b>${done}/${N}</b>`:`Жауап: <b>${done}/${N}</b>`;
     btns=`<button class="btn primary" type="button" data-land="start">${ru?"Продолжить":"Жалғастыру"}</button>`;
