@@ -412,6 +412,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
 }
 .srcnote{margin:22px 0 0;text-indent:0;font:13px/1.45 var(--f-ui);color:var(--muted);text-align:left}
 .srcnote a{color:inherit;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.card.nudge{outline:3px solid var(--accent);outline-offset:2px;transition:outline-color .3s}
 .brand a.home{font-family:var(--f-ui);font-weight:800;font-size:22px;letter-spacing:-.3px;text-decoration:none;color:var(--ink)}
 .brand a.home .ai{color:var(--accent);font:inherit;letter-spacing:inherit}
 @media (max-width:880px){.brand a.home{font-size:19px}}
@@ -1211,7 +1212,7 @@ function renderTop(){
   const answered=sts.filter(s=>s.status==="ok"||s.status==="revealed").length;
   document.getElementById("score").innerHTML=L.score(first,all.length,answered);
   renderTabs();
-  const rb=document.getElementById("resultsBtn"); if(rb && !showingResults){ const ad=allDone(); rb.textContent = ad?(BANK.items.every(isDone)?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")):(S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isAnswered).length}/${BANK.items.length}`; rb.disabled=!ad; rb.classList.toggle("primary",ad); }
+  const rb=document.getElementById("resultsBtn"); if(rb && !showingResults){ const ad=allDone(); rb.textContent = ad?(BANK.items.every(isDone)?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")):(S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isAnswered).length}/${BANK.items.length}`; rb.disabled=false; rb.classList.toggle("primary",ad); }
 }
 function setView(v){
   S.view=v; save(); document.getElementById("grid").dataset.view=v;
@@ -1331,7 +1332,14 @@ function renderResults(){
     <div class="actions"><button class="btn primary" type="button" id="backBtn">${ru?"Посмотреть ответы":"Жауаптарды қарау"}</button></div>`;
 }
 let showingResults=false;
-document.getElementById("resultsBtn").addEventListener("click",()=>{ if(!allDone()&&!showingResults) return; if(!showingResults) finalize(); showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
+document.getElementById("resultsBtn").addEventListener("click",()=>{
+  // Барлық сұраққа жауап берілмесе, батырма бірінші жауапсыз сұраққа апарады
+  if(!allDone()&&!showingResults){
+    const ti=BANK.texts.findIndex(t=>itemsOf(t.id).some(x=>!isAnswered(x))); if(ti<0) return;
+    const q=itemsOf(BANK.texts[ti].id).find(x=>!isAnswered(x));
+    openText(ti,true); setView("qs"); activate(q.id);
+    requestAnimationFrame(()=>{ const c=document.getElementById("card-"+q.id); if(c){ c.scrollIntoView({block:"start",behavior:"smooth"}); c.classList.add("nudge"); setTimeout(()=>c.classList.remove("nudge"),1200); } });
+    return; } if(!showingResults) finalize(); showingResults=!showingResults; renderAll(); window.scrollTo({top:0}); });
 document.getElementById("results").addEventListener("click",e=>{
   if(e.target.id==="backBtn"){ showingResults=false; renderAll(); }
   if(e.target.id==="resetBtn"){ S.attempt=null; S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; for(const k in chats) delete chats[k]; marks=[]; save(); showingResults=false; renderAll(); window.scrollTo({top:0}); }
@@ -1441,7 +1449,8 @@ function renderAll(){
   document.getElementById("backq").textContent = S.lang==="ru"?"← Вернуться к вопросу":"← Сұраққа оралу";
   const rb=document.getElementById("resultsBtn"), ad=allDone();
   rb.textContent = showingResults ? L.back : (ad ? (BANK.items.every(isDone)?(S.lang==="ru"?"Отчёт":"Есеп"):(S.lang==="ru"?"Завершить":"Аяқтау")) : (S.lang==="ru"?"Завершить":"Аяқтау")+` · ${BANK.items.filter(isAnswered).length}/${BANK.items.length}`);
-  rb.disabled = !showingResults && !ad; rb.classList.toggle("primary", ad && !showingResults);
+  rb.disabled = false; rb.classList.toggle("primary", ad && !showingResults);
+  rb.title = (!showingResults && !ad) ? (S.lang==="ru"?"Перейти к вопросу без ответа":"Жауап берілмеген сұраққа өту") : "";
   const onLanding = view==="landing" && !showingResults;
   document.getElementById("landing").hidden=!onLanding;
   if(onLanding) document.getElementById("landing").innerHTML=landingHTML();

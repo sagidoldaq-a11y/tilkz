@@ -206,8 +206,12 @@ const L = l => ({
       noMic:"Микрофон қосылмады. Жауапты дауыстап айтып, таймерді іске қосуға болады.", noMicGo:"Таймермен жалғастыру", timerStop:"■ Дайын",
       yourRec:"Сіздің жазбаңыз (тек осы құрылғыда сақталады)", self:"Өзіңді тексер", model:"Үлгі жауапты көру", modelH:"Үлгі жауап",
       notSaved:"Нәтиже тек осы құрылғыда сақталады. Серверге сақтау үшін", login:"платформаға кіру керек",
+      aLead:"Сабақтарға кіру үшін аккаунт керек. Тіркелу тегін.", aLogin:"Кіру", aReg:"Тіркелу", google:"Google арқылы кіру", googleReg:"Google арқылы тіркелу", or:"немесе",
+      email:"Email, телефон нөмірі не логин", emailReg:"Email", name:"Аты-жөні", pw:"Құпиясөз", pwHint:"Кемінде 6 таңба.", doLogin:"Кіру", doReg:"Тіркелу", wait:"Жүктелуде…",
+      policyPre:"Тіркелу арқылы", policy:"құпиялық саясатымен", policyPost:"келісесіз.",
+      e:{empty:"Барлық өріс толтырылуы керек.", bad:"Логин не құпиясөз қате.", pw:"Құпиясөз кемінде 6 таңба болуы керек.", email:"Email қате жазылған.", taken:"Бұл email-мен тіркелген аккаунт бар. «Кіру» бетінен кіруге болады.", net:"Байланыс жоқ. Интернетті тексеріп, қайталап көру керек.", fail:"Тіркелу кезінде қате шықты. Қайталап көру керек.", google:"Google арқылы кіру әзірге қосылмаған. Email арқылы тіркелуге болады."},
       finished:"Сабақтың тапсырмалары орындалды!", sources:"Дереккөздер", unlock:(n)=>`${n}-сабақты аяқтаған соң ашылады`, lessonN:(n)=>`${n}-сабақ`,
-      out:"Аккаунттан шығу керек пе?"},
+      out:"Аккаунттан шығу"},
   ru:{lessons:"Уроки", module:"модуль", lesson:"урок", start:"Начать", cont:"Продолжить", again:"Начать заново",
       progress:(a,n)=>`Выполнено ${a} из ${n} заданий`, firstOk:(a,n)=>`Верно с первого раза: ${a} / ${n}`,
       secs:{vocab:"Словарь", qtypes:"Вопросы", phrases:"Опорные фразы", grammar:"Грамматика", reading:"Текст", speaking:"Говорение"},
@@ -223,8 +227,12 @@ const L = l => ({
       noMic:"Микрофон не подключился. Можно ответить вслух и запустить только таймер.", noMicGo:"Продолжить с таймером", timerStop:"■ Готово",
       yourRec:"Ваша запись (хранится только на этом устройстве)", self:"Проверь себя", model:"Показать образец ответа", modelH:"Образец ответа",
       notSaved:"Результат хранится только на этом устройстве. Чтобы сохранять на сервере,", login:"нужно войти на платформу",
+      aLead:"Для доступа к урокам нужен аккаунт. Регистрация бесплатная.", aLogin:"Вход", aReg:"Регистрация", google:"Войти через Google", googleReg:"Зарегистрироваться через Google", or:"или",
+      email:"Email, номер телефона или логин", emailReg:"Email", name:"Имя и фамилия", pw:"Пароль", pwHint:"Не менее 6 символов.", doLogin:"Войти", doReg:"Зарегистрироваться", wait:"Загрузка…",
+      policyPre:"Регистрируясь, вы соглашаетесь с", policy:"политикой конфиденциальности", policyPost:".",
+      e:{empty:"Заполнены не все поля.", bad:"Неверный логин или пароль.", pw:"Пароль должен быть не короче 6 символов.", email:"Неверный email.", taken:"Аккаунт с этим email уже есть – можно войти через вкладку «Вход».", net:"Нет связи. Нужно проверить интернет и повторить попытку.", fail:"Ошибка при регистрации. Нужно повторить попытку.", google:"Вход через Google пока не подключён. Можно зарегистрироваться по email."},
       finished:"Задания урока выполнены!", sources:"Источники", unlock:(n)=>`Откроется после урока ${n}`, lessonN:(n)=>`Урок ${n}`,
-      out:"Выйти из аккаунта?"}
+      out:"Выйти из аккаунта"}
 })[S.lang];
 
 /* ---------- Күй: localStorage-та, пайдаланушыға бөлек ---------- */
@@ -617,7 +625,18 @@ app.addEventListener("submit", async e=>{
     authBusy=false; await enterAs(data.user);
   }catch(err){ console.warn(err); fail(t.e.net); }
 });
-document.getElementById("user").addEventListener("click", async ()=>{ if(!confirm(T().out)) return; try{ await sb.auth.signOut(); }catch(e){} location.reload(); });
+/* Аккаунт мәзірі: бетті бұғаттайтын confirm() орнына шағын мәзір */
+document.getElementById("user").addEventListener("click", e=>{
+  e.stopPropagation(); let m=document.getElementById("userMenu"); if(m){ m.remove(); return; }
+  const r=e.currentTarget.getBoundingClientRect();
+  m=document.createElement("div"); m.id="userMenu"; m.setAttribute("role","menu");
+  m.style.cssText="position:fixed;z-index:40;background:var(--panel);border-radius:14px;box-shadow:0 12px 32px -12px rgba(22,35,58,.35);padding:6px;top:"+(r.bottom+8)+"px;right:"+Math.max(8,innerWidth-r.right)+"px";
+  m.innerHTML=`<button type="button" class="btn" role="menuitem" id="signOut">${T().out}</button>`;
+  document.body.appendChild(m);
+  const so=m.querySelector("#signOut"); so.onclick=async()=>{ try{ await sb.auth.signOut(); }catch(err){} location.reload(); }; so.focus();
+});
+document.addEventListener("click",e=>{ const m=document.getElementById("userMenu"); if(m && !m.contains(e.target)) m.remove(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const m=document.getElementById("userMenu"); if(m) m.remove(); } });
 async function enterAs(u){
   const {data:p}=await sb.from("students").select("first_name,last_name").eq("user_id",u.id).maybeSingle();
   const md=u.user_metadata||{};
