@@ -12,7 +12,7 @@ bank4 = json.loads((here.parent/"content"/"bank_l1_v2.json").read_text(encoding=
 out = out.replace("/*__BANK_L1_V2__*/null", json.dumps(bank4, ensure_ascii=False).replace("</", "<\\/"))
 bank3 = json.loads((here.parent/"content"/"bank_l2_v2.json").read_text(encoding="utf-8"))
 out = out.replace("/*__BANK_L2_V2__*/null", json.dumps(bank3, ensure_ascii=False).replace("</", "<\\/"))
-EXTRA = [("L1_V4", "bank_l1_v4.json"), ("L1_V5", "bank_l1_v5.json"), ("L2_V3", "bank_l2_v3.json"), ("L2_V4", "bank_l2_v4.json"), ("L2_V5", "bank_l2_v5.json")]
+EXTRA = [("L1_V4", "bank_l1_v4.json"), ("L1_V5", "bank_l1_v5.json"), ("L2_V3", "bank_l2_v3.json"), ("L2_V4", "bank_l2_v4.json"), ("L2_V5", "bank_l2_v5.json"), ("L1_V6", "bank_l1_v6.json"), ("L1_V7", "bank_l1_v7.json"), ("L1_V8", "bank_l1_v8.json"), ("L1_V9", "bank_l1_v9.json"), ("L1_V10", "bank_l1_v10.json"), ("L2_V6", "bank_l2_v6.json"), ("L2_V7", "bank_l2_v7.json"), ("L2_V8", "bank_l2_v8.json"), ("L2_V9", "bank_l2_v9.json"), ("L2_V10", "bank_l2_v10.json")]
 extra = {}
 for slot, fn in EXTRA:   # 4-нұсқадан бастап: файл бар болса ғана қосылады
     f = (here.parent/"content") / fn

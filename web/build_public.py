@@ -20,7 +20,7 @@ bank4 = json.loads((root / "content" / "bank_l1_v2.json").read_text(encoding="ut
 body = body.replace("/*__BANK_L1_V2__*/null", json.dumps(bank4, ensure_ascii=False).replace("</", "<\\/"))
 bank3 = json.loads((root / "content" / "bank_l2_v2.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L2_V2__*/null", json.dumps(bank3, ensure_ascii=False).replace("</", "<\\/"))
-EXTRA = [("L1_V4", "bank_l1_v4.json"), ("L1_V5", "bank_l1_v5.json"), ("L2_V3", "bank_l2_v3.json"), ("L2_V4", "bank_l2_v4.json"), ("L2_V5", "bank_l2_v5.json")]
+EXTRA = [("L1_V4", "bank_l1_v4.json"), ("L1_V5", "bank_l1_v5.json"), ("L2_V3", "bank_l2_v3.json"), ("L2_V4", "bank_l2_v4.json"), ("L2_V5", "bank_l2_v5.json"), ("L1_V6", "bank_l1_v6.json"), ("L1_V7", "bank_l1_v7.json"), ("L1_V8", "bank_l1_v8.json"), ("L1_V9", "bank_l1_v9.json"), ("L1_V10", "bank_l1_v10.json"), ("L2_V6", "bank_l2_v6.json"), ("L2_V7", "bank_l2_v7.json"), ("L2_V8", "bank_l2_v8.json"), ("L2_V9", "bank_l2_v9.json"), ("L2_V10", "bank_l2_v10.json")]
 extra = {}
 for slot, fn in EXTRA:   # 4-нұсқадан бастап: файл бар болса ғана қосылады
     f = (root / "content") / fn
@@ -58,7 +58,7 @@ out.mkdir(exist_ok=True)
 shutil.copyfile(here / "privacy.html", root / "privacy" / "index.html")
 
 # 3) Мұғалім кабинеті
-banks_all = [bank, bank4, bank5, bank2, bank3] + [extra[s] for s in ("L1_V4","L1_V5","L2_V3","L2_V4","L2_V5") if extra[s]]   # бірінші тіл: 1, 2, 3-нұсқа; екінші тіл: 1, 2-нұсқа
+banks_all = [bank, bank4, bank5, bank2, bank3] + [extra[s] for s in ("L1_V4","L1_V5","L1_V6","L1_V7","L1_V8","L1_V9","L1_V10","L2_V3","L2_V4","L2_V5","L2_V6","L2_V7","L2_V8","L2_V9","L2_V10") if extra[s]]   # бірінші тіл: 1, 2, 3-нұсқа; екінші тіл: 1, 2-нұсқа
 tt = (here / "teacher.template.html").read_text(encoding="utf-8")
 assert tt.count("/*__BANKS__*/[]") == 1 and tt.count("/*__SUPABASE__*/null") == 1
 tt = tt.replace("/*__BANKS__*/[]", json.dumps(banks_all, ensure_ascii=False).replace("</", "<\\/"))
