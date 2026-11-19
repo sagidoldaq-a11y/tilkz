@@ -1581,14 +1581,26 @@ async function restoreFromServer(){
     if(a.error||t.error){ console.warn(a.error||t.error); return; }
     const open={};                                   // bank → ашық нұсқа (аяқталмаған соңғысы)
     for(const x of t.data||[]) if(!x.finished_at && !open[x.bank_id]) open[x.bank_id]=x.id;
+    // Серверге жетпей қалған жергілікті жауаптар кезекке қосылады (мысалы, байланыс үзілген кезде берілген жауаптар)
+    const srv={}; for(const r of a.data||[]) srv[r.bank_id+"|"+r.item_id]=r;
+    for(const [bid,pb] of Object.entries(S.banks)) for(const [iid,loc] of Object.entries(pb.items||{})){
+      if(!loc || loc.status==="open") continue; const r=srv[bid+"|"+iid];
+      if(!r || r.status!==loc.status || (r.tries||[]).length!==(loc.tries||[]).length){
+        if(!r || (loc.tries||[]).length>=(r.tries||[]).length) (pb.dirty ||= {})[iid]=1; }
+    }
     for(const r of a.data||[]){
       const pb = S.banks[r.bank_id] ||= {text:0, items:{}, order:{}, cur:{}, hl:{}, attempt:null};
+      if(pb.dirty?.[r.item_id]) continue;
       const loc = pb.items[r.item_id];
       if(!loc || loc.status==="open" || !(loc.tries||[]).length && r.status!=="open"){
         pb.items[r.item_id] = {sel:null, tries:[...(r.tries||[])], status:r.status};
       }
     }
     for(const bank of Object.keys(S.banks)){ if(open[bank]) S.banks[bank].attempt=open[bank]; else if(S.banks[bank].attempt && !(t.data||[]).some(x=>x.id===S.banks[bank].attempt && !x.finished_at)) S.banks[bank].attempt=null; }
+    // Жергілікті түрде толық аяқталған, бірақ серверде аяқталмаған нұсқа аяқталды деп белгіленеді
+    for(const [bid,pb] of Object.entries(S.banks)){ const bank=bankById(bid); if(!bank) continue;
+      const all=bank.items.every(x=>["ok","revealed"].includes(pb.items?.[x.id]?.status));
+      if(all && (open[bid] || Object.keys(pb.dirty||{}).length)) pb.finDirty=true; }
     save();
   }catch(e){ console.warn(e); }
 }
@@ -1599,7 +1611,7 @@ async function enterAs(user){
   const lang=S.lang, theme=null; KEY="oqylym-v1-state:"+user.id; S=load(); S.lang=lang;
   BANK=bankOf(S.lang,(S.vars||{})[S.lang]||0); view="landing"; showingResults=false; marks=[]; markKw=[]; activeQ=null; scrollQ=null;
   await restoreFromServer();
-  save(); renderAll(); window.scrollTo({top:0});
+  save(); renderAll(); window.scrollTo({top:0}); flushSync();
 }
 /* Аккаунт мәзірі: бетті бұғаттайтын confirm() орнына шағын мәзір */
 document.getElementById("userBtn").addEventListener("click",e=>{
@@ -1622,20 +1634,53 @@ function ensureAttempt(bank){
   return attemptReq[bank.bank_id] ||= sb.from("attempts").insert({bank_id:bank.bank_id, mode:"practice"}).select("id").single()
     .then(({data,error})=>{ delete attemptReq[bank.bank_id]; if(error){ console.warn(error); return null; } pb.attempt=data.id; save(); return data.id; });
 }
-async function syncItem(it){
-  if(!USER||!sb) return; const bank=BANK, s=st(it.id); if(s.status==="open") return;
-  const aid=await ensureAttempt(bank); if(!aid) return;
-  const {error}=await sb.from("answers").upsert({attempt_id:aid, bank_id:bank.bank_id, item_id:it.id, skill:it.skill, level:it.level,
-    tries:[...s.tries], status:s.status, first_correct:(s.status==="ok"&&s.tries.length===0), updated_at:new Date().toISOString()});
-  if(error) console.warn(error);
+/* Жауаптар алдымен телефонның/компьютердің жадындағы кезекке (pb.dirty) түседі, сервер қабылдағанда ғана кезектен өшеді.
+   Байланыс үзілсе не бет фонда тұрып қалса, кезек келесі әрекетте, желі қайта қосылғанда, бетке қайта оралғанда және кіргенде жіберіледі. */
+const ALL_BANKS = () => [...BANKS.kk, ...BANKS.ru];
+const bankById = id => ALL_BANKS().find(b=>b.bank_id===id);
+function syncItem(it, bank=BANK){
+  const pb=S.banks[bank.bank_id]; if(!pb) return;
+  const s=pb.items?.[it.id]; if(!s || s.status==="open") return;
+  (pb.dirty ||= {})[it.id]=1; save(); return flushSync();
 }
-async function syncFinish(){
-  if(!USER||!sb) return; const bank=BANK;
-  for(const x of bank.items) await syncItem(x);
-  const aid=await ensureAttempt(bank); if(!aid) return;
-  const {error}=await sb.from("attempts").update({finished_at:new Date().toISOString(), first_correct:bank.items.filter(isFirst).length, total:bank.items.length}).eq("id",aid);
-  if(error) console.warn(error);
+let flushing=null, flushAgain=false;
+function flushSync(){
+  if(!USER||!sb) return Promise.resolve();
+  if(flushing){ flushAgain=true; return flushing; }
+  flushing=(async()=>{
+    do{ flushAgain=false;
+      for(const [bid,pb] of Object.entries(S.banks)){
+        const bank=bankById(bid); if(!bank) continue;
+        const ids=Object.keys(pb.dirty||{}); if(!ids.length && !pb.finDirty) continue;
+        const aid=await ensureAttempt(bank); if(!aid) return;
+        const rows=ids.map(id=>{ const it=bank.items.find(x=>x.id===id), s=pb.items[id]; return it&&s&&s.status!=="open" ? {attempt_id:aid, bank_id:bid, item_id:id, skill:it.skill, level:it.level,
+          tries:[...s.tries], status:s.status, first_correct:(s.status==="ok"&&s.tries.length===0), updated_at:new Date().toISOString()} : null; }).filter(Boolean);
+        if(rows.length){
+          const snap=rows.map(r=>r.item_id+":"+r.status+":"+r.tries.length);
+          const {error}=await sb.from("answers").upsert(rows);
+          if(error){ console.warn(error); return; }
+          rows.forEach((r,i)=>{ const s=pb.items[r.item_id]; if(s && snap[i]===r.item_id+":"+s.status+":"+s.tries.length) delete pb.dirty[r.item_id]; });
+          save();
+        } else { pb.dirty={}; save(); }
+        if(pb.finDirty){
+          const done=bank.items.filter(x=>pb.items[x.id]?.status==="ok"&&!(pb.items[x.id].tries||[]).length).length;
+          const {error}=await sb.from("attempts").update({finished_at:pb.finAt||new Date().toISOString(), first_correct:done, total:bank.items.length}).eq("id",aid);
+          if(error){ console.warn(error); return; }
+          delete pb.finDirty; delete pb.finAt; save();
+        }
+      }
+    } while(flushAgain);
+  })().catch(e=>console.warn(e)).finally(()=>{ flushing=null; });
+  return flushing;
 }
+function syncFinish(){
+  if(!USER||!sb) return; const pb=S.banks[BANK.bank_id]; if(!pb) return;
+  for(const x of BANK.items) if(pb.items[x.id] && pb.items[x.id].status!=="open") (pb.dirty ||= {})[x.id]=1;
+  pb.finDirty=true; pb.finAt=new Date().toISOString(); save(); return flushSync();
+}
+addEventListener("online", ()=>flushSync());
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") flushSync(); });
+setInterval(()=>{ if(Object.values(S.banks||{}).some(pb=>Object.keys(pb.dirty||{}).length||pb.finDirty)) flushSync(); }, 30000);
 async function boot(){
   if(SB_CFG && window.supabase){
     sb=window.supabase.createClient(SB_CFG.url, SB_CFG.key, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"tilkz-auth"}});
