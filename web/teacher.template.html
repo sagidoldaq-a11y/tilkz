@@ -261,7 +261,11 @@ function latestAnswers(rows){
   return Object.values(best);
 }
 const inTrack = r => trackF==="all" || (bankById[r.bank_id]||{}).track===trackF;
-const bankLabel = id => { const b=bankById[id]; if(!b) return id; const same=BANKS.filter(x=>x.track===b.track); return `${b.track==="second_language"?"Екінші тіл":"Бірінші тіл"} · ${same.indexOf(b)+1}-нұсқа`; };
+/* ББ нұсқалар курстан алынды: нөмірлеу оқушы көретін ЖИ нұсқалар бойынша жүреді, ББ нұсқалардың бұрынғы нәтижелері бөлек белгіленеді */
+const BB_BANKS = new Set(["kaz-L1-sagidolda-2026-v1","kaz-L1-nis-sample-v1","kaz-L2-nis-sample-v1"]);
+const bankLabel = id => { const b=bankById[id]; if(!b) return id; const tr=b.track==="second_language"?"Екінші тіл":"Бірінші тіл";
+  if(BB_BANKS.has(id)){ const bb=BANKS.filter(x=>x.track===b.track && BB_BANKS.has(x.bank_id)); return `${tr} · ББ ${bb.indexOf(b)+1}-нұсқа (курстан алынған)`; }
+  const same=BANKS.filter(x=>x.track===b.track && !BB_BANKS.has(x.bank_id)); return `${tr} · ${same.indexOf(b)+1}-нұсқа`; };
 
 /* ---------- Беттер ---------- */
 function route(){ if(view==="classes") renderClasses(); else if(view==="class") renderClass(); else renderStudent(); window.scrollTo({top:0}); }

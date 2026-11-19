@@ -296,7 +296,20 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
 .userbtn{max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .usermenu{position:fixed;z-index:40;background:var(--panel);border-radius:14px;box-shadow:0 12px 32px -12px rgba(22,35,58,.35);padding:6px}
 
-.splitter,.qnav{display:none}
+.splitter{display:none}
+/* Барлық экранда: бір мәтін – бір сұрақ (сұрақтар арасында нүктелі навигация мен «Келесі сұрақ» батырмасы) */
+.qs .card{display:none} .qs .card.cur{display:block}
+.qs .finbar{display:none} .qs.last .finbar{display:block}
+.qnav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qnav .nv{flex:0 0 auto;min-width:40px;height:36px;border:1px solid var(--line);background:var(--panel);border-radius:8px;font-weight:700;color:var(--ink);cursor:pointer}
+.qnav .nv:disabled{opacity:.35;cursor:default}
+.qnav .dots{display:flex;gap:5px;flex:1 1 auto;justify-content:center;flex-wrap:wrap}
+.qnav .dot{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
+.qnav .dot.cur{border:2px solid var(--accent)}
+.qnav .dot.ok{background:var(--ok-soft);border-color:var(--ok)}
+.qnav .dot.bad{background:var(--bad-soft);border-color:var(--bad)}
+.qnav .dot.cur.ok,.qnav .dot.cur.bad{box-shadow:0 0 0 2px var(--accent)}
+.nextnav{margin-top:14px;justify-content:flex-end}
 /* Телефон тігінен (және тар экрандар): мәтін жоғарыда, сұрақ төменде. Көлденең телефонға арналған баптау төменде. */
 @media (max-width:880px) and (orientation:portrait), (max-width:880px) and (min-height:521px){
   header.top{position:static}
@@ -454,6 +467,16 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
 const BANKS = { kk: [/*__BANK__*/null, /*__BANK_L1_V2__*/null, /*__BANK_L1_V3__*/null, /*__BANK_L1_V4__*/null, /*__BANK_L1_V5__*/null, /*__BANK_L1_V6__*/null, /*__BANK_L1_V7__*/null, /*__BANK_L1_V8__*/null, /*__BANK_L1_V9__*/null, /*__BANK_L1_V10__*/null].filter(Boolean), ru: [/*__BANK_L2__*/null, /*__BANK_L2_V2__*/null, /*__BANK_L2_V3__*/null, /*__BANK_L2_V4__*/null, /*__BANK_L2_V5__*/null, /*__BANK_L2_V6__*/null, /*__BANK_L2_V7__*/null, /*__BANK_L2_V8__*/null, /*__BANK_L2_V9__*/null, /*__BANK_L2_V10__*/null].filter(Boolean) };
 let BANK = BANKS.kk[0];
 const bankOf = (l, v) => { const a = BANKS[l] || BANKS.kk; return a[v] || a[0]; };
+/* Таңдалған нұсқа bank_id бойынша сақталады (S.vid). Бұрынғы сақтауда тек реттік нөмір (S.vars) болған:
+   ББ нұсқалар курстан алынғандықтан, ол нөмір алынған нұсқалар санына жылжытылады. */
+const OLD_BB = {kk:["kaz-L1-sagidolda-2026-v1","kaz-L1-nis-sample-v1"], ru:["kaz-L2-nis-sample-v1"]};
+function varIdx(l){
+  const a=BANKS[l]||BANKS.kk, id=(S.vid||{})[l];
+  if(id){ const i=a.findIndex(b=>b.bank_id===id); if(i>=0) return i; }
+  let v=(S.vars||{})[l]||0; const gone=(OLD_BB[l]||[]).filter(x=>!a.some(b=>b.bank_id===x)).length;
+  return Math.max(0, Math.min(a.length-1, v-gone));
+}
+function setVar(l, vi){ (S.vid ||= {})[l]=bankOf(l,vi).bank_id; S.vars[l]=vi; }
 
 /* ---------- Интерфейс мәтіндері ---------- */
 const UI = {
@@ -557,7 +580,7 @@ let S = load();
 // Тіл барлық беттерге ортақ (визитка, курс, кабинет): қолданушы өзі ауыстырмайынша өзгермейді
 const LANG_KEY="tilkz-lang";
 try{ const l=localStorage.getItem(LANG_KEY); if(l==="kk"||l==="ru") S.lang=l; else localStorage.setItem(LANG_KEY,S.lang); }catch(e){}
-BANK = bankOf(S.lang, (S.vars||{})[S.lang]||0);
+BANK = bankOf(S.lang, varIdx(S.lang));
 function load(){
   let s=null; try{ s=JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){}
   s=Object.assign({lang:"kk", view:"text"}, s||{});
@@ -573,7 +596,7 @@ function load(){
     Object.defineProperty(s, k, {get(){ return per()[k]; }, set(v){ per()[k]=v; }, enumerable:false, configurable:true});
   return s;
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,vars:S.vars,view:S.view,banks:S.banks,split:S.split,marker:S.marker,tipSeen:S.tipSeen})); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({lang:S.lang,vars:S.vars,vid:S.vid,view:S.view,banks:S.banks,split:S.split,marker:S.marker,tipSeen:S.tipSeen})); }catch(e){} }
 const t = () => UI[S.lang];
 const itemsOf = tid => BANK.items.filter(x=>x.text_id===tid);
 const st = id => (S.items[id] ||= {sel:null, tries:[], status:"open"}); // open | retry | ok | revealed
@@ -897,7 +920,8 @@ function goQ(i){
   const its=itemsOf(BANK.texts[S.text].id); if(i<0||i>=its.length) return;
   S.cur[S.text]=i; save();
   activeQ=its[i].id; marksFor(its[i]);
-  renderPaper(); renderQs(); document.getElementById("qs").scrollTop=0;
+  renderPaper(); renderQs(); const q=document.getElementById("qs"); q.scrollTop=0;
+  if(!phone() && !landPhone()){ const hb=document.querySelector("header.top")?.getBoundingClientRect().bottom||0, r=q.getBoundingClientRect(); if(r.top<hb) window.scrollTo({top:Math.max(0,scrollY+r.top-hb-8)}); }
 }
 document.getElementById("qs").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b && !b.disabled) goQ(+b.dataset.go); });
 function cardHTML(it){
@@ -948,7 +972,24 @@ function cardHTML(it){
   return `<article class="card ${it.id===curId()?"cur":""} ${s.status==="ok"?"is-ok":""} ${s.status==="revealed"?"is-bad":""}" id="card-${it.id}">
     <div class="qhead"><span class="qnum">${it.number}</span><button type="button" class="chip skillchip" data-act="skill" data-id="${it.id}" aria-expanded="${!!openSkill[it.id]}" title="${S.lang==="ru"?"Что это за навык?":"Бұл қандай дағды?"}">${esc(skillName)} <span aria-hidden="true">ⓘ</span></button>
       </div>
-    ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${fin?"":actions}${(!fin&&openHelp[it.id])?assistHTML(it):""}</article>`;
+    ${openSkill[it.id]?skillBox(it.skill):""}<p class="stem">${stemHTML(it.stem)}</p><div class="opts">${opts}</div>${fb}${fin?nextNavHTML(it):actions}${(!fin&&openHelp[it.id])?assistHTML(it):""}</article>`;
+}
+
+/* Бір мәтін – бір сұрақ: жауап берілгеннен кейін «Келесі сұрақ», мәтіннің барлық сұрағына жауап берілсе – «Келесі мәтін» */
+function nextNavHTML(it){
+  const ru=S.lang==="ru", its=itemsOf(it.text_id), i=its.findIndex(x=>x.id===it.id);
+  const ti=BANK.texts.findIndex(t=>t.id===it.text_id), textDone=its.every(isAnswered);
+  const nq = j => `<button class="btn primary" type="button" data-go="${j}">${ru?"Следующий вопрос →":"Келесі сұрақ →"}</button>`;
+  let b="";
+  if(!textDone){ let j=its.findIndex((x,k)=>k>i && !isAnswered(x)); if(j<0) j=its.findIndex(x=>!isAnswered(x)); b=nq(j); }
+  else if(allDone()) b=`<button class="btn primary" type="button" data-fin="finish">${ru?"Завершить":"Аяқтау"}</button>`;
+  else {
+    // келесі жауапсыз мәтін (соңғы мәтіннен кейін басына оралады)
+    let nt=BANK.texts.findIndex((t,k)=>k>ti && itemsOf(t.id).some(x=>!isAnswered(x)));
+    if(nt<0) nt=BANK.texts.findIndex(t=>itemsOf(t.id).some(x=>!isAnswered(x)));
+    b=`<button class="btn primary" type="button" data-fin="text" data-t="${nt}">${ru?"Следующий текст →":"Келесі мәтін →"}</button>`;
+  }
+  return `<div class="actions nextnav">${b}</div>`;
 }
 
 /* ---------- Көмекші (Claude) ---------- */
@@ -1343,6 +1384,7 @@ document.getElementById("results").addEventListener("click",e=>{
 document.getElementById("qs").addEventListener("click",e=>{
   const b=e.target.closest("[data-fin]"); if(!b) return;
   if(b.dataset.fin==="next"){ openText(Math.min(S.text+1,BANK.texts.length-1), true); }
+  if(b.dataset.fin==="text"){ openText(+b.dataset.t||0, true); }
   if(b.dataset.fin==="finish" && allDone()){ finalize(); syncFinish(); showingResults=true; renderAll(); window.scrollTo({top:0}); }
 });
 function finishBar(){
@@ -1352,10 +1394,10 @@ function finishBar(){
   const fin = allDone() ? `<button class="btn primary" type="button" data-fin="finish">${ru?"Завершить":"Аяқтау"}</button>` : "";
   const note = allDone() ? (ru?"Все ответы готовы. Открой отчёт.":"Барлық жауап дайын. Есепті аш.")
                          : (ru?`Ответов: ${done}/${N}`:`Жауап: ${done}/${N}`);
-  return `<div class="finbar"><div class="fprog"><i style="width:${Math.round(100*done/N)}%"></i></div><p>${note}</p><div class="actions">${next}${fin}</div></div>`;
+  return `<div class="finbar"><div class="fprog"><i style="width:${Math.round(100*done/N)}%"></i></div><p>${note}</p></div>`;
 }
 function setLang(l){
-  const nb = bankOf(l, S.vars[l]||0), changed = nb!==BANK;
+  const nb = bankOf(l, varIdx(l)), changed = nb!==BANK;
   S.lang=l; BANK=nb; save(); try{ localStorage.setItem(LANG_KEY,l); }catch(e){}
   if(changed){ marks=[]; markKw=[]; tmpHl=[]; activeQ=null; scrollQ=null; showingResults=false; view="landing"; hideBar(); }
   renderAll(); if(changed) window.scrollTo({top:0});
@@ -1405,7 +1447,7 @@ function landingHTML(){
 document.getElementById("landing").addEventListener("click",e=>{
   const b=e.target.closest("[data-land]"); if(!b) return;
   const vi=+b.dataset.v||0, nb=bankOf(S.lang, vi);
-  if(nb!==BANK){ S.vars[S.lang]=vi; BANK=nb; marks=[]; markKw=[]; tmpHl=[]; activeQ=null; scrollQ=null; hideBar(); save(); }
+  if(nb!==BANK){ setVar(S.lang,vi); BANK=nb; marks=[]; markKw=[]; tmpHl=[]; activeQ=null; scrollQ=null; hideBar(); save(); }
   if(b.dataset.land==="start"){ view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
   if(b.dataset.land==="report"){ showingResults=true; view="practice"; renderAll(); window.scrollTo({top:0}); }
   if(b.dataset.land==="restart"){ S.attempt=null; S.items={}; S.order={}; S.cur={}; S.hl={}; S.text=0; marks=[]; activeQ=null; scrollQ=null; save(); view="practice"; showingResults=false; renderAll(); window.scrollTo({top:0}); }
@@ -1605,7 +1647,7 @@ async function enterAs(user){
   USER=user; PROFILE=data||null;
   if(!PROFILE){ const t=await sb.from("teachers").select("user_id").eq("user_id",user.id).maybeSingle(); IS_TEACHER=!!t.data; }
   const lang=S.lang, theme=null; KEY="oqylym-v1-state:"+user.id; S=load(); S.lang=lang;
-  BANK=bankOf(S.lang,(S.vars||{})[S.lang]||0); view="landing"; showingResults=false; marks=[]; markKw=[]; activeQ=null; scrollQ=null;
+  BANK=bankOf(S.lang,varIdx(S.lang)); view="landing"; showingResults=false; marks=[]; markKw=[]; activeQ=null; scrollQ=null;
   await restoreFromServer();
   save(); renderAll(); window.scrollTo({top:0}); flushSync();
 }

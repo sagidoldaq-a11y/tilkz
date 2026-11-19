@@ -11,13 +11,15 @@ shutil.copyfile(here / "home.html", root / "index.html")
 # 2) Тест беті
 bank = json.loads((root / "content" / "bank_v1.json").read_text(encoding="utf-8"))
 tpl = (here / "app.template.html").read_text(encoding="utf-8")
-body = tpl.replace("/*__BANK__*/null", json.dumps(bank, ensure_ascii=False).replace("</", "<\\/"))
+# ББ нұсқалар (bank_v1, bank_l1_v2, bank_l2_v1) курстан алынды: оқушыға тек ЖИ нұсқалар көрсетіледі.
+# Олар мұғалім кабинетінде қалады (banks_all), бұрынғы нәтижелер сонда оқылады.
+body = tpl.replace("/*__BANK__*/null", "null")
 bank2 = json.loads((root / "content" / "bank_l2_v1.json").read_text(encoding="utf-8"))
-body = body.replace("/*__BANK_L2__*/null", json.dumps(bank2, ensure_ascii=False).replace("</", "<\\/"))
+body = body.replace("/*__BANK_L2__*/null", "null")
 bank5 = json.loads((root / "content" / "bank_l1_v3.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L1_V3__*/null", json.dumps(bank5, ensure_ascii=False).replace("</", "<\\/"))
 bank4 = json.loads((root / "content" / "bank_l1_v2.json").read_text(encoding="utf-8"))
-body = body.replace("/*__BANK_L1_V2__*/null", json.dumps(bank4, ensure_ascii=False).replace("</", "<\\/"))
+body = body.replace("/*__BANK_L1_V2__*/null", "null")
 bank3 = json.loads((root / "content" / "bank_l2_v2.json").read_text(encoding="utf-8"))
 body = body.replace("/*__BANK_L2_V2__*/null", json.dumps(bank3, ensure_ascii=False).replace("</", "<\\/"))
 EXTRA = [("L1_V4", "bank_l1_v4.json"), ("L1_V5", "bank_l1_v5.json"), ("L2_V3", "bank_l2_v3.json"), ("L2_V4", "bank_l2_v4.json"), ("L2_V5", "bank_l2_v5.json"), ("L1_V6", "bank_l1_v6.json"), ("L1_V7", "bank_l1_v7.json"), ("L1_V8", "bank_l1_v8.json"), ("L1_V9", "bank_l1_v9.json"), ("L1_V10", "bank_l1_v10.json"), ("L2_V6", "bank_l2_v6.json"), ("L2_V7", "bank_l2_v7.json"), ("L2_V8", "bank_l2_v8.json"), ("L2_V9", "bank_l2_v9.json"), ("L2_V10", "bank_l2_v10.json")]
