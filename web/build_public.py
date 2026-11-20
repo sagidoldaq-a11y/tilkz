@@ -78,7 +78,7 @@ gt = gt.replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
 gout = root / "gov"
 gout.mkdir(exist_ok=True)
 (gout / "index.html").write_text(gt, encoding="utf-8")
-# 5) «Казахский язык с 0» курсы (тек орысша беттен ашылады)
+# 5) «Қазақша. Старт» курсы (тек орысша беттен ашылады)
 for src, dst in (("kz0.html", "kz0/index.html"), ("kz0-hw0.html", "kz0/0/index.html"), ("kz0-slides0.html", "kz0/0/slides/index.html")):
     d = root / dst
     d.parent.mkdir(parents=True, exist_ok=True)
