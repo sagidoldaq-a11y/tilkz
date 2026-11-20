@@ -61,6 +61,17 @@ shutil.copyfile(here / "privacy.html", root / "privacy" / "index.html")
 
 # 3) Мұғалім кабинеті
 banks_all = [bank, bank4, bank5, bank2, bank3] + [extra[s] for s in ("L1_V4","L1_V5","L1_V6","L1_V7","L1_V8","L1_V9","L1_V10","L2_V3","L2_V4","L2_V5","L2_V6","L2_V7","L2_V8","L2_V9","L2_V10") if extra[s]]   # бірінші тіл: 1, 2, 3-нұсқа; екінші тіл: 1, 2-нұсқа
+def hw_bank(hw):
+    """Үй тапсырмасы мұғалім кабинетінде нұсқа сияқты көрінуі үшін: әр тапсырма – бір «сұрақ»"""
+    items, n = [], 0
+    for r in hw["rounds"]:
+        for it in r["items"]:
+            n += 1
+            ans = " ".join(it["a"]) if isinstance(it["a"], list) else it["a"]
+            stem = r["title"] + ": " + (it.get("p") or it.get("pic") or "")
+            items.append({"id": it["id"], "number": n, "stem": stem, "options": {"✓": ans}, "key": "✓", "skill": r["skill"], "level": 1})
+    return {"bank_id": hw["bank_id"], "track": "kz0", "label": "Қазақша. Старт · " + hw["title"], "skills": hw["skills"], "items": items, "texts": []}
+banks_all = banks_all + [hw_bank(json.loads((root / "content" / "kz0-hw0.json").read_text(encoding="utf-8")))]
 tt = (here / "teacher.template.html").read_text(encoding="utf-8")
 assert tt.count("/*__BANKS__*/[]") == 1 and tt.count("/*__SUPABASE__*/null") == 1
 tt = tt.replace("/*__BANKS__*/[]", json.dumps(banks_all, ensure_ascii=False).replace("</", "<\\/"))
@@ -79,8 +90,15 @@ gout = root / "gov"
 gout.mkdir(exist_ok=True)
 (gout / "index.html").write_text(gt, encoding="utf-8")
 # 5) «Қазақша. Старт» курсы (тек орысша беттен ашылады)
-for src, dst in (("kz0.html", "kz0/index.html"), ("kz0-hw0.html", "kz0/0/index.html"), ("kz0-slides0.html", "kz0/0/slides/index.html")):
+for src, dst in (("kz0.html", "kz0/index.html"), ("kz0-slides0.html", "kz0/0/slides/index.html")):
     d = root / dst
     d.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(here / src, d)
+# Үй тапсырмасы: мазмұны content/kz0-hw0.json-нан, нәтижелер Supabase-ке (attempts / answers) жазылады
+hw0 = json.loads((root / "content" / "kz0-hw0.json").read_text(encoding="utf-8"))
+ht = (here / "kz0-hw0.html").read_text(encoding="utf-8")
+assert ht.count("/*__HW__*/null") == 1 and ht.count("/*__SUPABASE__*/null") == 1
+ht = ht.replace("/*__HW__*/null", json.dumps(hw0, ensure_ascii=False).replace("</", "<\\/")).replace("/*__SUPABASE__*/null", json.dumps(SUPABASE))
+(root / "kz0" / "0").mkdir(parents=True, exist_ok=True)
+(root / "kz0" / "0" / "index.html").write_text(ht, encoding="utf-8")
 print("ok", root / "index.html", out / "index.html", tout / "index.html", gout / "index.html")

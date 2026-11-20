@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>try{var t=localStorage.getItem("tilkz-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 :root{
@@ -111,6 +112,20 @@ textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radiu
 .mistakes b{color:var(--ok)}
 .streak{display:inline-block;background:var(--gold-soft);color:var(--ink);border-radius:99px;padding:2px 10px;font-size:13px;font-weight:800}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:9}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--line);border-radius:14px;padding:4px;margin-bottom:14px}
+.tabs button{border:0;background:transparent;min-height:44px;border-radius:11px;font-weight:700;font-size:16px;color:var(--muted)}
+.tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+.af{display:flex;flex-direction:column;gap:12px;text-align:left}
+.af label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:15px}
+.af input,.af select{width:100%;min-height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:17px;background:var(--surface);color:var(--ink)}
+.af .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.af .hint{font-weight:400;font-size:13px;color:var(--muted);line-height:1.4}
+.af .err{color:var(--bad);font-weight:600;font-size:15px;margin:0;min-height:0}
+.af .err:empty{display:none}
+.who{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;color:var(--muted);margin:2px 0 12px}
+.who button{background:none;border:0;color:var(--accent);font-weight:700;padding:6px 0}
+.saved{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ok-soft);color:var(--ok);border-radius:14px;padding:10px 14px;font-weight:700;font-size:15px;text-align:center}
+.saved.wait{background:var(--accent-soft);color:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -132,59 +147,21 @@ textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radiu
 (function(){
 "use strict";
 const WA="77082141226";
-const KEY="kz0-hw0-v1";
+let KEY="kz0-hw0-v1:guest";
+const SB_CFG=/*__SUPABASE__*/null, LOGIN_DOMAIN="oqushy.tilkz.app";
+let sb=null, USER=null, PROFILE=null;
 const PIC_RU={"алма":"яблоко","мысық":"кошка","кітап":"книга","ағаш":"дерево","ұшақ":"самолёт","сағат":"часы","қасық":"ложка","қолшатыр":"зонт","маймыл":"обезьяна","ара":"пчела","кірпі":"ёж","найзағай":"молния"};
 
 /* ---------- content: based on lesson 0 «Знакомство» ---------- */
-const ROUNDS=[
- {id:"r1",title:"Найди слово",icon:"🔎",intro:"Посмотри на картинку и выбери казахское слово.",type:"pick",items:[
-  {pic:"🍎",a:"алма",o:["алма","ағаш","ара"]},
-  {pic:"🐱",a:"мысық",o:["маймыл","мысық","қасық"]},
-  {pic:"📖",a:"кітап",o:["кірпі","сағат","кітап"]},
-  {pic:"🌳",a:"ағаш",o:["ағаш","алма","ұшақ"]},
-  {pic:"✈️",a:"ұшақ",o:["қасық","ұшақ","ара"]},
-  {pic:"⏰",a:"сағат",o:["сағат","кітап","кірпі"]},
-  {pic:"🥄",a:"қасық",o:["мысық","қолшатыр","қасық"]},
-  {pic:"☂️",a:"қолшатыр",o:["найзағай","қолшатыр","маймыл"]}
- ]},
- {id:"r2",title:"Собери слово",icon:"🧩",intro:"Нажимай на буквы по порядку. Обрати внимание на казахские буквы: ұ, қ, і.",type:"letters",items:[
-  {pic:"🐱",a:"мысық"},{pic:"✈️",a:"ұшақ"},{pic:"🦔",a:"кірпі"},{pic:"🐝",a:"ара"}
- ]},
- {id:"r3",title:"Кому нравится?",icon:"💛",intro:"«Мне нравится» по-казахски — «Маған ұнайды». Мен → маған. Выбери правильную форму.",rule:"Мен → маған · Сен → саған · Ол → оған · Біз → бізге · Сендер → сендерге · Олар → оларға",type:"pick",items:[
-  {p:"Мен → ?",ru:"я → мне",a:"маған",o:["менің","маған","мені"],two:true},
-  {p:"Сен → ?",ru:"ты → тебе",a:"саған",o:["саған","сенің","сені"],two:true},
-  {p:"Ол → ?",ru:"он / она → ему / ей",a:"оған",o:["оның","оны","оған"],two:true},
-  {p:"Біз → ?",ru:"мы → нам",a:"бізге",o:["бізге","біздің","бізді"],two:true},
-  {p:"Сендер → ?",ru:"вы → вам",a:"сендерге",o:["сендердің","сендерге","сендерді"],two:true},
-  {p:"Олар → ?",ru:"они → им",a:"оларға",o:["оларға","олардың","оларды"],two:true}
- ]},
- {id:"r4",title:"Правильное предложение",icon:"✅",intro:"Прочитай фразу по-русски и выбери, как правильно сказать по-казахски.",type:"pick",items:[
-  {pic:"⚽",p:"Мне нравится футбол.",a:"Маған футбол ұнайды.",o:["Мен футбол ұнайды.","Маған футбол ұнайды.","Менің футбол ұнайды."]},
-  {pic:"🥛",p:"Ему не нравится молоко.",a:"Оған сүт ұнамайды.",o:["Оған сүт ұнамайды.","Ол сүт ұнамайды.","Оған сүт ұнайды."]},
-  {pic:"🍕",p:"Тебе нравится пицца?",a:"Саған пицца ұнай ма?",o:["Сен пицца ұнай ма?","Саған пицца ұнайды.","Саған пицца ұнай ма?"]},
-  {pic:"❄️",p:"Нам нравится зима.",a:"Бізге қыс ұнайды.",o:["Біз қыс ұнайды.","Бізге қыс ұнайды.","Бізде қыс ұнайды."]},
-  {pic:"🐶",p:"Я люблю собак.",a:"Мен итті жақсы көремін.",o:["Маған итті жақсы көремін.","Мен итті жақсы көремін.","Мен ит жақсы көреміз."]}
- ]},
- {id:"r5",title:"Собери предложение",icon:"🏗️",intro:"Нажимай на слова по порядку. В казахском глагол стоит в конце!",type:"words",items:[
-  {p:"Меня зовут Али.",a:["Менің","атым","Әли."]},
-  {p:"Мне одиннадцать лет.",a:["Мен","он","бір","жастамын."]},
-  {p:"Я живу в Астане.",a:["Мен","Астанада","тұрамын."]},
-  {p:"Мне не нравится рано вставать.",a:["Маған","ерте","тұру","ұнамайды."]}
- ]},
- {id:"r6",title:"Ответь на вопрос",icon:"💬",intro:"Тебе задают вопрос. Выбери подходящий ответ.",type:"pick",items:[
-  {p:"Атың кім?",ru:"Как тебя зовут?",a:"Менің атым Дана.",o:["Мен он жастамын.","Менің атым Дана.","Маған алма ұнайды."]},
-  {p:"Неше жастасың?",ru:"Сколько тебе лет?",a:"Мен он бір жастамын.",o:["Мен он бір жастамын.","Менің атым Ерлан.","Мен мектепте оқимын."]},
-  {p:"Қай қалада тұрасың?",ru:"В каком городе ты живёшь?",a:"Мен Алматыда тұрамын.",o:["Маған футбол ұнайды.","Менің атым Әли.","Мен Алматыда тұрамын."]},
-  {p:"Саған не ұнайды?",ru:"Что тебе нравится?",a:"Маған сурет салу ұнайды.",o:["Мен Астанада тұрамын.","Маған сурет салу ұнайды.","Мен он жастамын."]}
- ]}
-];
+const HW=/*__HW__*/null;
+const ROUNDS=HW.rounds;
 const TOTAL=ROUNDS.reduce((n,r)=>n+r.items.length,0);
 
 /* ---------- state ---------- */
 let S=fresh();
-function fresh(){return {name:"",ri:0,qi:0,pts:0,first:0,streak:0,best:0,phase:"start",log:[],retry:[],inRetry:false,about:"",bestScore:null};}
-try{const raw=localStorage.getItem(KEY); if(raw){const o=JSON.parse(raw); S=Object.assign(fresh(),o);}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function fresh(){return {name:"",ri:0,qi:0,pts:0,first:0,streak:0,best:0,phase:"start",log:[],retry:[],inRetry:false,about:"",bestScore:null,attempt:null,dirty:{},finDirty:false,finDone:false};}
+function loadState(){ S=fresh(); try{const raw=localStorage.getItem(KEY); if(raw){S=Object.assign(fresh(),JSON.parse(raw));}}catch(e){} }
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("kz0-progress",JSON.stringify({hw0:Math.max(S.bestScore||0,S.phase==="result"?S.pts:0)}));}catch(e){}}
 
 const app=document.getElementById("app"), ptsEl=document.getElementById("pts"), bar=document.getElementById("bar");
 const sheet=document.getElementById("sheet"), shT=document.getElementById("sh-title"), shX=document.getElementById("sh-text"), shN=document.getElementById("sh-next");
@@ -197,6 +174,7 @@ function paintTop(){ptsEl.textContent=S.pts; bar.style.width=Math.round(100*Math
 /* ---------- screens ---------- */
 function render(){
   paintTop(); hideSheet();
+  if(!USER) return authScreen();
   if(S.phase==="start") return startScreen();
   if(S.phase==="intro") return introScreen();
   if(S.phase==="task") return taskScreen();
@@ -208,17 +186,14 @@ function startScreen(){
   app.innerHTML=`<p class="eyebrow">Урок 0 · Домашнее задание</p>
   <h1>Знакомство: игра на очки</h1>
   <p class="muted">${TOTAL} ${ruN(TOTAL,"задание","задания","заданий")} по нашему первому уроку. За каждый правильный ответ — очки, за серию без ошибок — бонус.</p>
+  <div class="who"><span>Ты вошёл(ла) как <b>${esc(S.name)}</b></span><button type="button" id="out">Выйти</button></div>
   <div class="card stack">
-    <label for="nm"><b>Как тебя зовут?</b></label>
-    <input type="text" id="nm" autocomplete="given-name" maxlength="40" placeholder="Имя" value="${esc(S.name)}">
     <div class="rounds">${ROUNDS.map((r,i)=>`<div><b>${i+1}</b>${esc(r.title)}</div>`).join("")}<div><b>★</b>Бонус: расскажи о себе</div></div>
     <div class="rule"><span aria-hidden="true">💡</span><span>С первой попытки: <b>+10</b>. Со второй: <b>+5</b>. Три верных ответа подряд: <b>+5</b> бонус. Ошибки мы повторим в конце.</span></div>
     <button class="btn primary block" id="go" type="button">${S.log.length?"Продолжить":"Начать"}</button>
   </div>`;
-  const nm=document.getElementById("nm"), go=document.getElementById("go");
-  const upd=()=>{go.disabled=!nm.value.trim();}; upd(); nm.oninput=upd;
-  go.onclick=()=>{S.name=nm.value.trim(); if(!S.log.length){S.phase="intro";} else if(S.phase==="start"){S.phase=S.inRetry?"task":"task";} save(); render();};
-  if(S.log.length && S.phase==="start"){ /* resume keeps current place */ }
+  document.getElementById("go").onclick=()=>{ S.phase=S.log.length?"task":"intro"; save(); render(); };
+  document.getElementById("out").onclick=signOut;
 }
 function introScreen(){
   const r=ROUNDS[S.ri];
@@ -234,9 +209,9 @@ function current(){
   if(S.inRetry){const k=S.retry[S.qi]; const [ri,qi]=k.split(":").map(Number); return {r:ROUNDS[ri],it:ROUNDS[ri].items[qi],ri,qi,key:k};}
   const r=ROUNDS[S.ri]; return {r,it:r.items[S.qi],ri:S.ri,qi:S.qi,key:S.ri+":"+S.qi};
 }
-let tries=0;
+let tries=0, wrongs=[];
 function taskScreen(){
-  tries=0;
+  tries=0; wrongs=[];
   const {r,it}=current();
   const n=S.inRetry?`Повтор ${S.qi+1} / ${S.retry.length}`:`${S.qi+1} / ${r.items.length}`;
   const head=`<div class="qhead"><span class="eyebrow">${S.inRetry?"Работа над ошибками":esc(r.title)}</span><span class="qcount">${n}${S.streak>=2?` · <span class="streak">серия ${S.streak} 🔥</span>`:""}</span></div>`;
@@ -254,7 +229,7 @@ function pickTask(head,r,it){
   app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
     const ok=b.dataset.o===it.a;
     if(ok){ b.classList.add("right"); app.querySelectorAll(".opt").forEach(x=>x.disabled=true); answer(true,it); }
-    else{ b.classList.add("wrong"); b.disabled=true; tries++;
+    else{ b.classList.add("wrong"); b.disabled=true; tries++; wrongs.push(b.dataset.o);
       if(tries>=2 || it.o.length<=2){ app.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(x.dataset.o===it.a)x.classList.add("right");}); answer(false,it,b.dataset.o); }
       else softWrong(); }
   });
@@ -289,7 +264,7 @@ function wireBuild(src,built,need,getStr,target,it,sep){
   chk.onclick=()=>{
     const ok=getStr()===target;
     if(ok){ slots.classList.add("ok"); lock(); answer(true,it); }
-    else{ tries++; slots.classList.add("bad");
+    else{ tries++; wrongs.push(getStr()); slots.classList.add("bad");
       if(tries>=2){ lock(); answer(false,it,getStr(),target); }
       else { softWrong(()=>{built.length=0; paint();}); } }
   };
@@ -314,10 +289,11 @@ function answer(ok,it,given,target){
     S.best=Math.max(S.best,S.streak);
   } else S.streak=0;
   S.pts+=gain+bonus;
-  if(firstTime) S.log.push({k:key,first:ok&&tries===0,ok});
+  if(firstTime){ S.log.push({k:key,first:ok&&tries===0,ok});
+    const {r}=current(); S.dirty[it.id]={item_id:it.id, skill:r.skill, level:1, tries:wrongs.slice(), status:ok?"ok":"revealed", first_correct:ok&&tries===0}; }
   if(firstTime && ok && tries===0) S.first++;
   if(!S.inRetry && !(ok&&tries===0) && !S.retry.includes(key)) S.retry.push(key);
-  save(); paintTop();
+  save(); paintTop(); flush();
   const ans=target||it.a, ru=it.pic&&PIC_RU[it.a]?` — ${PIC_RU[it.a]}`:"";
   if(ok){
     showSheet("ok",pick(PRAISE)+(bonus?" 🔥":""),`<span class="pts">+${gain}</span>${bonus?` и <span class="pts">+${bonus}</span> за серию из ${S.streak}!`:""} <span lang="kk">${esc(Array.isArray(ans)?ans.join(" "):ans)}</span>${esc(ru)}`,"Дальше",next);
@@ -374,7 +350,7 @@ function resultScreen(){
     msg=`Хорошее начало: ${S.first} из ${TOTAL}. Ты прошёл(ла) всё задание до конца и исправил(а) ошибки. Это и есть учёба! Попробуй ещё раз завтра, и результат вырастет.`;}
   else {emoji="🌱";title=`Рахмет за старание${nm?", "+nm:""}!`;
     msg=`Казахский язык для тебя новый, и ошибаться сейчас нормально: так растёт мозг. Ты дошёл(ла) до конца и исправил(а) ошибки, это главное. Пройди задание ещё раз завтра: увидишь, насколько станет легче!`;}
-  S.bestScore=Math.max(S.bestScore||0,S.pts); save();
+  S.bestScore=Math.max(S.bestScore||0,S.pts); if(!S.finDone){S.finDirty=true; S.finDone=true;} save(); flush().then(paintSaved);
   const miss=S.retry.map(k=>{const [ri,qi]=k.split(":").map(Number); const it=ROUNDS[ri].items[qi]; const a=Array.isArray(it.a)?it.a.join(" "):it.a; const q=it.p?it.p.replace(/ → \?$/,""):(PIC_RU[it.a]||it.pic); return `<div>${esc(q)} → <b lang="kk">${esc(a)}</b></div>`;}).join("");
   const report=`Домашнее задание · Урок 0 «Знакомство»\nУченик: ${S.name||"—"}\nС первой попытки: ${S.first}/${TOTAL} (${pct}%)\nОчки: ${S.pts}\nЛучшая серия: ${S.best}\nОшибки: ${S.retry.length}\nО себе: ${S.about.trim()||"—"}`;
   app.innerHTML=`<div class="big" aria-hidden="true">${emoji}</div>
@@ -384,12 +360,13 @@ function resultScreen(){
   <div class="tally"><div><b>${S.pts}</b><span>очков</span></div><div><b>${S.first}/${TOTAL}</b><span>с 1-й попытки</span></div><div><b>${S.best}</b><span>лучшая серия</span></div></div>
   ${miss?`<h2>Запомни</h2><div class="mistakes">${miss}</div>`:""}
   <div class="stack" style="margin-top:18px">
-    <a class="btn primary block" id="send" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(report)}">Отправить результат учителю</a>
-    <p class="muted center" style="font-size:14px;margin:0">Откроется WhatsApp. Номер учителя: +7 708 214 12 26</p>
+    <div class="saved wait" id="saved">Сохраняем результат…</div>
+    <a class="btn primary block" id="send" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(report)}">Отправить голосовое учителю</a>
+    <p class="muted center" style="font-size:14px;margin:0">Прочитай вслух свои предложения о себе и отправь аудио в WhatsApp: +7 708 214 12 26</p>
     <button class="btn block" id="again" type="button">Пройти ещё раз</button>
     <a class="btn block" href="slides/">Повторить презентацию урока</a>
   </div>`;
-  document.getElementById("again").onclick=()=>{const nm=S.name, bs=S.bestScore; S=fresh(); S.name=nm; S.bestScore=bs; S.phase="intro"; save(); render(); window.scrollTo({top:0});};
+  document.getElementById("again").onclick=()=>{const nm=S.name, bs=Math.max(S.bestScore||0,S.pts); S=fresh(); S.name=nm; S.bestScore=bs; S.phase="intro"; save(); render(); window.scrollTo({top:0});};
   if(stars>=2) confetti();
 }
 
@@ -411,9 +388,132 @@ function confetti(){
     if(++t<220)requestAnimationFrame(f); else c.hidden=true;})();
 }
 
-if(S.phase!=="start" && S.phase!=="result" && S.log.length===0 && S.phase!=="intro") S.phase="start";
-if(S.phase==="task"||S.phase==="intro"||S.phase==="retryIntro"||S.phase==="about"){ /* resume */ }
-render();
+/* ---------- аккаунт aitil: вход, регистрация, сохранение результатов ---------- */
+const normPhone=v=>{let d=(v||"").replace(/\D/g,""); if(d.length===11&&d[0]==="8")d="7"+d.slice(1); if(d.length===10)d="7"+d; return /^7\d{10}$/.test(d)?d:null;};
+const loginEmail=v=>{v=v.trim().toLowerCase(); if(v.includes("@"))return v; if(!/[a-z]/.test(v)){const ph=normPhone(v); if(ph)v=ph;} return v+"@"+LOGIN_DOMAIN;};
+let authMode="reg", authBusy=false;
+function authScreen(){
+  const reg=authMode==="reg";
+  const grades=`<option value="" selected disabled>— класс —</option>`+[4,5,6,7,8,9,10,11].map(n=>`<option value="${n}">${n} класс</option>`).join("");
+  app.innerHTML=`<p class="eyebrow">Қазақша. Старт · Урок 0</p>
+  <h1>${reg?"Зарегистрируйся, чтобы начать":"Войди, чтобы продолжить"}</h1>
+  <p class="muted">${reg?"Так учитель увидит твои очки и ошибки, а прогресс сохранится на любом устройстве.":"Номер WhatsApp и пароль, которые ты указал(а) при регистрации."}</p>
+  <div class="card">
+    <div class="tabs" role="group"><button type="button" data-am="reg" aria-pressed="${reg}">Регистрация</button><button type="button" data-am="login" aria-pressed="${!reg}">Вход</button></div>
+    ${reg?`<form class="af" id="regForm" novalidate>
+      <div class="row2"><label>Имя<input name="first_name" maxlength="60" autocomplete="given-name" required></label><label>Фамилия<input name="last_name" maxlength="60" autocomplete="family-name" required></label></div>
+      <label>Класс<select name="grade" required>${grades}</select></label>
+      <label>Твой номер WhatsApp<input name="phone" type="tel" inputmode="tel" autocomplete="username" value="+7 " required><span class="hint">Если своего номера нет, укажи номер родителей. Этот номер — твой логин.</span></label>
+      <label>Номер WhatsApp родителей<input name="parent_phone" type="tel" inputmode="tel" autocomplete="off" value="+7 " required></label>
+      <label>Придумай пароль<input name="password" type="password" autocomplete="new-password" required><span class="hint">Не меньше 6 символов. Запиши его, чтобы не забыть.</span></label>
+      <span class="hint">Регистрируясь, ты и родители соглашаетесь с <a href="../../privacy/" target="_blank" rel="noopener">политикой конфиденциальности</a>.</span>
+      <p class="err" role="alert"></p>
+      <button class="btn primary block" type="submit">Зарегистрироваться</button></form>`
+    :`<form class="af" id="loginForm" novalidate>
+      <label>Номер WhatsApp или логин<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" value="+7 " required></label>
+      <label>Пароль<input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="err" role="alert"></p>
+      <button class="btn primary block" type="submit">Войти</button></form>`}
+  </div>`;
+  app.querySelectorAll("[data-am]").forEach(b=>b.onclick=()=>{authMode=b.dataset.am; render();});
+  app.querySelectorAll("input[type=tel],input[name=login]").forEach(el=>el.addEventListener("input",()=>fmtPhone(el)));
+  app.querySelector("form").addEventListener("submit",onAuthSubmit);
+}
+function fmtPhone(el){
+  const v=el.value; if(/[a-zA-Z]/.test(v)){el.value=v.replace(/^\+7\s*/,""); return;}
+  let d=v.replace(/^\+7\s*/,"").replace(/\D/g,""); if(d.length>10)d=d.slice(d.length-10);
+  el.value=!d?"+7 ":"+7 "+d.slice(0,3)+(d.length>3?" "+d.slice(3,6):"")+(d.length>6?" "+d.slice(6,8):"")+(d.length>8?" "+d.slice(8,10):"");
+}
+async function onAuthSubmit(e){
+  e.preventDefault(); if(authBusy||!sb) return;
+  const form=e.target, f=Object.fromEntries(new FormData(form)); for(const k in f) f[k]=String(f[k]).trim();
+  const btn=form.querySelector("button[type=submit]"), err=form.querySelector(".err"), label=btn.textContent;
+  const fail=m=>{authBusy=false; err.textContent=m; btn.disabled=false; btn.textContent=label;};
+  authBusy=true; err.textContent=""; btn.disabled=true; btn.textContent="Загрузка…";
+  const NET="Нет связи. Проверь интернет и попробуй ещё раз.";
+  try{
+    if(form.id==="loginForm"){
+      if(!f.login||!f.password) return fail("Заполни номер и пароль.");
+      const {data,error}=await sb.auth.signInWithPassword({email:loginEmail(f.login),password:f.password});
+      if(error) return fail(/fetch|network/i.test(error.message)?NET:"Неверный номер или пароль.");
+      authBusy=false; return enterAs(data.user);
+    }
+    if(!f.first_name||!f.last_name||!f.grade||!f.password) return fail("Заполни все поля.");
+    const ph=normPhone(f.phone), pph=normPhone(f.parent_phone);
+    if(!ph) return fail("Проверь свой номер. Пример: +7 701 123 45 67");
+    if(!pph) return fail("Проверь номер родителей. Пример: +7 701 123 45 67");
+    if(f.password.length<6) return fail("Пароль должен быть не короче 6 символов.");
+    const l=await sb.rpc("login_available",{p_login:ph}); if(l.error) return fail(NET);
+    if(!l.data) return fail("С этим номером уже есть аккаунт. Открой вкладку «Вход».");
+    const {data,error}=await sb.auth.signUp({email:loginEmail(ph),password:f.password,
+      options:{data:{role:"student",mode:"open",phone:ph,parent_phone:pph,first_name:f.first_name,last_name:f.last_name,grade:f.grade,consent:"true"}}});
+    if(error) return fail(/fetch|network/i.test(error.message)?NET:/registered|exists/i.test(error.message)?"С этим номером уже есть аккаунт. Открой вкладку «Вход».":"Не получилось зарегистрироваться. Проверь данные и попробуй ещё раз.");
+    if(!data.session) return fail("Регистрация не завершена. Напиши учителю.");
+    authBusy=false; return enterAs(data.user);
+  }catch(x){ console.warn(x); fail(NET); }
+}
+async function enterAs(user){
+  let prof=null; try{ const r=await sb.from("students").select("first_name,last_name").eq("user_id",user.id).maybeSingle(); prof=r.data||null; }catch(e){}
+  USER=user; PROFILE=prof; KEY="kz0-hw0-v1:"+user.id; loadState();
+  S.name=(PROFILE&&PROFILE.first_name)||S.name||"";
+  if(S.phase==="start"&&S.log.length) S.phase="start";
+  save(); render(); window.scrollTo({top:0}); flush();
+}
+async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
+
+/* ответы уходят в общую базу aitil (attempts / answers) — учитель видит их в кабинете */
+let flushing=null, again=false;
+function flush(){
+  if(!USER||!sb) return Promise.resolve(false);
+  if(flushing){ again=true; return flushing; }
+  flushing=(async()=>{
+    let ok=true;
+    do{ again=false;
+      const rows=Object.values(S.dirty||{});
+      if(!rows.length && !S.finDirty) break;
+      if(!S.attempt){
+        const {data,error}=await sb.from("attempts").insert({bank_id:HW.bank_id,mode:"practice"}).select("id").single();
+        if(error){ console.warn(error); ok=false; break; }
+        S.attempt=data.id; save();
+      }
+      if(rows.length){
+        const now=new Date().toISOString();
+        const {error}=await sb.from("answers").upsert(rows.map(r=>({...r,attempt_id:S.attempt,bank_id:HW.bank_id,updated_at:now})));
+        if(error){ console.warn(error); ok=false; break; }
+        rows.forEach(r=>{ if(S.dirty[r.item_id]===r) delete S.dirty[r.item_id]; }); save();
+      }
+      if(S.finDirty){
+        const {error}=await sb.from("attempts").update({finished_at:new Date().toISOString(),first_correct:S.first,total:TOTAL}).eq("id",S.attempt);
+        if(error){ console.warn(error); ok=false; break; }
+        S.finDirty=false; save();
+      }
+    } while(again);
+    return ok && !Object.keys(S.dirty||{}).length && !S.finDirty;
+  })().catch(e=>{console.warn(e); return false;}).finally(()=>{flushing=null;});
+  return flushing;
+}
+function paintSaved(ok){
+  const el=document.getElementById("saved"); if(!el) return;
+  if(ok){ el.className="saved"; el.textContent="✓ Результат сохранён. Учитель его видит."; }
+  else { el.className="saved wait"; el.textContent="Результат сохранится, когда появится интернет."; }
+}
+addEventListener("online",()=>flush().then(paintSaved));
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") flush(); });
+
+async function boot(){
+  if(SB_CFG && window.supabase){
+    sb=window.supabase.createClient(SB_CFG.url,SB_CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"tilkz-auth"}});
+    try{ const {data:{session}}=await sb.auth.getSession(); if(session) return enterAs(session.user); }catch(e){ console.warn(e); }
+    let had=false; try{ had=!!localStorage.getItem("tilkz-auth"); }catch(e){}
+    authMode=had?"login":"reg";
+  } else {
+    app.innerHTML=`<p class="muted">Не удалось загрузить платформу. Обнови страницу.</p>`; return;
+  }
+  render();
+}
+app.innerHTML=`<p class="muted center" style="margin-top:40px">Загрузка…</p>`;
+boot();
+
 })();
 </script>
 </body>

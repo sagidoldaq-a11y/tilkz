@@ -152,7 +152,7 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 const SB_CFG = /*__SUPABASE__*/null;
 const BANKS = /*__BANKS__*/[];
 const LOGIN_DOMAIN = "oqushy.tilkz.app";
-const SKILL_GROUPS = {A:"Ақпаратты табу", B:"Мәтінді түсіну", C:"Негізгі ой мен құрылым", D:"Автор және жанр"};
+const SKILL_GROUPS = {A:"Ақпаратты табу", B:"Мәтінді түсіну", C:"Негізгі ой мен құрылым", D:"Автор және жанр", K:"Қазақша. Старт"};
 const app = document.getElementById("app");
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 /* Оқушының мектебі (кодпен тіркелгендер) не WhatsApp нөмірлері (кодсыз тіркелгендер) */
@@ -263,7 +263,7 @@ function latestAnswers(rows){
 const inTrack = r => trackF==="all" || (bankById[r.bank_id]||{}).track===trackF;
 /* ББ нұсқалар курстан алынды: нөмірлеу оқушы көретін ЖИ нұсқалар бойынша жүреді, ББ нұсқалардың бұрынғы нәтижелері бөлек белгіленеді */
 const BB_BANKS = new Set(["kaz-L1-sagidolda-2026-v1","kaz-L1-nis-sample-v1","kaz-L2-nis-sample-v1"]);
-const bankLabel = id => { const b=bankById[id]; if(!b) return id; const tr=b.track==="second_language"?"Екінші тіл":"Бірінші тіл";
+const bankLabel = id => { const b=bankById[id]; if(!b) return id; if(b.label) return b.label; const tr=b.track==="second_language"?"Екінші тіл":"Бірінші тіл";
   if(BB_BANKS.has(id)){ const bb=BANKS.filter(x=>x.track===b.track && BB_BANKS.has(x.bank_id)); return `${tr} · ББ ${bb.indexOf(b)+1}-нұсқа (курстан алынған)`; }
   const same=BANKS.filter(x=>x.track===b.track && !BB_BANKS.has(x.bank_id)); return `${tr} · ${same.indexOf(b)+1}-нұсқа`; };
 
@@ -322,7 +322,7 @@ function studentStats(uid){
   const finish=mine.reduce((m,a)=>a.finished_at&&(!m||a.finished_at>m)?a.finished_at:m,"");
   return {n:rows.length, first, p:pct(first,rows.length), fin, last, start, finish};
 }
-function trackSelect(){ return `<label>Бағыт: <select id="trackF"><option value="all"${trackF==="all"?" selected":""}>Барлығы</option><option value="first_language"${trackF==="first_language"?" selected":""}>Бірінші тіл (қазақ сыныптары)</option><option value="second_language"${trackF==="second_language"?" selected":""}>Екінші тіл (орыс сыныптары)</option></select></label>`; }
+function trackSelect(){ return `<label>Бағыт: <select id="trackF"><option value="all"${trackF==="all"?" selected":""}>Барлығы</option><option value="first_language"${trackF==="first_language"?" selected":""}>Бірінші тіл (қазақ сыныптары)</option><option value="second_language"${trackF==="second_language"?" selected":""}>Екінші тіл (орыс сыныптары)</option><option value="kz0"${trackF==="kz0"?" selected":""}>Қазақша. Старт (үй тапсырмалары)</option></select></label>`; }
 
 function renderClass(){
   const c=cur, S=data.students;

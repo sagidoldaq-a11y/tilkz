@@ -91,8 +91,8 @@ h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-w
 </main>
 <script>
 try{
-  const s=JSON.parse(localStorage.getItem("kz0-hw0-v1")||"null");
-  const best=s?Math.max(s.bestScore||0,s.phase==="result"?s.pts:0):0;
+  const s=JSON.parse(localStorage.getItem("kz0-progress")||"null");
+  const best=s?(s.hw0||0):0;
   if(best>0){document.getElementById("done0").hidden=false;document.getElementById("score0").textContent="лучший результат: "+best;}
 }catch(e){}
 </script>
