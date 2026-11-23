@@ -119,7 +119,7 @@ textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radiu
 .af label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:15px}
 .af input,.af select{width:100%;min-height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:17px;background:var(--surface);color:var(--ink)}
 .af .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.af .hint{font-weight:400;font-size:13px;color:var(--muted);line-height:1.4}
+.af .hint{font-weight:400;font-size:13px;color:var(--muted);line-height:1.4;text-align:left;margin:0}
 .af .err{color:var(--bad);font-weight:600;font-size:15px;margin:0;min-height:0}
 .af .err:empty{display:none}
 .who{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;color:var(--muted);margin:2px 0 12px}
@@ -147,13 +147,12 @@ textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radiu
 (function(){
 "use strict";
 const WA="77082141226";
-let KEY="kz0-hw0-v1:guest";
+
 const SB_CFG={"url": "https://yqfepngubehrupkitklr.supabase.co", "key": "sb_publishable_R_DvPrvev24GFHUtyGwhRw_r5CopZYH"}, LOGIN_DOMAIN="oqushy.tilkz.app";
 let sb=null, USER=null, PROFILE=null;
-const PIC_RU={"алма":"яблоко","мысық":"кошка","кітап":"книга","ағаш":"дерево","ұшақ":"самолёт","сағат":"часы","қасық":"ложка","қолшатыр":"зонт","маймыл":"обезьяна","ара":"пчела","кірпі":"ёж","найзағай":"молния"};
-
-/* ---------- content: based on lesson 0 «Знакомство» ---------- */
-const HW={"bank_id": "kz0-hw0", "course": "kz0", "lesson": 0, "title": "0-сабақ. Танысу: үй тапсырмасы", "skills": {"K1": "Сөздік: суреттен сөзді тану", "K2": "Емле: сөзді әріптен құрау", "K3": "Грамматика: маған, саған, оған…", "K4": "Грамматика: дұрыс сөйлемді таңдау", "K5": "Сөйлем құрау (сөз тәртібі)", "K6": "Сұраққа жауап беру"}, "rounds": [{"id": "r1", "title": "Найди слово", "icon": "🔎", "intro": "Посмотри на картинку и выбери казахское слово.", "type": "pick", "items": [{"pic": "🍎", "a": "алма", "o": ["алма", "ағаш", "ара"], "id": "kz0-hw0-r1-1"}, {"pic": "🐱", "a": "мысық", "o": ["маймыл", "мысық", "қасық"], "id": "kz0-hw0-r1-2"}, {"pic": "📖", "a": "кітап", "o": ["кірпі", "сағат", "кітап"], "id": "kz0-hw0-r1-3"}, {"pic": "🌳", "a": "ағаш", "o": ["ағаш", "алма", "ұшақ"], "id": "kz0-hw0-r1-4"}, {"pic": "✈️", "a": "ұшақ", "o": ["қасық", "ұшақ", "ара"], "id": "kz0-hw0-r1-5"}, {"pic": "⏰", "a": "сағат", "o": ["сағат", "кітап", "кірпі"], "id": "kz0-hw0-r1-6"}, {"pic": "🥄", "a": "қасық", "o": ["мысық", "қолшатыр", "қасық"], "id": "kz0-hw0-r1-7"}, {"pic": "☂️", "a": "қолшатыр", "o": ["найзағай", "қолшатыр", "маймыл"], "id": "kz0-hw0-r1-8"}], "skill": "K1"}, {"id": "r2", "title": "Собери слово", "icon": "🧩", "intro": "Нажимай на буквы по порядку. Обрати внимание на казахские буквы: ұ, қ, і.", "type": "letters", "items": [{"pic": "🐱", "a": "мысық", "id": "kz0-hw0-r2-1"}, {"pic": "✈️", "a": "ұшақ", "id": "kz0-hw0-r2-2"}, {"pic": "🦔", "a": "кірпі", "id": "kz0-hw0-r2-3"}, {"pic": "🐝", "a": "ара", "id": "kz0-hw0-r2-4"}], "skill": "K2"}, {"id": "r3", "title": "Кому нравится?", "icon": "💛", "intro": "«Мне нравится» по-казахски — «Маған ұнайды». Мен → маған. Выбери правильную форму.", "rule": "Мен → маған · Сен → саған · Ол → оған · Біз → бізге · Сендер → сендерге · Олар → оларға", "type": "pick", "items": [{"p": "Мен → ?", "ru": "я → мне", "a": "маған", "o": ["менің", "маған", "мені"], "two": true, "id": "kz0-hw0-r3-1"}, {"p": "Сен → ?", "ru": "ты → тебе", "a": "саған", "o": ["саған", "сенің", "сені"], "two": true, "id": "kz0-hw0-r3-2"}, {"p": "Ол → ?", "ru": "он / она → ему / ей", "a": "оған", "o": ["оның", "оны", "оған"], "two": true, "id": "kz0-hw0-r3-3"}, {"p": "Біз → ?", "ru": "мы → нам", "a": "бізге", "o": ["бізге", "біздің", "бізді"], "two": true, "id": "kz0-hw0-r3-4"}, {"p": "Сендер → ?", "ru": "вы → вам", "a": "сендерге", "o": ["сендердің", "сендерге", "сендерді"], "two": true, "id": "kz0-hw0-r3-5"}, {"p": "Олар → ?", "ru": "они → им", "a": "оларға", "o": ["оларға", "олардың", "оларды"], "two": true, "id": "kz0-hw0-r3-6"}], "skill": "K3"}, {"id": "r4", "title": "Правильное предложение", "icon": "✅", "intro": "Прочитай фразу по-русски и выбери, как правильно сказать по-казахски.", "type": "pick", "items": [{"pic": "⚽", "p": "Мне нравится футбол.", "a": "Маған футбол ұнайды.", "o": ["Мен футбол ұнайды.", "Маған футбол ұнайды.", "Менің футбол ұнайды."], "id": "kz0-hw0-r4-1"}, {"pic": "🥛", "p": "Ему не нравится молоко.", "a": "Оған сүт ұнамайды.", "o": ["Оған сүт ұнамайды.", "Ол сүт ұнамайды.", "Оған сүт ұнайды."], "id": "kz0-hw0-r4-2"}, {"pic": "🍕", "p": "Тебе нравится пицца?", "a": "Саған пицца ұнай ма?", "o": ["Сен пицца ұнай ма?", "Саған пицца ұнайды.", "Саған пицца ұнай ма?"], "id": "kz0-hw0-r4-3"}, {"pic": "❄️", "p": "Нам нравится зима.", "a": "Бізге қыс ұнайды.", "o": ["Біз қыс ұнайды.", "Бізге қыс ұнайды.", "Бізде қыс ұнайды."], "id": "kz0-hw0-r4-4"}, {"pic": "🐶", "p": "Я люблю собак.", "a": "Мен итті жақсы көремін.", "o": ["Маған итті жақсы көремін.", "Мен итті жақсы көремін.", "Мен ит жақсы көреміз."], "id": "kz0-hw0-r4-5"}], "skill": "K4"}, {"id": "r5", "title": "Собери предложение", "icon": "🏗️", "intro": "Нажимай на слова по порядку. В казахском глагол стоит в конце!", "type": "words", "items": [{"p": "Меня зовут Али.", "a": ["Менің", "атым", "Әли."], "id": "kz0-hw0-r5-1"}, {"p": "Мне одиннадцать лет.", "a": ["Мен", "он", "бір", "жастамын."], "id": "kz0-hw0-r5-2"}, {"p": "Я живу в Астане.", "a": ["Мен", "Астанада", "тұрамын."], "id": "kz0-hw0-r5-3"}, {"p": "Мне не нравится рано вставать.", "a": ["Маған", "ерте", "тұру", "ұнамайды."], "id": "kz0-hw0-r5-4"}], "skill": "K5"}, {"id": "r6", "title": "Ответь на вопрос", "icon": "💬", "intro": "Тебе задают вопрос. Выбери подходящий ответ.", "type": "pick", "items": [{"p": "Атың кім?", "ru": "Как тебя зовут?", "a": "Менің атым Дана.", "o": ["Мен он жастамын.", "Менің атым Дана.", "Маған алма ұнайды."], "id": "kz0-hw0-r6-1"}, {"p": "Неше жастасың?", "ru": "Сколько тебе лет?", "a": "Мен он бір жастамын.", "o": ["Мен он бір жастамын.", "Менің атым Ерлан.", "Мен мектепте оқимын."], "id": "kz0-hw0-r6-2"}, {"p": "Қай қалада тұрасың?", "ru": "В каком городе ты живёшь?", "a": "Мен Алматыда тұрамын.", "o": ["Маған футбол ұнайды.", "Менің атым Әли.", "Мен Алматыда тұрамын."], "id": "kz0-hw0-r6-3"}, {"p": "Саған не ұнайды?", "ru": "Что тебе нравится?", "a": "Маған сурет салу ұнайды.", "o": ["Мен Астанада тұрамын.", "Маған сурет салу ұнайды.", "Мен он жастамын."], "id": "kz0-hw0-r6-4"}], "skill": "K6"}]};
+/* ---------- content: content/kz0-hwN.json ---------- */
+const HW={"bank_id": "kz0-hw0", "course": "kz0", "lesson": 0, "title": "0-сабақ. Танысу: үй тапсырмасы", "skills": {"K1": "Сөздік: суреттен сөзді тану", "K2": "Емле: сөзді әріптен құрау", "K3": "Грамматика: маған, саған, оған…", "K4": "Грамматика: дұрыс сөйлемді таңдау", "K5": "Сөйлем құрау (сөз тәртібі)", "K6": "Сұраққа жауап беру"}, "rounds": [{"id": "r1", "title": "Найди слово", "icon": "🔎", "intro": "Посмотри на картинку и выбери казахское слово.", "type": "pick", "items": [{"pic": "🍎", "a": "алма", "o": ["алма", "ағаш", "ара"], "id": "kz0-hw0-r1-1"}, {"pic": "🐱", "a": "мысық", "o": ["маймыл", "мысық", "қасық"], "id": "kz0-hw0-r1-2"}, {"pic": "📖", "a": "кітап", "o": ["кірпі", "сағат", "кітап"], "id": "kz0-hw0-r1-3"}, {"pic": "🌳", "a": "ағаш", "o": ["ағаш", "алма", "ұшақ"], "id": "kz0-hw0-r1-4"}, {"pic": "✈️", "a": "ұшақ", "o": ["қасық", "ұшақ", "ара"], "id": "kz0-hw0-r1-5"}, {"pic": "⏰", "a": "сағат", "o": ["сағат", "кітап", "кірпі"], "id": "kz0-hw0-r1-6"}, {"pic": "🥄", "a": "қасық", "o": ["мысық", "қолшатыр", "қасық"], "id": "kz0-hw0-r1-7"}, {"pic": "☂️", "a": "қолшатыр", "o": ["найзағай", "қолшатыр", "маймыл"], "id": "kz0-hw0-r1-8"}], "skill": "K1", "hint": "Как это по-казахски?"}, {"id": "r2", "title": "Собери слово", "icon": "🧩", "intro": "Нажимай на буквы по порядку. Обрати внимание на казахские буквы: ұ, қ, і.", "type": "letters", "items": [{"pic": "🐱", "a": "мысық", "id": "kz0-hw0-r2-1"}, {"pic": "✈️", "a": "ұшақ", "id": "kz0-hw0-r2-2"}, {"pic": "🦔", "a": "кірпі", "id": "kz0-hw0-r2-3"}, {"pic": "🐝", "a": "ара", "id": "kz0-hw0-r2-4"}], "skill": "K2"}, {"id": "r3", "title": "Кому нравится?", "icon": "💛", "intro": "«Мне нравится» по-казахски — «Маған ұнайды». Мен → маған. Выбери правильную форму.", "rule": "Мен → маған · Сен → саған · Ол → оған · Біз → бізге · Сендер → сендерге · Олар → оларға", "type": "pick", "items": [{"p": "Мен → ?", "ru": "я → мне", "a": "маған", "o": ["менің", "маған", "мені"], "two": true, "id": "kz0-hw0-r3-1"}, {"p": "Сен → ?", "ru": "ты → тебе", "a": "саған", "o": ["саған", "сенің", "сені"], "two": true, "id": "kz0-hw0-r3-2"}, {"p": "Ол → ?", "ru": "он / она → ему / ей", "a": "оған", "o": ["оның", "оны", "оған"], "two": true, "id": "kz0-hw0-r3-3"}, {"p": "Біз → ?", "ru": "мы → нам", "a": "бізге", "o": ["бізге", "біздің", "бізді"], "two": true, "id": "kz0-hw0-r3-4"}, {"p": "Сендер → ?", "ru": "вы → вам", "a": "сендерге", "o": ["сендердің", "сендерге", "сендерді"], "two": true, "id": "kz0-hw0-r3-5"}, {"p": "Олар → ?", "ru": "они → им", "a": "оларға", "o": ["оларға", "олардың", "оларды"], "two": true, "id": "kz0-hw0-r3-6"}], "skill": "K3"}, {"id": "r4", "title": "Правильное предложение", "icon": "✅", "intro": "Прочитай фразу по-русски и выбери, как правильно сказать по-казахски.", "type": "pick", "items": [{"pic": "⚽", "p": "Мне нравится футбол.", "a": "Маған футбол ұнайды.", "o": ["Мен футбол ұнайды.", "Маған футбол ұнайды.", "Менің футбол ұнайды."], "id": "kz0-hw0-r4-1"}, {"pic": "🥛", "p": "Ему не нравится молоко.", "a": "Оған сүт ұнамайды.", "o": ["Оған сүт ұнамайды.", "Ол сүт ұнамайды.", "Оған сүт ұнайды."], "id": "kz0-hw0-r4-2"}, {"pic": "🍕", "p": "Тебе нравится пицца?", "a": "Саған пицца ұнай ма?", "o": ["Сен пицца ұнай ма?", "Саған пицца ұнайды.", "Саған пицца ұнай ма?"], "id": "kz0-hw0-r4-3"}, {"pic": "❄️", "p": "Нам нравится зима.", "a": "Бізге қыс ұнайды.", "o": ["Біз қыс ұнайды.", "Бізге қыс ұнайды.", "Бізде қыс ұнайды."], "id": "kz0-hw0-r4-4"}, {"pic": "🐶", "p": "Я люблю собак.", "a": "Мен итті жақсы көремін.", "o": ["Маған итті жақсы көремін.", "Мен итті жақсы көремін.", "Мен ит жақсы көреміз."], "id": "kz0-hw0-r4-5"}], "skill": "K4", "hint": "Как сказать по-казахски?", "prompt_ru": true}, {"id": "r5", "title": "Собери предложение", "icon": "🏗️", "intro": "Нажимай на слова по порядку. В казахском глагол стоит в конце!", "type": "words", "items": [{"p": "Меня зовут Али.", "a": ["Менің", "атым", "Әли."], "id": "kz0-hw0-r5-1"}, {"p": "Мне одиннадцать лет.", "a": ["Мен", "он", "бір", "жастамын."], "id": "kz0-hw0-r5-2"}, {"p": "Я живу в Астане.", "a": ["Мен", "Астанада", "тұрамын."], "id": "kz0-hw0-r5-3"}, {"p": "Мне не нравится рано вставать.", "a": ["Маған", "ерте", "тұру", "ұнамайды."], "id": "kz0-hw0-r5-4"}], "skill": "K5"}, {"id": "r6", "title": "Ответь на вопрос", "icon": "💬", "intro": "Тебе задают вопрос. Выбери подходящий ответ.", "type": "pick", "items": [{"p": "Атың кім?", "ru": "Как тебя зовут?", "a": "Менің атым Дана.", "o": ["Мен он жастамын.", "Менің атым Дана.", "Маған алма ұнайды."], "id": "kz0-hw0-r6-1"}, {"p": "Неше жастасың?", "ru": "Сколько тебе лет?", "a": "Мен он бір жастамын.", "o": ["Мен он бір жастамын.", "Менің атым Ерлан.", "Мен мектепте оқимын."], "id": "kz0-hw0-r6-2"}, {"p": "Қай қалада тұрасың?", "ru": "В каком городе ты живёшь?", "a": "Мен Алматыда тұрамын.", "o": ["Маған футбол ұнайды.", "Менің атым Әли.", "Мен Алматыда тұрамын."], "id": "kz0-hw0-r6-3"}, {"p": "Саған не ұнайды?", "ru": "Что тебе нравится?", "a": "Маған сурет салу ұнайды.", "o": ["Мен Астанада тұрамын.", "Маған сурет салу ұнайды.", "Мен он жастамын."], "id": "kz0-hw0-r6-4"}], "skill": "K6"}], "meta": {"n": 0, "ru": "Знакомство", "title": "Урок 0. Знакомство — домашнее задание | Қазақша. Старт", "desc": "Домашнее задание к уроку «Знакомство»: слова, «маған ұнайды», предложения о себе. Казахский язык с нуля для школьников.", "gloss": {"алма": "яблоко", "мысық": "кошка", "кітап": "книга", "ағаш": "дерево", "ұшақ": "самолёт", "сағат": "часы", "қасық": "ложка", "қолшатыр": "зонт", "маймыл": "обезьяна", "ара": "пчела", "кірпі": "ёж", "найзағай": "молния"}, "about": {"title": "Расскажи о себе", "label": "О себе", "frame": "Менің атым … . Мен … жастамын. Маған … ұнайды, себебі …", "placeholder": "Менің атым …"}, "win": "Ты запомнил(а) новые слова и сразу понял(а), как говорить «маған ұнайды»."}}, M=HW.meta, PIC_RU=M.gloss||{};
+let KEY=`${HW.bank_id}-v1:guest`;
 const ROUNDS=HW.rounds;
 const TOTAL=ROUNDS.reduce((n,r)=>n+r.items.length,0);
 
@@ -161,7 +160,7 @@ const TOTAL=ROUNDS.reduce((n,r)=>n+r.items.length,0);
 let S=fresh();
 function fresh(){return {name:"",ri:0,qi:0,pts:0,first:0,streak:0,best:0,phase:"start",log:[],retry:[],inRetry:false,about:"",bestScore:null,attempt:null,dirty:{},finDirty:false,finDone:false};}
 function loadState(){ S=fresh(); try{const raw=localStorage.getItem(KEY); if(raw){S=Object.assign(fresh(),JSON.parse(raw));}}catch(e){} }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("kz0-progress",JSON.stringify({hw0:Math.max(S.bestScore||0,S.phase==="result"?S.pts:0)}));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); let pr={}; try{pr=JSON.parse(localStorage.getItem("kz0-progress")||"{}")||{};}catch(e){} pr["hw"+M.n]=Math.max(pr["hw"+M.n]||0,S.bestScore||0,S.phase==="result"?S.pts:0); localStorage.setItem("kz0-progress",JSON.stringify(pr));}catch(e){}}
 
 const app=document.getElementById("app"), ptsEl=document.getElementById("pts"), bar=document.getElementById("bar");
 const sheet=document.getElementById("sheet"), shT=document.getElementById("sh-title"), shX=document.getElementById("sh-text"), shN=document.getElementById("sh-next");
@@ -183,12 +182,12 @@ function render(){
   if(S.phase==="result") return resultScreen();
 }
 function startScreen(){
-  app.innerHTML=`<p class="eyebrow">Урок 0 · Домашнее задание</p>
-  <h1>Знакомство: игра на очки</h1>
-  <p class="muted">${TOTAL} ${ruN(TOTAL,"задание","задания","заданий")} по нашему первому уроку. За каждый правильный ответ — очки, за серию без ошибок — бонус.</p>
+  app.innerHTML=`<p class="eyebrow">Урок ${M.n} · Домашнее задание</p>
+  <h1>${esc(M.ru)}: игра на очки</h1>
+  <p class="muted">${TOTAL} ${ruN(TOTAL,"задание","задания","заданий")} по уроку «${esc(M.ru)}». За каждый правильный ответ — очки, за серию без ошибок — бонус.</p>
   <div class="who"><span>Ты вошёл(ла) как <b>${esc(S.name)}</b></span><button type="button" id="out">Выйти</button></div>
   <div class="card stack">
-    <div class="rounds">${ROUNDS.map((r,i)=>`<div><b>${i+1}</b>${esc(r.title)}</div>`).join("")}<div><b>★</b>Бонус: расскажи о себе</div></div>
+    <div class="rounds">${ROUNDS.map((r,i)=>`<div><b>${i+1}</b>${esc(r.title)}</div>`).join("")}<div><b>★</b>Бонус: ${esc(M.about.title.toLowerCase())}</div></div>
     <div class="rule"><span aria-hidden="true">💡</span><span>С первой попытки: <b>+10</b>. Со второй: <b>+5</b>. Три верных ответа подряд: <b>+5</b> бонус. Ошибки мы повторим в конце.</span></div>
     <button class="btn primary block" id="go" type="button">${S.log.length?"Продолжить":"Начать"}</button>
   </div>`;
@@ -223,8 +222,8 @@ function pickTask(head,r,it){
   const opts=shuffle(it.o);
   app.innerHTML=`${head}
    ${it.pic?`<div class="pic" aria-hidden="true">${it.pic}</div>`:""}
-   ${it.p?`<div class="prompt" ${r.id==="r4"?"":'lang="kk"'}>${esc(it.p)}</div>`:""}
-   ${it.ru?`<div class="hint">${esc(it.ru)}</div>`:`<div class="hint">${r.id==="r1"?"Как это по-казахски?":(r.id==="r4"?"Как сказать по-казахски?":"")}</div>`}
+   ${it.p?`<div class="prompt" ${(it.prompt_ru||r.prompt_ru)?"":'lang="kk"'}>${esc(it.p)}</div>`:""}
+   ${it.ru?`<div class="hint">${esc(it.ru)}</div>`:`<div class="hint">${esc(r.hint||"")}</div>`}
    <div class="opts ${it.two?"two":""}" lang="kk">${opts.map(o=>`<button class="opt" type="button" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
   app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
     const ok=b.dataset.o===it.a;
@@ -290,7 +289,7 @@ function answer(ok,it,given,target){
   } else S.streak=0;
   S.pts+=gain+bonus;
   if(firstTime){ S.log.push({k:key,first:ok&&tries===0,ok});
-    const {r}=current(); S.dirty[it.id]={item_id:it.id, skill:r.skill, level:1, tries:wrongs.slice(), status:ok?"ok":"revealed", first_correct:ok&&tries===0}; }
+    const {r}=current(); S.dirty[it.id]={item_id:it.id, skill:it.skill||r.skill, level:1, tries:wrongs.slice(), status:ok?"ok":"revealed", first_correct:ok&&tries===0}; }
   if(firstTime && ok && tries===0) S.first++;
   if(!S.inRetry && !(ok&&tries===0) && !S.retry.includes(key)) S.retry.push(key);
   save(); paintTop(); flush();
@@ -324,10 +323,10 @@ function retryIntro(){
 }
 function aboutScreen(){
   app.innerHTML=`<p class="eyebrow">Бонус · +20</p><div class="big" aria-hidden="true">✍️</div>
-  <h1 class="center">Расскажи о себе</h1>
+  <h1 class="center">${esc(M.about.title)}</h1>
   <p class="center muted">Напиши 3 предложения по-казахски. Используй образцы.</p>
-  <div class="rule" style="margin-bottom:12px"><span aria-hidden="true">📌</span><span lang="kk">Менің атым … . Мен … жастамын. Маған … ұнайды, себебі …</span></div>
-  <textarea id="ab" lang="kk" placeholder="Менің атым …">${esc(S.about)}</textarea>
+  <div class="rule" style="margin-bottom:12px"><span aria-hidden="true">📌</span><span lang="kk">${esc(M.about.frame)}</span></div>
+  <textarea id="ab" lang="kk" placeholder="${esc(M.about.placeholder)}">${esc(S.about)}</textarea>
   <p class="muted" style="margin-top:10px;font-size:15px">Учитель проверит твои предложения. А ещё запиши их голосом и отправь аудио учителю в WhatsApp.</p>
   <div class="actionbar"><div class="in" style="display:flex;gap:10px"><button class="btn" id="skip" type="button">Пропустить</button><button class="btn primary" style="flex:1" id="go" type="button" disabled>Готово</button></div></div>`;
   const ab=document.getElementById("ab"), go=document.getElementById("go");
@@ -343,7 +342,7 @@ function resultScreen(){
   let emoji,title,msg;
   const nm=S.name?esc(S.name):"";
   if(pct>=90){emoji="🏆";title=`Керемет${nm?", "+nm:""}! Тамаша!`;
-    msg=`Это потрясающий результат: ${S.first} из ${TOTAL} с первой попытки! Ты запомнил(а) новые слова и сразу понял(а), как говорить «маған ұнайды». Так учатся настоящие чемпионы. Учитель будет очень гордиться тобой!`;}
+    msg=`Это потрясающий результат: ${S.first} из ${TOTAL} с первой попытки! ${M.win} Так учатся настоящие чемпионы. Учитель будет очень гордиться тобой!`;}
   else if(pct>=70){emoji="🌟";title=`Жарайсың${nm?", "+nm:""}!`;
     msg=`Очень сильно: ${S.first} из ${TOTAL} с первой попытки! Ты уже уверенно знаешь слова урока и умеешь строить фразы. Ещё чуть-чуть, и будет максимум!`;}
   else if(pct>=50){emoji="💪";title=`Жақсы бастама${nm?", "+nm:""}!`;
@@ -352,7 +351,7 @@ function resultScreen(){
     msg=`Казахский язык для тебя новый, и ошибаться сейчас нормально: так растёт мозг. Ты дошёл(ла) до конца и исправил(а) ошибки, это главное. Пройди задание ещё раз завтра: увидишь, насколько станет легче!`;}
   S.bestScore=Math.max(S.bestScore||0,S.pts); if(!S.finDone){S.finDirty=true; S.finDone=true;} save(); flush().then(paintSaved);
   const miss=S.retry.map(k=>{const [ri,qi]=k.split(":").map(Number); const it=ROUNDS[ri].items[qi]; const a=Array.isArray(it.a)?it.a.join(" "):it.a; const q=it.p?it.p.replace(/ → \?$/,""):(PIC_RU[it.a]||it.pic); return `<div>${esc(q)} → <b lang="kk">${esc(a)}</b></div>`;}).join("");
-  const report=`Домашнее задание · Урок 0 «Знакомство»\nУченик: ${S.name||"—"}\nС первой попытки: ${S.first}/${TOTAL} (${pct}%)\nОчки: ${S.pts}\nЛучшая серия: ${S.best}\nОшибки: ${S.retry.length}\nО себе: ${S.about.trim()||"—"}`;
+  const report=`Домашнее задание · Урок ${M.n} «${M.ru}»\nУченик: ${S.name||"—"}\nС первой попытки: ${S.first}/${TOTAL} (${pct}%)\nОчки: ${S.pts}\nЛучшая серия: ${S.best}\nОшибки: ${S.retry.length}\n${M.about.label}: ${S.about.trim()||"—"}`;
   app.innerHTML=`<div class="big" aria-hidden="true">${emoji}</div>
   <h1 class="center" lang="kk">${title}</h1>
   <div class="stars" aria-label="${stars} из 3 звёзд">${[0,1,2].map(i=>`<span class="${i<stars?"on":""}">⭐</span>`).join("")}</div>
@@ -362,7 +361,7 @@ function resultScreen(){
   <div class="stack" style="margin-top:18px">
     <div class="saved wait" id="saved">Сохраняем результат…</div>
     <a class="btn primary block" id="send" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(report)}">Отправить голосовое учителю</a>
-    <p class="muted center" style="font-size:14px;margin:0">Прочитай вслух свои предложения о себе и отправь аудио в WhatsApp: +7 708 214 12 26</p>
+    <p class="muted center" style="font-size:14px;margin:0">Прочитай вслух свои предложения и отправь аудио в WhatsApp: +7 708 214 12 26</p>
     <button class="btn block" id="again" type="button">Пройти ещё раз</button>
     <a class="btn block" href="slides/">Повторить презентацию урока</a>
   </div>`;
@@ -395,7 +394,7 @@ let authMode="reg", authBusy=false;
 function authScreen(){
   const reg=authMode==="reg";
   const grades=`<option value="" selected disabled>— класс —</option>`+[4,5,6,7,8,9,10,11].map(n=>`<option value="${n}">${n} класс</option>`).join("");
-  app.innerHTML=`<p class="eyebrow">Қазақша. Старт · Урок 0</p>
+  app.innerHTML=`<p class="eyebrow">Қазақша. Старт · Урок ${M.n}</p>
   <h1>${reg?"Зарегистрируйся, чтобы начать":"Войди, чтобы продолжить"}</h1>
   <p class="muted">${reg?"Так учитель увидит твои очки и ошибки, а прогресс сохранится на любом устройстве.":"Номер WhatsApp и пароль, которые ты указал(а) при регистрации."}</p>
   <div class="card">
@@ -454,7 +453,7 @@ async function onAuthSubmit(e){
 }
 async function enterAs(user){
   let prof=null; try{ const r=await sb.from("students").select("first_name,last_name").eq("user_id",user.id).maybeSingle(); prof=r.data||null; }catch(e){}
-  USER=user; PROFILE=prof; KEY="kz0-hw0-v1:"+user.id; loadState();
+  USER=user; PROFILE=prof; KEY=`${HW.bank_id}-v1:`+user.id; loadState();
   S.name=(PROFILE&&PROFILE.first_name)||S.name||"";
   if(S.phase==="start"&&S.log.length) S.phase="start";
   save(); render(); window.scrollTo({top:0}); flush();

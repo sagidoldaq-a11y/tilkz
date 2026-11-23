@@ -79,8 +79,20 @@ h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-w
         </div>
       </div>
     </li>
-    <li class="lesson soon" aria-disabled="true">
+    <li class="lesson">
       <div class="num" aria-hidden="true">1</div>
+      <div>
+        <h2>Моя семья <span lang="kk">· Менің отбасым</span><span class="done" id="done1" hidden>✓ <span id="score1"></span></span></h2>
+        <p>10 слов о семье. Множественное число: -лар/-лер. Чей? Притяжательные окончания: анам, әкең, ағаларым.</p>
+        <div class="tags" lang="kk"><span>ана · әке · аға · іні</span><span>-лар / -лер</span><span>-ым / -ім</span></div>
+        <div class="acts">
+          <a class="btn primary" href="1/">Домашнее задание</a>
+          <a class="btn" href="1/slides/">Презентация урока</a>
+        </div>
+      </div>
+    </li>
+    <li class="lesson soon" aria-disabled="true">
+      <div class="num" aria-hidden="true">2</div>
       <div>
         <h2>Следующий урок</h2>
         <p>Появится здесь после занятия.</p>
@@ -92,8 +104,8 @@ h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-w
 <script>
 try{
   const s=JSON.parse(localStorage.getItem("kz0-progress")||"null");
-  const best=s?(s.hw0||0):0;
-  if(best>0){document.getElementById("done0").hidden=false;document.getElementById("score0").textContent="лучший результат: "+best;}
+  [0,1].forEach(n=>{ const best=s?(s["hw"+n]||0):0;
+    if(best>0){document.getElementById("done"+n).hidden=false;document.getElementById("score"+n).textContent="лучший результат: "+best;} });
 }catch(e){}
 </script>
 </body>

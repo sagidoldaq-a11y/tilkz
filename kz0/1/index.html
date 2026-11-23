@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="google" content="notranslate">
-<title>Урок 0. Знакомство — домашнее задание | Қазақша. Старт</title>
-<meta name="description" content="Домашнее задание к уроку «Знакомство»: слова, «маған ұнайды», предложения о себе. Казахский язык с нуля для школьников.">
+<title>Урок 1. Моя семья — домашнее задание | Қазақша. Старт</title>
+<meta name="description" content="Домашнее задание к уроку «Моя семья»: 10 слов о семье, множественное число (-лар/-лер) и притяжательные окончания (-ым/-ім).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -119,7 +119,7 @@ textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radiu
 .af label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:15px}
 .af input,.af select{width:100%;min-height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:17px;background:var(--surface);color:var(--ink)}
 .af .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.af .hint{font-weight:400;font-size:13px;color:var(--muted);line-height:1.4}
+.af .hint{font-weight:400;font-size:13px;color:var(--muted);line-height:1.4;text-align:left;margin:0}
 .af .err{color:var(--bad);font-weight:600;font-size:15px;margin:0;min-height:0}
 .af .err:empty{display:none}
 .who{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;color:var(--muted);margin:2px 0 12px}
@@ -147,13 +147,12 @@ textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radiu
 (function(){
 "use strict";
 const WA="77082141226";
-let KEY="kz0-hw0-v1:guest";
-const SB_CFG=/*__SUPABASE__*/null, LOGIN_DOMAIN="oqushy.tilkz.app";
-let sb=null, USER=null, PROFILE=null;
-const PIC_RU={"алма":"яблоко","мысық":"кошка","кітап":"книга","ағаш":"дерево","ұшақ":"самолёт","сағат":"часы","қасық":"ложка","қолшатыр":"зонт","маймыл":"обезьяна","ара":"пчела","кірпі":"ёж","найзағай":"молния"};
 
-/* ---------- content: based on lesson 0 «Знакомство» ---------- */
-const HW=/*__HW__*/null;
+const SB_CFG={"url": "https://yqfepngubehrupkitklr.supabase.co", "key": "sb_publishable_R_DvPrvev24GFHUtyGwhRw_r5CopZYH"}, LOGIN_DOMAIN="oqushy.tilkz.app";
+let sb=null, USER=null, PROFILE=null;
+/* ---------- content: content/kz0-hwN.json ---------- */
+const HW={"bank_id": "kz0-hw1", "course": "kz0", "lesson": 1, "title": "1-сабақ. Менің отбасым: үй тапсырмасы", "meta": {"n": 1, "ru": "Моя семья", "title": "Урок 1. Моя семья — домашнее задание | Қазақша. Старт", "desc": "Домашнее задание к уроку «Моя семья»: 10 слов о семье, множественное число (-лар/-лер) и притяжательные окончания (-ым/-ім).", "gloss": {"ана": "мама", "әке": "папа", "ата": "дедушка", "әже": "бабушка", "аға": "старший брат", "әпке": "старшая сестра", "іні": "младший брат", "қарындас": "младшая сестра (у брата)", "бауыр": "брат или сестра", "отбасы": "семья", "мысық": "кошка"}, "about": {"title": "Расскажи о своей семье", "label": "О семье", "frame": "Менің отбасым … . Менің … бар. Оның аты — … . Мен … жақсы көремін.", "placeholder": "Менің отбасым …"}, "win": "Ты уже умеешь рассказать о своей семье и правильно ставишь окончания «-лар/-лер» и «-ым/-ім»."}, "skills": {"K1": "Сөздік: суреттен сөзді тану", "K3": "Грамматика: маған, саған, оған…", "K4": "Грамматика: дұрыс сөйлемді таңдау", "K5": "Сөйлем құрау (сөз тәртібі)", "K7": "Көптік жалғау: жуан / жіңішке, -лар/-дар/-тар", "K8": "Көптік жалғау қашан жалғанбайды", "K9": "Тәуелдік жалғау (жекеше, көпше)", "K10": "Көптік жалғаудан кейін тәуелдік"}, "rounds": [{"id": "r1", "title": "Найди слово", "icon": "👨‍👩‍👧‍👦", "skill": "K1", "hint": "Как это по-казахски?", "intro": "10 новых слов про семью. Посмотри на картинку и выбери казахское слово.", "type": "pick", "items": [{"pic": "👩", "ru": "мама", "a": "ана", "o": ["ана", "әке", "әже"], "id": "kz0-hw1-r1-1"}, {"pic": "👨", "ru": "папа", "a": "әке", "o": ["аға", "әке", "ата"], "id": "kz0-hw1-r1-2"}, {"pic": "👴", "ru": "дедушка", "a": "ата", "o": ["ата", "ана", "әже"], "id": "kz0-hw1-r1-3"}, {"pic": "👵", "ru": "бабушка", "a": "әже", "o": ["әпке", "әже", "ата"], "id": "kz0-hw1-r1-4"}, {"pic": "🧑", "ru": "старший брат", "a": "аға", "o": ["іні", "әке", "аға"], "id": "kz0-hw1-r1-5"}, {"pic": "👩‍🦰", "ru": "старшая сестра", "a": "әпке", "o": ["әпке", "қарындас", "ана"], "id": "kz0-hw1-r1-6"}, {"pic": "👦", "ru": "младший брат", "a": "іні", "o": ["аға", "іні", "ата"], "id": "kz0-hw1-r1-7"}, {"pic": "👧", "ru": "младшая сестра (у брата)", "a": "қарындас", "o": ["әпке", "әже", "қарындас"], "id": "kz0-hw1-r1-8"}, {"pic": "👫", "ru": "родной брат или сестра", "a": "бауыр", "o": ["бауыр", "отбасы", "іні"], "id": "kz0-hw1-r1-9"}, {"pic": "👨‍👩‍👧‍👦", "ru": "семья", "a": "отбасы", "o": ["ана", "бауыр", "отбасы"], "id": "kz0-hw1-r1-10"}]}, {"id": "r2", "title": "-лар или -лер?", "icon": "🎯", "skill": "K7", "hint": "", "intro": "Смотри на последнюю гласную слова. Твёрдая (а, о, ұ, ы) → -лар, -дар, -тар. Мягкая (ә, ө, ү, і, е) → -лер, -дер, -тер.", "rule": "После гласной, р, й, у → -лар/-лер · после л, м, н, ң, з, ж → -дар/-дер · после к, қ, п, с, т, ш → -тар/-тер", "type": "pick", "items": [{"p": "ана → ?", "ru": "мамы", "a": "аналар", "o": ["аналар", "анелер", "анадар"], "id": "kz0-hw1-r2-1"}, {"p": "әже → ?", "ru": "бабушки", "a": "әжелер", "o": ["әжелар", "әжелер", "әжетер"], "id": "kz0-hw1-r2-2"}, {"p": "кірпі → ?", "ru": "ежи", "a": "кірпілер", "o": ["кірпілар", "кірпітер", "кірпілер"], "id": "kz0-hw1-r2-3"}, {"p": "бауыр → ?", "ru": "братья и сёстры", "a": "бауырлар", "o": ["бауырлар", "бауырдар", "бауыртар"], "id": "kz0-hw1-r2-4"}, {"p": "қыз → ?", "ru": "девочки", "a": "қыздар", "o": ["қызлар", "қыздар", "қызтар"], "id": "kz0-hw1-r2-5"}, {"p": "мысық → ?", "ru": "кошки", "a": "мысықтар", "o": ["мысықлар", "мысықтер", "мысықтар"], "id": "kz0-hw1-r2-6"}]}, {"id": "r3", "title": "Нужно -лар или нет?", "icon": "🔢", "skill": "K8", "hint": "", "intro": "После чисел и слов «көп» (много), «аз» (мало), «бірнеше» (несколько) множественное число НЕ ставится: екі кітап, көп алма.", "rule": "екі кітап · бес бала · көп алма · бірнеше дос", "type": "pick", "items": [{"p": "екі ___", "ru": "две книги", "a": "кітап", "o": ["кітап", "кітаптар"], "two": true, "id": "kz0-hw1-r3-1"}, {"p": "көп ___", "ru": "много яблок", "a": "алма", "o": ["алмалар", "алма"], "two": true, "id": "kz0-hw1-r3-2"}, {"p": "бес ___", "ru": "пять детей", "a": "бала", "o": ["бала", "балалар"], "two": true, "id": "kz0-hw1-r3-3"}, {"p": "бірнеше ___", "ru": "несколько друзей", "a": "дос", "o": ["достар", "дос"], "two": true, "id": "kz0-hw1-r3-4"}, {"p": "Аулада ___ ойнап жүр.", "ru": "Во дворе играют дети.", "a": "балалар", "o": ["бала", "балалар"], "two": true, "id": "kz0-hw1-r3-5"}]}, {"id": "r4", "title": "Чей?", "icon": "🏷️", "skill": "K9", "hint": "", "intro": "Тәуелдік жалғау показывает, чьё это: менің анам — моя мама, біздің анамыз — наша мама.", "rule": "менің -м/-ым · сенің -ң/-ың · оның -сы/-ы · біздің -мыз/-ымыз", "type": "pick", "items": [{"p": "менің ана…", "ru": "моя мама", "a": "анам", "o": ["анам", "анаң", "анасы"], "id": "kz0-hw1-r4-1"}, {"p": "сенің әке…", "ru": "твой папа", "a": "әкең", "o": ["әкем", "әкесі", "әкең"], "id": "kz0-hw1-r4-2"}, {"p": "оның іні…", "ru": "его младший брат", "a": "інісі", "o": ["інім", "інісі", "інің"], "id": "kz0-hw1-r4-3"}, {"p": "біздің әже…", "ru": "наша бабушка", "a": "әжеміз", "o": ["әжем", "әжесі", "әжеміз"], "id": "kz0-hw1-r4-4"}, {"p": "менің бауыр…", "ru": "мой брат", "a": "бауырым", "o": ["бауырым", "бауырм", "бауырім"], "id": "kz0-hw1-r4-5"}, {"p": "біздің отбасы…", "ru": "наша семья", "a": "отбасымыз", "o": ["отбасыміз", "отбасымыз", "отбасымз"], "id": "kz0-hw1-r4-6"}]}, {"id": "r5", "title": "Много + чей", "icon": "🧱", "skill": "K10", "hint": "Сначала -лар, потом -ым", "prompt_ru": true, "intro": "Порядок всегда такой: слово + -лар + -ым. ағалар + ым = ағаларым (мои братья).", "rule": "сөз + көптік + тәуелдік: аға + лар + ым = ағаларым", "type": "pick", "items": [{"p": "мои старшие братья", "a": "ағаларым", "o": ["ағамлар", "ағаларым", "ағалерім"], "id": "kz0-hw1-r5-1"}, {"p": "его друзья", "a": "достары", "o": ["достары", "досылар", "достарсы"], "id": "kz0-hw1-r5-2"}, {"p": "наши бабушки", "a": "әжелеріміз", "o": ["әжеміздер", "әжелерміз", "әжелеріміз"], "id": "kz0-hw1-r5-3"}, {"p": "мои книги", "a": "кітаптарым", "o": ["кітаптарым", "кітабымдар", "кітаптерім"], "id": "kz0-hw1-r5-4"}, {"p": "твои кошки", "a": "мысықтарың", "o": ["мысықыңдар", "мысықтарың", "мысықтарсың"], "id": "kz0-hw1-r5-5"}]}, {"id": "r6", "title": "Собери предложение", "icon": "🏗️", "skill": "K5", "hint": "", "intro": "Это 5 фраз урока. Нажимай на слова по порядку. Глагол — в конце!", "type": "words", "items": [{"p": "Моя семья большая.", "a": ["Менің", "отбасым", "үлкен."], "id": "kz0-hw1-r6-1"}, {"p": "У меня два старших брата.", "a": ["Менің", "екі", "ағам", "бар."], "id": "kz0-hw1-r6-2"}, {"p": "Его зовут Ерлан.", "a": ["Оның", "аты —", "Ерлан."], "id": "kz0-hw1-r6-3"}, {"p": "Я люблю свою бабушку.", "a": ["Мен", "әжемді", "жақсы", "көремін."], "id": "kz0-hw1-r6-4"}, {"p": "Мы живём в Алматы.", "a": ["Біз", "Алматыда", "тұрамыз."], "id": "kz0-hw1-r6-5"}]}, {"id": "r7", "title": "Вспомним урок 0", "icon": "🔁", "skill": "K1", "hint": "", "intro": "Три задания из прошлого урока. Повторение через несколько дней помогает запомнить надолго.", "type": "pick", "items": [{"pic": "🐱", "ru": "кошка", "a": "мысық", "o": ["маймыл", "мысық", "кірпі"], "skill": "K1", "id": "kz0-hw1-r7-1"}, {"p": "Мне нравится футбол.", "a": "Маған футбол ұнайды.", "o": ["Мен футбол ұнайды.", "Маған футбол ұнайды.", "Менің футбол ұнайды."], "skill": "K4", "prompt_ru": true, "id": "kz0-hw1-r7-2"}, {"p": "Сен → ?", "ru": "ты → тебе", "a": "саған", "o": ["сенің", "сені", "саған"], "skill": "K3", "two": true, "id": "kz0-hw1-r7-3"}]}]}, M=HW.meta, PIC_RU=M.gloss||{};
+let KEY=`${HW.bank_id}-v1:guest`;
 const ROUNDS=HW.rounds;
 const TOTAL=ROUNDS.reduce((n,r)=>n+r.items.length,0);
 
@@ -161,7 +160,7 @@ const TOTAL=ROUNDS.reduce((n,r)=>n+r.items.length,0);
 let S=fresh();
 function fresh(){return {name:"",ri:0,qi:0,pts:0,first:0,streak:0,best:0,phase:"start",log:[],retry:[],inRetry:false,about:"",bestScore:null,attempt:null,dirty:{},finDirty:false,finDone:false};}
 function loadState(){ S=fresh(); try{const raw=localStorage.getItem(KEY); if(raw){S=Object.assign(fresh(),JSON.parse(raw));}}catch(e){} }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("kz0-progress",JSON.stringify({hw0:Math.max(S.bestScore||0,S.phase==="result"?S.pts:0)}));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); let pr={}; try{pr=JSON.parse(localStorage.getItem("kz0-progress")||"{}")||{};}catch(e){} pr["hw"+M.n]=Math.max(pr["hw"+M.n]||0,S.bestScore||0,S.phase==="result"?S.pts:0); localStorage.setItem("kz0-progress",JSON.stringify(pr));}catch(e){}}
 
 const app=document.getElementById("app"), ptsEl=document.getElementById("pts"), bar=document.getElementById("bar");
 const sheet=document.getElementById("sheet"), shT=document.getElementById("sh-title"), shX=document.getElementById("sh-text"), shN=document.getElementById("sh-next");
@@ -183,12 +182,12 @@ function render(){
   if(S.phase==="result") return resultScreen();
 }
 function startScreen(){
-  app.innerHTML=`<p class="eyebrow">Урок 0 · Домашнее задание</p>
-  <h1>Знакомство: игра на очки</h1>
-  <p class="muted">${TOTAL} ${ruN(TOTAL,"задание","задания","заданий")} по нашему первому уроку. За каждый правильный ответ — очки, за серию без ошибок — бонус.</p>
+  app.innerHTML=`<p class="eyebrow">Урок ${M.n} · Домашнее задание</p>
+  <h1>${esc(M.ru)}: игра на очки</h1>
+  <p class="muted">${TOTAL} ${ruN(TOTAL,"задание","задания","заданий")} по уроку «${esc(M.ru)}». За каждый правильный ответ — очки, за серию без ошибок — бонус.</p>
   <div class="who"><span>Ты вошёл(ла) как <b>${esc(S.name)}</b></span><button type="button" id="out">Выйти</button></div>
   <div class="card stack">
-    <div class="rounds">${ROUNDS.map((r,i)=>`<div><b>${i+1}</b>${esc(r.title)}</div>`).join("")}<div><b>★</b>Бонус: расскажи о себе</div></div>
+    <div class="rounds">${ROUNDS.map((r,i)=>`<div><b>${i+1}</b>${esc(r.title)}</div>`).join("")}<div><b>★</b>Бонус: ${esc(M.about.title.toLowerCase())}</div></div>
     <div class="rule"><span aria-hidden="true">💡</span><span>С первой попытки: <b>+10</b>. Со второй: <b>+5</b>. Три верных ответа подряд: <b>+5</b> бонус. Ошибки мы повторим в конце.</span></div>
     <button class="btn primary block" id="go" type="button">${S.log.length?"Продолжить":"Начать"}</button>
   </div>`;
@@ -223,8 +222,8 @@ function pickTask(head,r,it){
   const opts=shuffle(it.o);
   app.innerHTML=`${head}
    ${it.pic?`<div class="pic" aria-hidden="true">${it.pic}</div>`:""}
-   ${it.p?`<div class="prompt" ${r.id==="r4"?"":'lang="kk"'}>${esc(it.p)}</div>`:""}
-   ${it.ru?`<div class="hint">${esc(it.ru)}</div>`:`<div class="hint">${r.id==="r1"?"Как это по-казахски?":(r.id==="r4"?"Как сказать по-казахски?":"")}</div>`}
+   ${it.p?`<div class="prompt" ${(it.prompt_ru||r.prompt_ru)?"":'lang="kk"'}>${esc(it.p)}</div>`:""}
+   ${it.ru?`<div class="hint">${esc(it.ru)}</div>`:`<div class="hint">${esc(r.hint||"")}</div>`}
    <div class="opts ${it.two?"two":""}" lang="kk">${opts.map(o=>`<button class="opt" type="button" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
   app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
     const ok=b.dataset.o===it.a;
@@ -290,7 +289,7 @@ function answer(ok,it,given,target){
   } else S.streak=0;
   S.pts+=gain+bonus;
   if(firstTime){ S.log.push({k:key,first:ok&&tries===0,ok});
-    const {r}=current(); S.dirty[it.id]={item_id:it.id, skill:r.skill, level:1, tries:wrongs.slice(), status:ok?"ok":"revealed", first_correct:ok&&tries===0}; }
+    const {r}=current(); S.dirty[it.id]={item_id:it.id, skill:it.skill||r.skill, level:1, tries:wrongs.slice(), status:ok?"ok":"revealed", first_correct:ok&&tries===0}; }
   if(firstTime && ok && tries===0) S.first++;
   if(!S.inRetry && !(ok&&tries===0) && !S.retry.includes(key)) S.retry.push(key);
   save(); paintTop(); flush();
@@ -324,10 +323,10 @@ function retryIntro(){
 }
 function aboutScreen(){
   app.innerHTML=`<p class="eyebrow">Бонус · +20</p><div class="big" aria-hidden="true">✍️</div>
-  <h1 class="center">Расскажи о себе</h1>
+  <h1 class="center">${esc(M.about.title)}</h1>
   <p class="center muted">Напиши 3 предложения по-казахски. Используй образцы.</p>
-  <div class="rule" style="margin-bottom:12px"><span aria-hidden="true">📌</span><span lang="kk">Менің атым … . Мен … жастамын. Маған … ұнайды, себебі …</span></div>
-  <textarea id="ab" lang="kk" placeholder="Менің атым …">${esc(S.about)}</textarea>
+  <div class="rule" style="margin-bottom:12px"><span aria-hidden="true">📌</span><span lang="kk">${esc(M.about.frame)}</span></div>
+  <textarea id="ab" lang="kk" placeholder="${esc(M.about.placeholder)}">${esc(S.about)}</textarea>
   <p class="muted" style="margin-top:10px;font-size:15px">Учитель проверит твои предложения. А ещё запиши их голосом и отправь аудио учителю в WhatsApp.</p>
   <div class="actionbar"><div class="in" style="display:flex;gap:10px"><button class="btn" id="skip" type="button">Пропустить</button><button class="btn primary" style="flex:1" id="go" type="button" disabled>Готово</button></div></div>`;
   const ab=document.getElementById("ab"), go=document.getElementById("go");
@@ -343,7 +342,7 @@ function resultScreen(){
   let emoji,title,msg;
   const nm=S.name?esc(S.name):"";
   if(pct>=90){emoji="🏆";title=`Керемет${nm?", "+nm:""}! Тамаша!`;
-    msg=`Это потрясающий результат: ${S.first} из ${TOTAL} с первой попытки! Ты запомнил(а) новые слова и сразу понял(а), как говорить «маған ұнайды». Так учатся настоящие чемпионы. Учитель будет очень гордиться тобой!`;}
+    msg=`Это потрясающий результат: ${S.first} из ${TOTAL} с первой попытки! ${M.win} Так учатся настоящие чемпионы. Учитель будет очень гордиться тобой!`;}
   else if(pct>=70){emoji="🌟";title=`Жарайсың${nm?", "+nm:""}!`;
     msg=`Очень сильно: ${S.first} из ${TOTAL} с первой попытки! Ты уже уверенно знаешь слова урока и умеешь строить фразы. Ещё чуть-чуть, и будет максимум!`;}
   else if(pct>=50){emoji="💪";title=`Жақсы бастама${nm?", "+nm:""}!`;
@@ -352,7 +351,7 @@ function resultScreen(){
     msg=`Казахский язык для тебя новый, и ошибаться сейчас нормально: так растёт мозг. Ты дошёл(ла) до конца и исправил(а) ошибки, это главное. Пройди задание ещё раз завтра: увидишь, насколько станет легче!`;}
   S.bestScore=Math.max(S.bestScore||0,S.pts); if(!S.finDone){S.finDirty=true; S.finDone=true;} save(); flush().then(paintSaved);
   const miss=S.retry.map(k=>{const [ri,qi]=k.split(":").map(Number); const it=ROUNDS[ri].items[qi]; const a=Array.isArray(it.a)?it.a.join(" "):it.a; const q=it.p?it.p.replace(/ → \?$/,""):(PIC_RU[it.a]||it.pic); return `<div>${esc(q)} → <b lang="kk">${esc(a)}</b></div>`;}).join("");
-  const report=`Домашнее задание · Урок 0 «Знакомство»\nУченик: ${S.name||"—"}\nС первой попытки: ${S.first}/${TOTAL} (${pct}%)\nОчки: ${S.pts}\nЛучшая серия: ${S.best}\nОшибки: ${S.retry.length}\nО себе: ${S.about.trim()||"—"}`;
+  const report=`Домашнее задание · Урок ${M.n} «${M.ru}»\nУченик: ${S.name||"—"}\nС первой попытки: ${S.first}/${TOTAL} (${pct}%)\nОчки: ${S.pts}\nЛучшая серия: ${S.best}\nОшибки: ${S.retry.length}\n${M.about.label}: ${S.about.trim()||"—"}`;
   app.innerHTML=`<div class="big" aria-hidden="true">${emoji}</div>
   <h1 class="center" lang="kk">${title}</h1>
   <div class="stars" aria-label="${stars} из 3 звёзд">${[0,1,2].map(i=>`<span class="${i<stars?"on":""}">⭐</span>`).join("")}</div>
@@ -362,7 +361,7 @@ function resultScreen(){
   <div class="stack" style="margin-top:18px">
     <div class="saved wait" id="saved">Сохраняем результат…</div>
     <a class="btn primary block" id="send" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(report)}">Отправить голосовое учителю</a>
-    <p class="muted center" style="font-size:14px;margin:0">Прочитай вслух свои предложения о себе и отправь аудио в WhatsApp: +7 708 214 12 26</p>
+    <p class="muted center" style="font-size:14px;margin:0">Прочитай вслух свои предложения и отправь аудио в WhatsApp: +7 708 214 12 26</p>
     <button class="btn block" id="again" type="button">Пройти ещё раз</button>
     <a class="btn block" href="slides/">Повторить презентацию урока</a>
   </div>`;
@@ -395,7 +394,7 @@ let authMode="reg", authBusy=false;
 function authScreen(){
   const reg=authMode==="reg";
   const grades=`<option value="" selected disabled>— класс —</option>`+[4,5,6,7,8,9,10,11].map(n=>`<option value="${n}">${n} класс</option>`).join("");
-  app.innerHTML=`<p class="eyebrow">Қазақша. Старт · Урок 0</p>
+  app.innerHTML=`<p class="eyebrow">Қазақша. Старт · Урок ${M.n}</p>
   <h1>${reg?"Зарегистрируйся, чтобы начать":"Войди, чтобы продолжить"}</h1>
   <p class="muted">${reg?"Так учитель увидит твои очки и ошибки, а прогресс сохранится на любом устройстве.":"Номер WhatsApp и пароль, которые ты указал(а) при регистрации."}</p>
   <div class="card">
@@ -454,7 +453,7 @@ async function onAuthSubmit(e){
 }
 async function enterAs(user){
   let prof=null; try{ const r=await sb.from("students").select("first_name,last_name").eq("user_id",user.id).maybeSingle(); prof=r.data||null; }catch(e){}
-  USER=user; PROFILE=prof; KEY="kz0-hw0-v1:"+user.id; loadState();
+  USER=user; PROFILE=prof; KEY=`${HW.bank_id}-v1:`+user.id; loadState();
   S.name=(PROFILE&&PROFILE.first_name)||S.name||"";
   if(S.phase==="start"&&S.log.length) S.phase="start";
   save(); render(); window.scrollTo({top:0}); flush();
