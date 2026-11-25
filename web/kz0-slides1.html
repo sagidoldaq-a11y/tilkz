@@ -118,6 +118,7 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.
 .pt td.p{font-weight:700;color:var(--muted)}
 .pt td.f{font-family:var(--display);font-size:23px;font-weight:600}
 .pt tr.sep td{border-top:3px solid var(--ink)}
+.pt tr.hl td{background:#FFF7E3}
 
 /* builder */
 .pick{display:flex;flex-wrap:wrap;gap:8px}
@@ -352,8 +353,8 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.
     <tr><td>сіздің</td><td>-ңыз / -ңіз</td><td class="f">ана<span class="suf2">ңыз</span></td><td>-ыңыз / -іңіз</td><td class="f">бауыр<span class="suf2">ыңыз</span></td></tr>
     <tr><td>оның</td><td>-сы / -сі</td><td class="f">ана<span class="suf2">сы</span></td><td>-ы / -і</td><td class="f">бауыр<span class="suf2">ы</span></td></tr>
     <tr class="sep"><td rowspan="4" class="p">Көпше</td><td>біздің</td><td>-мыз / -міз</td><td class="f">ана<span class="suf2">мыз</span></td><td>-ымыз / -іміз</td><td class="f">бауыр<span class="suf2">ымыз</span></td></tr>
-    <tr><td>сендердің</td><td>-ң</td><td class="f">ана<span class="suf2">ң</span></td><td>-ың / -ің</td><td class="f">бауыр<span class="suf2">ың</span></td></tr>
-    <tr><td>сіздердің</td><td>-ңыз / -ңіз</td><td class="f">ана<span class="suf2">ңыз</span></td><td>-ыңыз / -іңіз</td><td class="f">бауыр<span class="suf2">ыңыз</span></td></tr>
+    <tr class="hl"><td>сендердің</td><td><b>-лар</b> + -ың</td><td class="f">ана<span class="suf">лар</span><span class="suf2">ың</span></td><td><b>-лар</b> + -ың</td><td class="f">бауыр<span class="suf">лар</span><span class="suf2">ың</span></td></tr>
+    <tr class="hl"><td>сіздердің</td><td><b>-лар</b> + -ыңыз</td><td class="f">ана<span class="suf">лар</span><span class="suf2">ыңыз</span></td><td><b>-лар</b> + -ыңыз</td><td class="f">бауыр<span class="suf">лар</span><span class="suf2">ыңыз</span></td></tr>
     <tr><td>олардың</td><td>-сы / -сі</td><td class="f">ана<span class="suf2">сы</span></td><td>-ы / -і</td><td class="f">бауыр<span class="suf2">ы</span></td></tr>
   </table>
   <div class="notes">
@@ -362,7 +363,7 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.
     <h4>Қалай түсіндіру</h4>
     <ul><li>Бастау нүктесі — 4-слайдтағы тіркестер: отбасы<b>м</b>, аға<b>м</b>, әже<b>м</b>ді. «Мұндағы -м нені білдіреді?» Оқушы өзі табады: «менің».</li>
     <li>Орыс тілімен салыстыру: «моя мама» — екі сөз; қазақша «менің анам» — иесі сөздің ішінде де бар (анам). Сондықтан «менің» сөзін жиі түсіріп айтуға болады: «Анам үйде».</li>
-    <li>Алдымен тек жекеше 4 жолды үйретіңіз, сосын көпшесін ашыңыз: біздің — жаңа жалғау, ал сендердің/сіздердің/олардың — жекешесімен бірдей!</li>
+    <li>Алдымен тек жекеше 4 жолды үйретіңіз, сосын көпшесін ашыңыз. <b>Ерекше назар:</b> сендердің және сіздердің — алдымен көптік жалғау, сосын тәуелдік: ана<b>лар</b>ың, бауыр<b>лар</b>ың, ана<b>лар</b>ыңыз, бауыр<b>лар</b>ыңыз (сары жолдар). «Сендердің анаң» деу — қате. Біздің — -мыз/-ымыз, олардың — оның-мен бірдей (анасы, бауыры).</li>
     <li>Жуан/жіңішке қайтадан: әже<b>м</b>, әже<b>міз</b>, әже<b>сі</b>.</li></ul>
     <div class="watch">Сақ болыңыз: к, қ, п дауыстыдан бұрын ұяңданады: кітап → кіта<b>б</b>ым, құлақ → құла<b>ғ</b>ы. Бүгін тек мысал ретінде айтыңыз; жаттығуда бұл сөздер жоқ.</div>
   </div>
@@ -571,8 +572,9 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.
   function chips(id,list,get,set){const box=document.getElementById(id);box.innerHTML='';list.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;if(v===get())b.classList.add('on');b.onclick=()=>{set(v);chips(id,list,get,set);drawB();};box.appendChild(b);});}
   function drawB(){
     let stem=bw, pl='';
-    if(bn==='2'){pl=plural(bw);stem=bw+pl;}
-    const suf=poss(stem,bp), root=mut(bw,bn==='2'?pl:suf);
+    /* сендердің, сіздердің: көптік жалғау әрдайым бірінші келеді (аналарың, бауырларыңыз) */
+    if(bn==='2'||bp==='sender'||bp==='sizder'){pl=plural(bw);stem=bw+pl;}
+    const suf=poss(stem,bp), root=mut(bw,pl?pl:suf);
     const pron=BP.find(x=>x[0]===bp)[1];
     const out=document.getElementById('bOut');
     if(hideAns){out.innerHTML=`<span class="pr">${pron}</span> <span class="r">${bw}</span> + ${bn==='2'?'<span class="pl">көп</span> + ':''}? <small>Алдымен өзің айт, сосын «Жауапты көрсету» бас.</small>`;return;}

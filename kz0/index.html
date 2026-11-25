@@ -91,8 +91,20 @@ h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-w
         </div>
       </div>
     </li>
-    <li class="lesson soon" aria-disabled="true">
+    <li class="lesson">
       <div class="num" aria-hidden="true">2</div>
+      <div>
+        <h2>Друзья и родственники <span lang="kk">· Досым және туыстарым</span><span class="done" id="done2" hidden>✓ <span id="score2"></span></span></h2>
+        <p>Кто я? Личные окончания: оқушымын, сыныптаспыз. Чей + кто: досымын, туыстарыңбыз. Абай и пословицы.</p>
+        <div class="tags" lang="kk"><span>дос · көрші · туыс</span><span>-мын / -бын / -пын</span><span>досымын</span></div>
+        <div class="acts">
+          <a class="btn primary" href="2/">Домашнее задание</a>
+          <a class="btn" href="2/slides/">Презентация урока</a>
+        </div>
+      </div>
+    </li>
+    <li class="lesson soon" aria-disabled="true">
+      <div class="num" aria-hidden="true">3</div>
       <div>
         <h2>Следующий урок</h2>
         <p>Появится здесь после занятия.</p>
@@ -104,7 +116,7 @@ h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-w
 <script>
 try{
   const s=JSON.parse(localStorage.getItem("kz0-progress")||"null");
-  [0,1].forEach(n=>{ const best=s?(s["hw"+n]||0):0;
+  [0,1,2].forEach(n=>{ const best=s?(s["hw"+n]||0):0;
     if(best>0){document.getElementById("done"+n).hidden=false;document.getElementById("score"+n).textContent="лучший результат: "+best;} });
 }catch(e){}
 </script>
