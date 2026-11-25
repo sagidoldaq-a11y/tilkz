@@ -139,6 +139,12 @@ h2{font-size:clamp(28px,3.4vw,38px);letter-spacing:-.025em;line-height:1.1;margi
 .p-course .what{color:var(--accent)}
 .p-course p,.p-course ul{color:var(--ink-2)}
 .p-course li svg{stroke:var(--accent)}
+.p-kz0{background:var(--surface);min-height:0;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:center}
+.p-kz0 .kz0-main{display:flex;flex-direction:column;gap:14px}
+.p-kz0 .what{color:var(--accent)}
+.p-kz0 p,.p-kz0 ul{color:var(--ink-2)}
+.p-kz0 li svg{stroke:var(--accent)}
+.p-kz0 .btn{margin-top:4px}
 .soon{align-self:flex-start;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--marker);color:#3A2E00}
 .play{width:64px;height:64px;border-radius:999px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}
 .play svg{fill:var(--accent)}
@@ -196,7 +202,7 @@ footer{background:var(--deep);color:#FFFFFF}
   .cta-row .btn{flex:1 1 100%}
   .demo{padding:22px;border-radius:24px}
   section.block{padding-bottom:72px}
-  .products,.steps,.more,.teacher{grid-template-columns:minmax(0,1fr)}
+  .products,.steps,.more,.teacher,.p-kz0{grid-template-columns:minmax(0,1fr)}
   .product{padding:28px;min-height:0}
   .product .btn{margin-top:12px;align-self:stretch}
   .teacher{padding:28px}
@@ -290,6 +296,23 @@ footer{background:var(--deep);color:#FFFFFF}
     </div>
   </section>
 
+  <section class="block" aria-labelledby="kzH" id="kz0">
+    <h2 id="kzH" data-t="kzH">Қазақ тілін нөлден үйрену</h2>
+    <article class="product p-kz0">
+      <div class="kz0-main">
+        <span class="what" data-t="kzWhat">Орыс сыныптарына арналған курс</span>
+        <h3>Қазақша. Старт</h3>
+        <p data-t="kzP">Нөлден бастап сөйлеуге үйрететін сабақтар. Әр сабақтан кейін презентация және ұпай жинайтын ойын-тапсырма.</p>
+        <a class="btn" href="kz0/" data-t="kzGo">Курсқа өту</a>
+      </div>
+      <ul>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="kz1">Әр сабақта 10 сөз және 5 сөз тіркесі</span></li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="kz2">Үй тапсырмасы — ұпай, серия, жұлдыз</span></li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="kz3">Нәтижені мұғалім кабинетінен көреді</span></li>
+      </ul>
+    </article>
+  </section>
+
   <section class="block" aria-labelledby="howH">
     <h2 id="howH" data-t="howH">Тренажер қалай жұмыс істейді</h2>
     <ol class="steps">
@@ -318,7 +341,6 @@ footer{background:var(--deep);color:#FFFFFF}
   <section class="block" aria-labelledby="moreH">
     <h2 id="moreH" data-t="moreH">Тағы не бар</h2>
     <div class="more">
-      <a class="row" href="kz0/" data-only="ru" hidden><svg class="ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V6a2 2 0 0 1 2-2h12v15H6a2 2 0 0 0-2 2z"/><path d="M8 8h6M8 12h4"/></svg><div><b>Қазақша. Старт</b><span>Казахский для русских классов: уроки и задания-игры</span></div><svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="row" href="gov/"><svg class="ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18h16M5 18V10M9.5 18V10M14.5 18V10M19 18V10M3 10l9-6 9 6z"/></svg><div><b data-t="m1">Мемлекеттік қызметтегі қазақ тілі</b><span data-t="m1p">Онлайн-тренажер</span></div><svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="row wa" data-wa="waKid" href="https://wa.me/77082141226" target="_blank" rel="noopener"><svg class="ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l9-4 9 4-9 4-9-4z"/><path d="M7 10v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5"/></svg><div><b data-t="m2">Оқушыға жеке сабақ</b><span data-t="m2p">5–11 сынып. Онлайн.</span></div><svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="row wa" data-wa="waAdult" href="https://wa.me/77082141226" target="_blank" rel="noopener"><svg class="ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><div><b data-t="m3">Ересекке сабақ</b><span data-t="m3p">Жалпы және іскерлік қазақ тілі.</span></div><svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
@@ -366,6 +388,7 @@ const T={
   dTry:"Қазір байқап көр",dSkill:"Астарлы ойды түсіндіру",dHint:"Жауапты таңда.",dNo:"Дұрыс емес. Мәтінге қайта қара: атақ қашан келді?",dYes:"Дұрыс. Атақ соғыстан алпыс жыл өткен соң келді. Дәлелі мәтінде белгіленді.",dGo:"Толық тестке өту",
   prodH:"Дайындықтың екі жолы",tWhat:"Онлайн-тренажер",tP:"Емтихан форматындағы мәтіндер мен 20 сұрақ.",t1:"Қате жауапқа кеңес, екінші мүмкіндік",t2:"Әр жауаптың түсіндірмесі мен мәтіннен дәлелі",t3:"Соңында дағдылар бойынша есеп",tGo:"Тестті бастау",
   soon:"Жақында",cWhat:"Видео-курс",cP:"Қазбек Сағидолданың видео-сабақтары. Курс ашылған күні хабар аласыз.",cGo:"Ашылғанда хабарлау",
+  kzH:"Қазақ тілін нөлден үйрену",kzWhat:"Орыс сыныптарына арналған курс",kzP:"Нөлден бастап сөйлеуге үйрететін сабақтар. Әр сабақтан кейін презентация және ұпай жинайтын ойын-тапсырма.",kz1:"Әр сабақта 10 сөз және 5 сөз тіркесі",kz2:"Үй тапсырмасы — ұпай, серия, жұлдыз",kz3:"Нәтижені мұғалім кабинетінен көреді",kzGo:"Курсқа өту",
   howH:"Тренажер қалай жұмыс істейді",s1:"Нұсқаны таңда",s1p:"10 нұсқа. Әрқайсысында 20 сұрақ.",s2:"Мәтінді оқып, жауап бер",s2p:"Қателессең, кеңес аласың да, қайта таңдайсың.",s3:"Әлсіз дағдыңды көр",s3p:"Есеп қай дағдыны жаттықтыру керегін көрсетеді.",
   name:"Қазбек Сағидолда",role:"Қазақ тілі мен әдебиеті мұғалімі",st1:"10+ жыл",st1p:"сабақ береді",st2p:"оқушы НЗМ мен БИЛ-ге дайындалды",st3:"2 курс",st3p:"авторы",schools:"Жұмыс істеген мектептері:",
   moreH:"Тағы не бар",m1:"Мемлекеттік қызметтегі қазақ тілі",m1p:"Онлайн-тренажер",m2:"Оқушыға жеке сабақ",m2p:"5–11 сынып. Онлайн.",m3:"Ересекке сабақ",m3p:"Жалпы және іскерлік қазақ тілі.",m4:"Компанияға оқыту",m4p:"Іскерлік хат, құжат жүргізу.",
@@ -379,6 +402,7 @@ const T={
   dTry:"Попробуй прямо сейчас",dSkill:"Понимание подтекста",dHint:"Выбери ответ.",dNo:"Неверно. Посмотри в текст ещё раз: когда пришло звание?",dYes:"Верно. Звание пришло через шестьдесят лет после войны. Доказательство выделено в тексте.",dGo:"Перейти к полному тесту",
   prodH:"Два способа подготовки",tWhat:"Онлайн-тренажёр",tP:"Тексты и 20 вопросов в формате экзамена.",t1:"Подсказка после ошибки и вторая попытка",t2:"Объяснение и доказательство из текста к каждому ответу",t3:"В конце — отчёт по навыкам",tGo:"Начать тест",
   soon:"Скоро",cWhat:"Видеокурс",cP:"Видеоуроки Казбека Сагидолды. Сообщим в день открытия курса.",cGo:"Сообщить об открытии",
+  kzH:"Казахский язык с нуля",kzWhat:"Курс для русских классов",kzP:"Уроки, которые с нуля учат говорить по-казахски. После каждого урока — презентация и домашнее задание-игра с очками.",kz1:"В каждом уроке 10 слов и 5 фраз",kz2:"Домашнее задание — очки, серии, звёзды",kz3:"Учитель видит результаты в своём кабинете",kzGo:"Перейти к курсу",
   howH:"Как работает тренажёр",s1:"Выбери вариант",s1p:"10 вариантов. В каждом 20 вопросов.",s2:"Прочитай текст и ответь",s2p:"Ошибся — получишь подсказку и выберешь ещё раз.",s3:"Увидь слабый навык",s3p:"Отчёт покажет, какой навык нужно тренировать.",
   name:"Казбек Сагидолда",role:"Учитель казахского языка и литературы",st1:"10+ лет",st1p:"преподаёт",st2p:"учеников подготовлены к НИШ и БИЛ",st3:"2 курса",st3p:"автор",schools:"Работал в школах:",
   moreH:"Что ещё есть",m1:"Казахский язык на государственной службе",m1p:"Онлайн-тренажёр",m2:"Индивидуальные занятия школьникам",m2p:"5–11 класс. Онлайн.",m3:"Занятия для взрослых",m3p:"Общий и деловой казахский.",m4:"Обучение для компаний",m4p:"Деловая переписка, делопроизводство.",
