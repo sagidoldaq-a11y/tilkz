@@ -65,7 +65,7 @@ h2{font-size:24px;line-height:1.15;margin:0;font-weight:900}
 .field{display:grid;gap:6px;width:100%;max-width:360px;text-align:left}
 .field input{font:inherit;font-size:18px;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:12px 14px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.flip{display:block;width:100%;perspective:900px;border:0;background:none;padding:0;aspect-ratio:4/3.3}
+.flip{display:block;width:100%;perspective:900px;border:0;background:none;padding:0;aspect-ratio:4/4.6}
 .flip .in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
 .flip.open .in{transform:rotateY(180deg)}
 .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;border:2px solid var(--line);display:grid;place-items:center;overflow:hidden}
@@ -73,7 +73,8 @@ h2{font-size:24px;line-height:1.15;margin:0;font-weight:900}
 .front b{font-size:clamp(20px,4.6vw,28px);font-weight:900}
 .front small{color:var(--soft);font-size:13px}
 .back{transform:rotateY(180deg);background:var(--bg);grid-template-rows:minmax(0,1fr) auto}
-.back svg{width:100%;height:100%}
+.back svg,.back .ph{width:100%;height:100%}
+.ph{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;pointer-events:none}
 .back p{margin:0;padding:6px 10px 10px;font-size:14px;line-height:1.25;text-align:center}
 .back p b{display:block;font-size:16px}
 .scene{border-radius:20px;overflow:hidden;border:2px solid var(--line);aspect-ratio:300/170;background:var(--paper)}
@@ -155,7 +156,7 @@ h2{font-size:24px;line-height:1.15;margin:0;font-weight:900}
 .link{border:0;background:none;color:var(--sky);font-weight:900;padding:8px;justify-self:center;min-height:44px;text-decoration:none;display:inline-flex;align-items:center}
 .center{text-align:center}
 #fx{position:fixed;inset:0;pointer-events:none;width:100%;height:100%;z-index:5}
-@media(max-width:520px){.buddy{grid-template-columns:60px minmax(0,1fr)}.pup{width:60px;height:60px}.bubble{font-size:16px}.badges{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3{gap:6px}.txt{padding:12px 14px}}
+@media(max-width:520px){.sc{aspect-ratio:4/5}.buddy{grid-template-columns:60px minmax(0,1fr)}.pup{width:60px;height:60px}.bubble{font-size:16px}.badges{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3{gap:6px}.txt{padding:12px 14px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -179,7 +180,7 @@ const S=["Ақбота мектептен келе жатты.","Жол жиег
 const W=[];S.forEach((s,si)=>s.split(' ').forEach(t=>W.push({t,si})));
 const GOAL=40;
 const STEPS=['Кілт сөздер','Болжау','Суық оқу','Үлгімен оқу','Қайталап оқу','Сұрақтар','Мазмұндау','Ыстық оқу'];
-const KEYS=[{w:'қалтырап',m:'тоңғаннан дірілдеп',p:'cold'},{w:'қыңсылап',m:'жіңішке дауыспен жылап',p:'whine'},{w:'құшағына алды',m:'қолымен қапсыра ұстады',p:'hug'},{w:'ажырамас дос',m:'ешқашан айырылмайтын дос',p:'friends'}];
+const KEYS=[{w:'қалтырап',m:'тоңғаннан дірілдеп',p:'cold'},{w:'қыңсылап',m:'жіңішке дауыспен жылап',p:'whine'},{w:'құшағына алды',m:'екі қолымен көтеріп, өзіне қысты',p:'hug'},{w:'ажырамас дос',m:'ешқашан айырылмайтын дос',p:'friends'}];
 const PRED=['Қыз бен күшік дос болады','Күшік қашып кетеді','Ақбота мектепке кешігеді'];
 const QUIZ=[
  {q:'Ақбота күшікті қай жерден көрді?',o:['Мектептен','Жол жиегінен','Ауладан'],a:1,ev:[1]},
@@ -209,7 +210,8 @@ function girl(x,y,s,pose='walk',bag=false){const sk='#f2c49b',arms={walk:'M22 54
  return `<g transform="translate(${x} ${y}) scale(${s})">${bag?'<rect x="34" y="50" width="16" height="26" rx="5" fill="#ff8a3d"/>':''}<circle cx="11" cy="30" r="7" fill="#2e1e18"/><circle cx="49" cy="30" r="7" fill="#2e1e18"/><circle cx="13" cy="21" r="4.5" fill="#ff6a48"/><circle cx="47" cy="21" r="4.5" fill="#ff6a48"/><rect x="21" y="86" width="7" height="24" rx="3" fill="${sk}"/><rect x="32" y="86" width="7" height="24" rx="3" fill="${sk}"/><rect x="18" y="107" width="12" height="7" rx="3.5" fill="#33302e"/><rect x="31" y="107" width="12" height="7" rx="3.5" fill="#33302e"/><path d="M15 92 L22 50 Q30 46 38 50 L45 92Z" fill="#3557a6"/><path d="M24 50 L30 58 L36 50Z" fill="#fff"/><path d="${arms}" stroke="${sk}" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="30" cy="32" r="14" fill="${sk}"/><path d="M16 32 Q16 16 30 16 Q44 16 44 32 Q40 22 30 23 Q20 22 16 32Z" fill="#2e1e18"/><circle cx="25" cy="33" r="1.9" fill="#2e1e18"/><circle cx="35" cy="33" r="1.9" fill="#2e1e18"/><path d="M26 38 Q30 41.5 34 38" stroke="#2e1e18" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="21.5" cy="37" r="2.6" fill="#ff9c9c" opacity=".6"/><circle cx="38.5" cy="37" r="2.6" fill="#ff9c9c" opacity=".6"/></g>`;}
 const heart=(x,y,s,c='#ff6a48')=>`<path transform="translate(${x} ${y}) scale(${s})" d="M10 6 C10 -1 0 -1 0 6 C0 13 10 18 10 22 C10 18 20 13 20 6 C20 -1 10 -1 10 6Z" fill="${c}"/>`;
 const sky=(id,a,b)=>`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>`;
-function scene(k){let g='';
+const PHOTO=['cold','whine','hug','friends','road','home','play'],POS={cold:'42% 60%',whine:'50% 55%',hug:'50% 78%',friends:'40% 60%',road:'50% 50%',home:'45% 60%',play:'50% 60%'};
+function scene(k){if(PHOTO.includes(k))return `<img class="ph" src="../../img/oqy/${k}.webp" style="object-position:${POS[k]}" alt="" draggable="false">`;let g='';
  if(k==='road')g=`${sky('gr','#9fd8ff','#e8f6ff')}<rect width="300" height="190" fill="url(#gr)"/><circle cx="258" cy="36" r="17" fill="#ffd35c"/><path d="M0 120 Q70 92 150 112 T300 104 V190 H0Z" fill="#a8de8e"/><path d="M0 136 Q90 120 300 132 V190 H0Z" fill="#8bcf74"/><path d="M0 170 Q150 132 300 150 L300 168 Q150 152 0 190Z" fill="#eadfcd"/><rect x="18" y="74" width="54" height="44" rx="3" fill="#f4b860"/><path d="M12 76 L45 52 L78 76Z" fill="#e2704b"/><rect x="38" y="96" width="14" height="22" fill="#9a5b34"/><rect x="24" y="84" width="10" height="9" fill="#fff"/><rect x="56" y="84" width="10" height="9" fill="#fff"/><path d="M45 52 V36" stroke="#555" stroke-width="2"/><path d="M45 36 h14 l-4 5 l4 5 h-14Z" fill="#3ea6f5"/>${girl(196,44,.98,'walk',true)}${dog(104,138,.5,'cold')}`;
  if(k==='home')g=`<rect width="300" height="190" fill="#ffe5c4"/><rect y="138" width="300" height="52" fill="#e2b887"/><rect x="26" y="26" width="76" height="58" rx="6" fill="#bfe6ff" stroke="#fff" stroke-width="6"/><path d="M64 26 V84 M26 55 H102" stroke="#fff" stroke-width="4"/><ellipse cx="150" cy="170" rx="70" ry="10" fill="#d49e6a"/><ellipse cx="160" cy="168" rx="24" ry="7" fill="#fff"/><ellipse cx="160" cy="166" rx="18" ry="4" fill="#fffdf4"/>${dog(132,124,.55,'happy',12)}${girl(206,48,.98,'hug')}`;
  if(k==='play')g=`${sky('gp','#a7deff','#effaff')}<rect width="300" height="190" fill="url(#gp)"/><circle cx="40" cy="34" r="17" fill="#ffd35c"/><path d="M0 132 Q150 112 300 130 V190 H0Z" fill="#8bcf74"/><circle cx="246" cy="158" r="13" fill="#ff6a48"/><path d="M234 156 Q246 150 258 156" stroke="#fff" stroke-width="3" fill="none"/>${girl(64,42,.98,'up')}${dog(176,110,.56,'happy',-12)}${heart(126,36,1.1)}${heart(150,18,.7,'#ff9c9c')}`;
