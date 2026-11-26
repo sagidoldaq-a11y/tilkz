@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="kk" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+<title>Ақбота мен күшік — 1-сабақ | Оқы. Түсін. Айт. | aitil</title>
+<meta name="description" content="2-сыныпқа арналған қазақша оқу сабағы: кілт сөздер, бір минуттық оқу, түсіну сұрақтары, суретпен мазмұндау. Ойын түрінде, 15 минут.">
+<link rel="canonical" href="https://aitil.kz/oqy/1/">
+<meta property="og:title" content="Ақбота мен күшік — 1-сабақ">
+<meta property="og:description" content="Оқы. Түсін. Айт. — 2–4-сыныпқа арналған оқу тренажері">
+<meta property="og:image" content="https://aitil.kz/img/og.jpg">
+<script>try{var t=localStorage.getItem("tilkz-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE children's reading game: warm, bright, one clear task per screen
+   IDEA the story's own road: Ақбота walks from school to home; the lesson is that road, 8 stations
+   PICTURE Ақтөс the puppy (mascot) travelling the road; drawn story scenes for cards and retelling
+   COLOUR sky blue band, white ground, coral action, sun-yellow stars; deep night blue in dark
+   TYPE Nunito 800/900 for headings and the reading text, Nunito 600 body
+   LAYOUT road band on top, one task in the middle, one big button at the bottom; phone first */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0e1a2c);--ink:light-dark(#1b2333,#f2f5fa);--soft:light-dark(#5b6577,#a9b4c6);--paper:light-dark(#fff7ea,#16263d);--line:light-dark(#efe3cf,#243650);--sky:light-dark(#3ea6f5,#1b4f88);--sky2:light-dark(#8fd0ff,#2a6db3);--coral:#ff6a48;--coral2:#e8532f;--sun:#ffc22e;--ok:#23a862;--okbg:light-dark(#e3f7ec,#123b28);--warn:light-dark(#fff0d6,#3b2e12);--hl:light-dark(#fff1a8,#5b4b10)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:600 17px/1.5 Nunito,ui-rounded,"SF Pro Rounded",system-ui,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sky2);outline-offset:2px}
+.app{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100%}
+.top{background:var(--sky);color:#fff;padding:10px max(16px,env(safe-area-inset-left,0px)) 8px}
+.toprow{display:flex;align-items:center;gap:10px;max-width:760px;margin:0 auto}
+.steplabel{flex:1;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.22);border-radius:999px;padding:4px 12px;font-weight:900;font-size:17px}
+.chip svg{width:20px;height:20px}
+.chip.pop{animation:pop .45s ease}
+@keyframes pop{40%{transform:scale(1.25)}}
+.mute{border:0;background:rgba(255,255,255,.22);border-radius:999px;width:40px;height:40px;display:grid;place-items:center;color:#fff}
+.mute svg{width:20px;height:20px}
+.road{max-width:760px;margin:4px auto 0;height:56px;position:relative}
+.road svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+main{overflow-y:auto;padding:18px max(16px,env(safe-area-inset-left,0px)) 24px}
+.wrap{max-width:720px;margin:0 auto;display:grid;gap:16px}
+.bottom{padding:12px max(16px,env(safe-area-inset-left,0px)) max(14px,env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg)}
+.main{display:block;width:100%;max-width:520px;margin:0 auto;border:0;border-radius:18px;background:var(--coral);color:#fff;font-weight:900;font-size:20px;min-height:58px;box-shadow:0 5px 0 var(--coral2);transition:transform .1s}
+.main:active{transform:translateY(3px);box-shadow:0 2px 0 var(--coral2)}
+.main:disabled{background:light-dark(#d9dde5,#2b3b55);color:light-dark(#7a8496,#8a97ad);box-shadow:none;cursor:default}
+.buddy{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center}
+.pup{width:76px;height:76px}
+.pup svg{width:100%;height:100%}
+.pup.jump{animation:jump .6s ease}
+@keyframes jump{30%{transform:translateY(-12px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}
+.bubble{margin:0;background:var(--paper);border:2px solid var(--line);border-radius:20px 20px 20px 6px;padding:12px 16px;font-weight:800;font-size:18px;line-height:1.35}
+.adult{display:flex;gap:10px;align-items:flex-start;background:var(--warn);border-radius:14px;padding:10px 14px;font-size:15px;color:var(--ink)}
+.adult b{white-space:nowrap}
+h1{font-size:clamp(30px,6vw,44px);line-height:1.05;letter-spacing:-.02em;margin:0;font-weight:900;text-wrap:balance}
+h2{font-size:24px;line-height:1.15;margin:0;font-weight:900}
+.sub{color:var(--soft);margin:0}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:18px}
+.hero{display:grid;justify-items:center;text-align:center;gap:10px;padding:8px 0}
+.hero .pup{width:150px;height:150px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.fact{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;font-size:15px;white-space:nowrap}
+.field{display:grid;gap:6px;width:100%;max-width:360px;text-align:left}
+.field input{font:inherit;font-size:18px;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:12px 14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.flip{display:block;width:100%;perspective:900px;border:0;background:none;padding:0;aspect-ratio:4/3.3}
+.flip .in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.open .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;border:2px solid var(--line);display:grid;place-items:center;overflow:hidden}
+.front{background:var(--paper);align-content:center;gap:4px}
+.front b{font-size:clamp(20px,4.6vw,28px);font-weight:900}
+.front small{color:var(--soft);font-size:13px}
+.back{transform:rotateY(180deg);background:var(--bg);grid-template-rows:minmax(0,1fr) auto}
+.back svg{width:100%;height:100%}
+.back p{margin:0;padding:6px 10px 10px;font-size:14px;line-height:1.25;text-align:center}
+.back p b{display:block;font-size:16px}
+.scene{border-radius:20px;overflow:hidden;border:2px solid var(--line);aspect-ratio:300/170;background:var(--paper)}
+.scene svg{width:100%;height:100%;display:block}
+.opts{display:grid;gap:10px}
+.opt{border:2px solid var(--line);background:var(--bg);border-radius:16px;padding:14px 16px;text-align:left;font-weight:800;font-size:18px;min-height:56px;display:flex;gap:12px;align-items:center}
+.opt i{font-style:normal;flex:none;width:32px;height:32px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-weight:900}
+.opt.sel{border-color:var(--sky);background:light-dark(#eaf5ff,#17324f)}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.ok i{background:var(--ok);color:#fff}
+.opt.no{opacity:.5;animation:shake .35s}
+.opt:disabled{cursor:default}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.txthead{display:flex;align-items:center;gap:14px;justify-content:space-between}
+.txt{font-weight:800;font-size:clamp(23px,4.8vw,31px);line-height:1.8;background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:16px 20px}
+.w{border-radius:8px;padding:1px 3px;margin:0 -1px;transition:background .15s,color .15s}
+.pick .w{cursor:pointer}
+.pick .w:hover{background:light-dark(#e6f2ff,#1d3a5c)}
+.w.last{background:var(--sky);color:#fff}
+.w.after{opacity:.3}
+.w.err{background:light-dark(#ffd9cf,#5a2a1f);text-decoration:underline wavy var(--coral);text-underline-offset:6px}
+.w.on{background:var(--sun);color:#1b2333}
+.w.done{color:var(--soft)}
+.w.ev{background:var(--hl);box-shadow:0 0 0 4px var(--hl)}
+.timer{position:relative;width:64px;height:64px;flex:none}
+.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer b{position:absolute;inset:0;display:grid;place-items:center;font-size:20px;font-weight:900}
+.big{font-size:clamp(64px,16vw,96px);font-weight:900;line-height:1;letter-spacing:-.03em}
+.result{display:grid;justify-items:center;text-align:center;gap:6px}
+.meter{position:relative;height:22px;border-radius:999px;background:light-dark(#edf0f5,#22324b);width:100%;margin:28px 0 6px}
+.meter .fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:999px;background:linear-gradient(90deg,var(--sky2),var(--sky));transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.meter .goal{position:absolute;top:-8px;bottom:-8px;width:3px;background:var(--coral);border-radius:2px}
+.meter .goal span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:13px;font-weight:900;color:var(--coral)}
+.rows{display:grid;gap:12px;width:100%}
+.row{display:grid;grid-template-columns:7.5em minmax(0,1fr) 3.2em;gap:10px;align-items:center;text-align:left;font-weight:800}
+.row .bar{height:26px;border-radius:999px;background:light-dark(#edf0f5,#22324b);overflow:hidden}
+.row .bar i{display:block;height:100%;width:0;border-radius:999px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.row b{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;border-radius:999px;padding:4px 12px;font-weight:900;font-size:15px;background:var(--okbg);color:var(--ok);white-space:nowrap}
+.track{position:relative;height:84px;margin:6px 8px 0}
+.track .lane{position:absolute;left:0;right:0;top:56px;height:8px;border-radius:8px;background:repeating-linear-gradient(90deg,var(--line) 0 14px,transparent 14px 24px)}
+.track .stop{position:absolute;top:50px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--bg);border:4px solid var(--line)}
+.track .stop.done{border-color:var(--sun);background:var(--sun)}
+.track .home{position:absolute;right:-8px;top:18px;width:48px;height:48px}
+.track .walker{position:absolute;top:2px;width:54px;height:54px;margin-left:-27px;transition:left .9s cubic-bezier(.3,1.4,.5,1)}
+.times{display:grid;gap:8px}
+.time{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:10px 14px;font-weight:800}
+.time b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.clock{font-size:44px;font-weight:900;text-align:center;font-variant-numeric:tabular-nums}
+.qnum{color:var(--soft);font-weight:900;font-size:15px}
+.hint{background:var(--hl);border-radius:16px;padding:12px 16px;font-weight:800;font-size:18px}
+.hint small{display:block;font-size:14px;color:var(--soft)}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sc{position:relative;border:3px solid var(--line);border-radius:18px;overflow:hidden;padding:0;background:var(--paper);aspect-ratio:300/190}
+.sc svg{width:100%;height:100%;display:block}
+.sc .n{position:absolute;top:6px;left:6px;width:30px;height:30px;border-radius:50%;background:var(--ok);color:#fff;font-weight:900;display:none;place-items:center}
+.sc.ok{border-color:var(--ok)}
+.sc.ok .n{display:grid}
+.sc.no{animation:shake .35s}
+.cap{margin:6px 2px 0;font-size:14px;color:var(--soft);text-align:center;font-weight:800}
+.checks{display:grid;gap:10px}
+.check{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--bg);text-align:left;font-weight:800;min-height:56px}
+.check i{flex:none;width:30px;height:30px;border-radius:9px;border:3px solid var(--line);display:grid;place-items:center}
+.check.on{border-color:var(--ok);background:var(--okbg)}
+.check.on i{background:var(--ok);border-color:var(--ok)}
+.check.on i::after{content:"";width:8px;height:14px;border:solid #fff;border-width:0 4px 4px 0;transform:rotate(45deg) translate(-1px,-2px)}
+.badges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;text-align:center}
+.badge{display:grid;justify-items:center;gap:6px;font-size:13px;font-weight:800;line-height:1.2}
+.badge .m{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--sun);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
+.badge .m svg{width:34px;height:34px}
+.badge.off{opacity:.35;filter:grayscale(1)}
+.sticker{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center}
+.sticker .s{width:96px;height:96px;border-radius:26px;background:var(--sky);padding:8px;transform:rotate(-6deg);box-shadow:0 0 0 5px #fff,0 6px 14px rgba(0,0,0,.18)}
+.report{width:100%;border-collapse:collapse;font-size:15px}
+.report td{padding:8px 0;border-bottom:1px solid var(--line)}
+.report td:last-child{text-align:right;font-weight:900;white-space:nowrap}
+.lock{display:flex;gap:12px;align-items:center;opacity:.8}
+.lock .k{width:44px;height:44px;border-radius:12px;background:var(--line);display:grid;place-items:center;flex:none}
+.link{border:0;background:none;color:var(--sky);font-weight:900;padding:8px;justify-self:center;min-height:44px;text-decoration:none;display:inline-flex;align-items:center}
+.center{text-align:center}
+#fx{position:fixed;inset:0;pointer-events:none;width:100%;height:100%;z-index:5}
+@media(max-width:520px){.buddy{grid-template-columns:60px minmax(0,1fr)}.pup{width:60px;height:60px}.bubble{font-size:16px}.badges{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3{gap:6px}.txt{padding:12px 14px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="toprow">
+      <div class="steplabel" id="steplabel">1-сабақ</div>
+      <span class="chip" id="starchip" aria-label="Жұлдыздар"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="#ffc22e" stroke="#e0a000" stroke-width="1"/></svg><b id="stars">0</b></span>
+      <button class="mute" id="mute" aria-label="Дыбыс"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="wave" d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/></svg></button>
+    </div>
+    <div class="road"><svg id="road" aria-hidden="true"></svg></div>
+  </header>
+  <main id="scroll"><div class="wrap" id="stage"></div></main>
+  <footer class="bottom"><button class="main" id="main">Бастадық!</button></footer>
+</div>
+<canvas id="fx"></canvas>
+<script>
+{
+const S=["Ақбота мектептен келе жатты.","Жол жиегінде кішкентай күшік отыр екен.","Күшік қалтырап, қыңсылап тұр.","Ақбота оны құшағына алды.","Үйге әкеліп, жылы сүт берді.","Күшік сүтті тез ішіп қойды.","Сосын құйрығын бұлғаңдатып, ойнай бастады.","Ақбота оған Ақтөс деп ат қойды.","Енді екеуі ажырамас дос."];
+const W=[];S.forEach((s,si)=>s.split(' ').forEach(t=>W.push({t,si})));
+const GOAL=40;
+const STEPS=['Кілт сөздер','Болжау','Суық оқу','Үлгімен оқу','Қайталап оқу','Сұрақтар','Мазмұндау','Ыстық оқу'];
+const KEYS=[{w:'қалтырап',m:'тоңғаннан дірілдеп',p:'cold'},{w:'қыңсылап',m:'жіңішке дауыспен жылап',p:'whine'},{w:'құшағына алды',m:'қолымен қапсыра ұстады',p:'hug'},{w:'ажырамас дос',m:'ешқашан айырылмайтын дос',p:'friends'}];
+const PRED=['Қыз бен күшік дос болады','Күшік қашып кетеді','Ақбота мектепке кешігеді'];
+const QUIZ=[
+ {q:'Ақбота күшікті қай жерден көрді?',o:['Мектептен','Жол жиегінен','Ауладан'],a:1,ev:[1]},
+ {q:'Күшік неге қалтырап тұрды?',o:['Тоңып, жалғыз қалғандықтан','Ойнағысы келгендіктен','Тойып алғандықтан'],a:0,ev:[2]},
+ {q:'Ақбота қандай қыз?',o:['Ашуланшақ','Мейірімді','Жалқау'],a:1,ev:[3,4]},
+ {q:'Күшіктің қуанғанын қайдан білеміз?',o:['Күшік «рақмет» деді','Күшік ұйықтап қалды','Құйрығын бұлғаңдатып, ойнай бастады'],a:2,ev:[6]}];
+const PRAISE=['Дұрыс!','Жарайсың!','Тамаша!','Дәл таптың!'];
+const SCN=[{k:'road',c:'Жолда'},{k:'home',c:'Үйде'},{k:'play',c:'Дос болды'}];
+const CHECK=['Күшік жолда қалтырап отырды','Ақбота оны үйге әкелді','Күшікке жылы сүт берді','Ат қойып, екеуі дос болды','Толық сөйлеммен, өз сөзімен айтты'];
+const $=s=>document.querySelector(s);
+const stage=$('#stage'),mainBtn=$('#main'),scroller=$('#scroll');
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let st,onMain=null,timers=[];
+function fresh(){st={step:0,name:'',stars:0,cold:null,hot:null,pred:null,flipped:new Set(),practice:[],quiz:[],retell:0,awarded:{}};}
+fresh();
+let best=null;try{best=JSON.parse(localStorage.getItem('oqy-l1')||'null')}catch(e){}
+
+/* drawings */
+function head(m){const sad=m==='sad'||m==='cold';const mouth=m==='wow'?'<ellipse cx="50" cy="69" rx="5" ry="6" fill="#23201e"/>':sad?'<path d="M43 70 Q50 65 57 70" stroke="#23201e" stroke-width="3" fill="none" stroke-linecap="round"/>':'<path d="M42 66 Q50 72 58 66" stroke="#23201e" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M46 69 Q50 79 54 69Z" fill="#ff7a8a"/>';
+ const brows=sad?'<path d="M32 38 L42 41 M68 38 L58 41" stroke="#23201e" stroke-width="2.5" stroke-linecap="round"/>':'';
+ return `<path d="M20 28 C4 32 4 64 20 70 C30 62 32 40 28 28Z" fill="#b9773e"/><path d="M80 28 C96 32 96 64 80 70 C70 62 68 40 72 28Z" fill="#b9773e"/><ellipse cx="50" cy="52" rx="32" ry="30" fill="#fff" stroke="#e6d6c0" stroke-width="2"/><ellipse cx="63" cy="44" rx="11" ry="10" fill="#efbb85"/><circle cx="39" cy="48" r="5" fill="#23201e"/><circle cx="61" cy="48" r="5" fill="#23201e"/><circle cx="40.6" cy="46.2" r="1.7" fill="#fff"/><circle cx="62.6" cy="46.2" r="1.7" fill="#fff"/>${brows}<ellipse cx="50" cy="64" rx="14" ry="10" fill="#fff4e6"/><path d="M44 58 Q50 54 56 58 Q54 63 50 63 Q46 63 44 58Z" fill="#23201e"/>${mouth}<circle cx="30" cy="60" r="4.5" fill="#ffb0b0" opacity=".7"/><circle cx="70" cy="60" r="4.5" fill="#ffb0b0" opacity=".7"/>`;}
+const pup=(m='happy')=>`<svg viewBox="0 0 100 100" aria-hidden="true">${head(m)}</svg>`;
+function dog(x,y,s,m='happy',r=0){const cold=m==='cold'?'<path d="M-44 10 q-6 8 0 16 M-52 6 q-8 12 0 24 M44 10 q6 8 0 16 M52 6 q8 12 0 24" stroke="#4aa8f0" stroke-width="3" fill="none" stroke-linecap="round"/>':'';
+ return `<g transform="translate(${x} ${y}) scale(${s}) rotate(${r})"><path d="M24 26 q18 -10 12 -30" stroke="#efbb85" stroke-width="7" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="30" rx="27" ry="19" fill="#fff" stroke="#e6d6c0" stroke-width="2"/><rect x="-20" y="38" width="10" height="18" rx="5" fill="#fff" stroke="#e6d6c0" stroke-width="2"/><rect x="10" y="38" width="10" height="18" rx="5" fill="#fff" stroke="#e6d6c0" stroke-width="2"/>${cold}<svg x="-32" y="-40" width="64" height="64" viewBox="0 0 100 100">${head(m)}</svg></g>`;}
+function girl(x,y,s,pose='walk',bag=false){const sk='#f2c49b',arms={walk:'M22 54 L16 80 M38 54 L44 80',hug:'M22 54 L13 70 L30 76 M38 54 L47 70 L30 76',up:'M22 54 L10 30 M38 54 L50 30'}[pose];
+ return `<g transform="translate(${x} ${y}) scale(${s})">${bag?'<rect x="34" y="50" width="16" height="26" rx="5" fill="#ff8a3d"/>':''}<circle cx="11" cy="30" r="7" fill="#2e1e18"/><circle cx="49" cy="30" r="7" fill="#2e1e18"/><circle cx="13" cy="21" r="4.5" fill="#ff6a48"/><circle cx="47" cy="21" r="4.5" fill="#ff6a48"/><rect x="21" y="86" width="7" height="24" rx="3" fill="${sk}"/><rect x="32" y="86" width="7" height="24" rx="3" fill="${sk}"/><rect x="18" y="107" width="12" height="7" rx="3.5" fill="#33302e"/><rect x="31" y="107" width="12" height="7" rx="3.5" fill="#33302e"/><path d="M15 92 L22 50 Q30 46 38 50 L45 92Z" fill="#3557a6"/><path d="M24 50 L30 58 L36 50Z" fill="#fff"/><path d="${arms}" stroke="${sk}" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="30" cy="32" r="14" fill="${sk}"/><path d="M16 32 Q16 16 30 16 Q44 16 44 32 Q40 22 30 23 Q20 22 16 32Z" fill="#2e1e18"/><circle cx="25" cy="33" r="1.9" fill="#2e1e18"/><circle cx="35" cy="33" r="1.9" fill="#2e1e18"/><path d="M26 38 Q30 41.5 34 38" stroke="#2e1e18" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="21.5" cy="37" r="2.6" fill="#ff9c9c" opacity=".6"/><circle cx="38.5" cy="37" r="2.6" fill="#ff9c9c" opacity=".6"/></g>`;}
+const heart=(x,y,s,c='#ff6a48')=>`<path transform="translate(${x} ${y}) scale(${s})" d="M10 6 C10 -1 0 -1 0 6 C0 13 10 18 10 22 C10 18 20 13 20 6 C20 -1 10 -1 10 6Z" fill="${c}"/>`;
+const sky=(id,a,b)=>`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>`;
+function scene(k){let g='';
+ if(k==='road')g=`${sky('gr','#9fd8ff','#e8f6ff')}<rect width="300" height="190" fill="url(#gr)"/><circle cx="258" cy="36" r="17" fill="#ffd35c"/><path d="M0 120 Q70 92 150 112 T300 104 V190 H0Z" fill="#a8de8e"/><path d="M0 136 Q90 120 300 132 V190 H0Z" fill="#8bcf74"/><path d="M0 170 Q150 132 300 150 L300 168 Q150 152 0 190Z" fill="#eadfcd"/><rect x="18" y="74" width="54" height="44" rx="3" fill="#f4b860"/><path d="M12 76 L45 52 L78 76Z" fill="#e2704b"/><rect x="38" y="96" width="14" height="22" fill="#9a5b34"/><rect x="24" y="84" width="10" height="9" fill="#fff"/><rect x="56" y="84" width="10" height="9" fill="#fff"/><path d="M45 52 V36" stroke="#555" stroke-width="2"/><path d="M45 36 h14 l-4 5 l4 5 h-14Z" fill="#3ea6f5"/>${girl(196,44,.98,'walk',true)}${dog(104,138,.5,'cold')}`;
+ if(k==='home')g=`<rect width="300" height="190" fill="#ffe5c4"/><rect y="138" width="300" height="52" fill="#e2b887"/><rect x="26" y="26" width="76" height="58" rx="6" fill="#bfe6ff" stroke="#fff" stroke-width="6"/><path d="M64 26 V84 M26 55 H102" stroke="#fff" stroke-width="4"/><ellipse cx="150" cy="170" rx="70" ry="10" fill="#d49e6a"/><ellipse cx="160" cy="168" rx="24" ry="7" fill="#fff"/><ellipse cx="160" cy="166" rx="18" ry="4" fill="#fffdf4"/>${dog(132,124,.55,'happy',12)}${girl(206,48,.98,'hug')}`;
+ if(k==='play')g=`${sky('gp','#a7deff','#effaff')}<rect width="300" height="190" fill="url(#gp)"/><circle cx="40" cy="34" r="17" fill="#ffd35c"/><path d="M0 132 Q150 112 300 130 V190 H0Z" fill="#8bcf74"/><circle cx="246" cy="158" r="13" fill="#ff6a48"/><path d="M234 156 Q246 150 258 156" stroke="#fff" stroke-width="3" fill="none"/>${girl(64,42,.98,'up')}${dog(176,110,.56,'happy',-12)}${heart(126,36,1.1)}${heart(150,18,.7,'#ff9c9c')}`;
+ if(k==='cold')g=`<rect width="300" height="190" fill="#e3f3ff"/>${[[40,30],[260,40],[70,150],[240,150],[150,22]].map(([x,y])=>`<path d="M${x-7} ${y}h14M${x} ${y-7}v14M${x-5} ${y-5}l10 10M${x+5} ${y-5}l-10 10" stroke="#8cc8f5" stroke-width="2.5" stroke-linecap="round"/>`).join('')}${dog(150,70,1,'cold')}`;
+ if(k==='whine')g=`<rect width="300" height="190" fill="#efe9ff"/><path d="M196 52 q14 14 0 28 M210 42 q22 24 0 48" stroke="#8e74ff" stroke-width="4" fill="none" stroke-linecap="round"/>${dog(150,70,1,'sad')}`;
+ if(k==='hug')g=`<rect width="300" height="190" fill="#ffe9e3"/>${girl(116,40,1.1,'hug')}${dog(150,112,.6,'happy')}${heart(210,40,1)}`;
+ if(k==='friends')g=`<rect width="300" height="190" fill="#e4f7e8"/><path d="M0 160 H300 V190 H0Z" fill="#b8e6a4"/>${girl(80,40,1.05,'walk')}${dog(196,108,.66,'happy')}${heart(140,30,1.1)}`;
+ return `<svg viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${g}</svg>`;}
+
+/* sound */
+let AC=null,muted=false;
+function snd(k){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const seq={tap:[[620,.05]],star:[[880,.07],[1320,.12]],ok:[[660,.08],[880,.08],[1180,.16]],no:[[260,.16]],win:[[523,.1],[659,.1],[784,.1],[1047,.3]]}[k]||[];let t=AC.currentTime;seq.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.18,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.03);t+=d*.85;});}catch(e){}}
+$('#mute').addEventListener('click',()=>{muted=!muted;$('#wave').style.display=muted?'none':'';if(!muted)snd('tap');});
+let kk=null;function voices(){try{kk=speechSynthesis.getVoices().find(v=>/^kk/i.test(v.lang))||null}catch(e){}}
+try{voices();speechSynthesis.onvoiceschanged=voices}catch(e){}
+function speak(t,rate=.85){if(!kk||muted)return null;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.voice=kk;u.lang=kk.lang;u.rate=rate;speechSynthesis.speak(u);return u}catch(e){return null}}
+
+/* frame */
+function setMain(label,fn,on=true){mainBtn.textContent=label;onMain=fn;mainBtn.disabled=!on;}
+mainBtn.addEventListener('click',()=>{if(onMain&&!mainBtn.disabled){snd('tap');onMain();}});
+function later(fn,ms){const t=setTimeout(fn,ms);timers.push(t);return t}
+function clearAll(){timers.forEach(clearTimeout);timers.forEach(clearInterval);timers=[];try{speechSynthesis.cancel()}catch(e){}}
+function stars(n,key){if(n<=0)return;if(key){if(st.awarded[key])return;st.awarded[key]=1}st.stars+=n;$('#stars').textContent=st.stars;const c=$('#starchip');c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');snd('star');}
+function bounce(){const p=document.querySelector('.buddy .pup');if(p){p.classList.remove('jump');void p.offsetWidth;p.classList.add('jump')}}
+const buddy=(t,m='happy')=>`<div class="buddy"><div class="pup">${pup(m)}</div><p class="bubble" id="say">${t}</p></div>`;
+function say(t,m){const b=$('#say');if(b){b.innerHTML=t;const p=b.previousElementSibling;if(m)p.innerHTML=pup(m)}bounce();}
+const adult=t=>`<div class="adult"><b>Үлкен кісіге:</b><span>${t}</span></div>`;
+const textHTML=(cls='')=>`<div class="txt ${cls}" id="txt">${W.map((w,i)=>`<span class="w" data-i="${i}">${w.t}</span>`).join(' ')}</div>`;
+function drawRoad(){const svg=$('#road'),w=svg.clientWidth||600,h=56,a=46,b=w-46,step=st.step;
+ const xs=STEPS.map((_,i)=>a+(b-a)*i/7),ys=STEPS.map((_,i)=>h/2+(i%2?7:-7));
+ let d=`M18 ${h/2+10}`;xs.forEach((x,i)=>{const px=i?xs[i-1]:18,py=i?ys[i-1]:h/2+10;d+=` C${(px+x)/2} ${py} ${(px+x)/2} ${ys[i]} ${x} ${ys[i]}`});d+=` C${(xs[7]+w-18)/2} ${ys[7]} ${(xs[7]+w-18)/2} ${h/2+10} ${w-18} ${h/2+10}`;
+ const pos=step<1?[18,h/2+6]:step>8?[w-18,h/2+6]:[xs[step-1],ys[step-1]];
+ svg.innerHTML=`<path d="${d}" stroke="rgba(255,255,255,.35)" stroke-width="10" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#fff" stroke-width="2" stroke-dasharray="2 8" fill="none" stroke-linecap="round" opacity=".8"/>
+ <g transform="translate(2 ${h/2-12})"><rect x="2" y="10" width="26" height="20" rx="2" fill="#f4b860"/><path d="M0 11 L15 0 L30 11Z" fill="#e2704b"/><rect x="11" y="19" width="8" height="11" fill="#9a5b34"/></g>
+ <g transform="translate(${w-32} ${h/2-12})"><rect x="3" y="12" width="26" height="18" rx="2" fill="#fff"/><path d="M0 13 L16 0 L32 13Z" fill="#ff6a48"/><rect x="12" y="19" width="8" height="11" fill="#ffc22e"/></g>
+ ${xs.map((x,i)=>{const done=i+1<step||step>8,cur=i+1===step;return `<circle cx="${x}" cy="${ys[i]}" r="${cur?12:9}" fill="${done?'#ffc22e':'#fff'}" fill-opacity="${done||cur?1:.45}" stroke="${cur?'#ffc22e':'none'}" stroke-width="3"/>${done?`<path d="M${x-4} ${ys[i]} l3 3 l5 -6" stroke="#7a5600" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:''}`}).join('')}
+ <svg x="${pos[0]-19}" y="${pos[1]-34}" width="38" height="38" viewBox="0 0 100 100">${head('happy')}</svg>`;
+ $('#steplabel').textContent=step<1?'1-сабақ · Ақбота мен күшік':step>8?'1-сабақ аяқталды':`${step}/8 · ${STEPS[step-1]}`;}
+const roadObs=new ResizeObserver(drawRoad);roadObs.observe($('#road'));
+function go(n){clearAll();st.step=n;drawRoad();scroller.scrollTop=0;[welcome,words,predict,()=>reading('cold'),model,practice,quiz,retell,()=>reading('hot'),finish][n]();}
+
+/* 0 */
+function welcome(){stage.innerHTML=`<div class="hero"><div class="pup">${pup('happy')}</div><h1>Сәлем! Мен – Ақтөс.</h1><p class="sub">Бүгін бірге «Ақбота мен күшік» әңгімесін оқимыз.</p><div class="facts"><span class="fact">8 қадам</span><span class="fact">15 минуттай</span><span class="fact">Жұлдыз жинайсың</span></div><label class="field" for="name"><span>Атың кім?</span><input id="name" maxlength="20" autocomplete="off" placeholder="Атыңды жаз"></label><a class="link" href="../">Барлық сабақтар</a></div>`;
+ const inp=$('#name');inp.value=st.name;inp.addEventListener('keydown',e=>{if(e.key==='Enter')mainBtn.click()});
+ setMain('Бастадық!',()=>{st.name=inp.value.trim();go(1)});}
+/* 1 */
+function words(){stage.innerHTML=buddy(`${st.name?esc(st.name)+', а':'А'}лдымен жаңа сөздермен танысайық. Карточканы түрт!`)+`<div class="grid2">${KEYS.map((k,i)=>`<button class="flip${st.flipped.has(i)?' open':''}" data-i="${i}" aria-label="${k.w}"><div class="in"><div class="face front"><b>${k.w}</b><small>түрт</small></div><div class="face back">${scene(k.p)}<p><b>${k.w}</b>${k.m}</p></div></div></button>`).join('')}</div>`;
+ const upd=()=>{const left=4-st.flipped.size;setMain(left?`Тағы ${left} карточка`:'Жалғастыру',()=>go(2),!left)};
+ stage.querySelectorAll('.flip').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i;b.classList.toggle('open');if(!st.flipped.has(i)){st.flipped.add(i);stars(1);if(st.flipped.size===4)say('Жарайсың! Төрт сөздің бәрін білесің.')}speak(KEYS[i].w);upd();}));upd();}
+/* 2 */
+function predict(){stage.innerHTML=`<h2>Ақбота мен күшік</h2><div class="scene">${scene('road')}</div>`+buddy('Тақырып пен суретке қара. Әңгіме не туралы болады?')+`<div class="opts">${PRED.map((p,i)=>`<button class="opt${st.pred===i?' sel':''}" data-i="${i}"><i>${'АӘБ'[i]}</i>${p}</button>`).join('')}</div>`;
+ stage.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{st.pred=+b.dataset.i;stage.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===b));stars(1,'pred');say('Қызық болжам! Оқығанда тексереміз.');setMain('Жалғастыру',()=>go(3));}));
+ setMain('Жалғастыру',()=>go(3),st.pred!==null);}
+/* 3 & 8 */
+function meter(v){const max=Math.max(80,v+10);return `<div class="meter"><div class="fill" data-p="${Math.min(100,v/max*100)}"></div><i class="goal" style="left:${GOAL/max*100}%"><span>мақсат ${GOAL}</span></i></div>`;}
+function grow(){requestAnimationFrame(()=>requestAnimationFrame(()=>stage.querySelectorAll('[data-p]').forEach(e=>e.style.width=e.dataset.p+'%')));}
+function reading(kind){const R={t0:0,el:60,last:null,err:new Set()},hot=kind==='hot';
+ stage.innerHTML=buddy(hot?'Соңғы сынақ! Бір минут оқы. Бастапқы нәтижеңді асыр!':'Енді мәтінді бір минут дауыстап оқы. Асықпа, анық оқы!',hot?'wow':'happy')+adult('қасында отырып тыңдаңыз. Бала оқып болғанда немесе минут біткенде, ол жеткен сөзді белгілейсіз.');
+ setMain('Оқуды бастау',run);
+ function run(){stage.innerHTML=`<div class="txthead"><h2>${hot?'Ыстық оқу':'Суық оқу'}</h2><div class="timer"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="none" stroke="var(--line)" stroke-width="7"/><circle id="ring" cx="32" cy="32" r="27" fill="none" stroke="var(--coral)" stroke-width="7" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="0"/></svg><b id="sec">60</b></div></div>`+textHTML();
+  R.t0=performance.now();const iv=setInterval(()=>{const e=(performance.now()-R.t0)/1000,left=Math.max(0,60-e);$('#sec').textContent=Math.ceil(left);$('#ring').setAttribute('stroke-dashoffset',169.6*(1-left/60));if(left<=0){clearInterval(iv);R.el=60;snd('no');markLast()}},200);timers.push(iv);
+  setMain('Оқып болдым',()=>{clearInterval(iv);R.el=Math.max(8,(performance.now()-R.t0)/1000);R.last=W.length-1;markErr()});}
+ function markLast(){stage.innerHTML=adult('бала қай сөзге дейін оқыды? Сол сөзді түртіңіз.')+textHTML('pick');setMain('Белгіледім',markErr,false);
+  stage.querySelectorAll('.w').forEach(s=>s.addEventListener('click',()=>{R.last=+s.dataset.i;stage.querySelectorAll('.w').forEach(x=>{const i=+x.dataset.i;x.classList.toggle('last',i===R.last);x.classList.toggle('after',i>R.last)});setMain('Белгіледім',markErr)}));}
+ function markErr(){stage.innerHTML=adult('қате оқылған сөздер болса, түртіп белгілеңіз. Қате болмаса, «Дайын» батырмасын басыңыз.')+textHTML('pick');
+  stage.querySelectorAll('.w').forEach(s=>{const i=+s.dataset.i;if(i>R.last){s.classList.add('after');return}s.addEventListener('click',()=>{R.err.has(i)?R.err.delete(i):R.err.add(i);s.classList.toggle('err')})});setMain('Дайын',result);}
+ function result(){const n=R.last+1,c=Math.max(0,n-R.err.size),wcpm=Math.round(c*60/R.el),acc=Math.round(c/n*100),res={wcpm,acc,sec:Math.round(R.el)};
+  if(!hot){st.cold=res;stage.innerHTML=buddy(wcpm>=GOAL?'Тамаша бастама! Енді бұдан да жақсы оқимыз.':'Жақсы бастама! Жаттыққаннан кейін бұл сан өседі.')+`<div class="card result"><span class="sub">Бастапқы нәтиже</span><div class="big">${wcpm}</div><b>сөз/минут</b>${meter(wcpm)}<span class="pill">дәлдік ${acc}%</span></div>`;stars(2,'cold');grow();setMain('Жалғастыру',()=>go(4));return}
+  st.hot=res;const d=wcpm-st.cold.wcpm,mx=Math.max(80,wcpm,st.cold.wcpm)+10;
+  stage.innerHTML=buddy(d>0?`Ура! Сен ${d} сөзге жылдам оқыдың!`:'Нәтижең сақталды. Келесі сабақта тағы асырамыз!',d>0?'wow':'happy')+`<div class="card result"><span class="sub">${d>0?'Өсім':'Қазіргі нәтиже'}</span><div class="big">${d>0?'+'+d:wcpm}</div><b>сөз/минут</b><div class="rows" style="margin-top:14px"><div class="row"><span>Бастапқы</span><div class="bar"><i data-p="${st.cold.wcpm/mx*100}" style="background:var(--sky2)"></i></div><b>${st.cold.wcpm}</b></div><div class="row"><span>Қазір</span><div class="bar"><i data-p="${wcpm/mx*100}" style="background:var(--coral)"></i></div><b>${wcpm}</b></div></div><span class="pill" style="margin-top:8px">дәлдік ${acc}%</span></div>`;
+  stars(3+(wcpm>=GOAL?2:0),'hot');grow();if(d>0){snd('win');later(confetti,300)}setMain('Нәтижені көру',()=>go(9));}}
+/* 4 */
+function syl(t){return (t.match(/[аәеиоөұүуыіэюяё]/gi)||[1]).length}
+function model(){stage.innerHTML=buddy(kk?'Енді мен оқимын. Тыңда да, жарық жүгірген сөзді бірге сыбырлап оқы.':'Жарық жүгірген сөзді бақыла да, бірге сыбырлап оқы.')+`<h2>Ақбота мен күшік</h2>`+textHTML();
+ let played=false;setMain('Бастау',play);
+ function play(){clearAll();const sp=stage.querySelectorAll('.w');sp.forEach(s=>s.classList.remove('on','done'));setMain('Тыңдап отырмын…',null,false);let i=0,cur=-1;
+  const tick=()=>{if(cur>=0)sp[cur].classList.replace('on','done');if(i>=W.length){end();return}if(W[i].si!==(W[i-1]||{}).si&&kk)speak(S[W[i].si],.8);cur=i;sp[i].classList.add('on');const t=W[i].t;i++;later(tick,260+210*syl(t)+(/[.!?]$/.test(t)?650:/,$/.test(t)?300:0))};tick();}
+ function end(){if(!played){played=true;stars(2,'model')}say('Жарайсың! Енді өзің жаттығасың.');stage.insertAdjacentHTML('beforeend','<button class="link" id="again">Қайта тыңдау</button>');$('#again').addEventListener('click',()=>{$('#again').remove();play()});setMain('Жалғастыру',()=>go(5));}}
+/* 5 */
+function practice(){const P={run:false,t0:0};
+ const render=()=>{const n=st.practice.length;stage.innerHTML=buddy(n>=3?'Ақтөс үйге жетті! Сен нағыз оқырмансың.':'Мәтінді 3 рет оқы. Әр оқудан кейін Ақтөс үйге жақындайды!',n>=3?'wow':'happy')+`<div class="track"><div class="lane"></div>${[0,1,2].map(i=>`<span class="stop${i<n?' done':''}" style="left:${(i+1)*29}%"></span>`).join('')}<svg class="home" viewBox="0 0 40 40"><rect x="5" y="16" width="30" height="22" rx="2" fill="#fff" stroke="#e6d6c0" stroke-width="2"/><path d="M2 18 L20 3 L38 18Z" fill="#ff6a48"/><rect x="16" y="25" width="8" height="13" fill="#ffc22e"/></svg><div class="walker" style="left:${n>=3?92:4+n*29}%">${pup(n>=3?'wow':'happy')}</div></div><div id="pz"></div><div class="times">${st.practice.map((t,i)=>{const d=i?st.practice[i-1]-t:0;return `<div class="time"><span>${i+1}-оқу</span>${d>0?`<span class="pill">${d} с жылдам</span>`:''}<b>${t} с</b></div>`}).join('')}</div>`;
+  if(n>=3)setMain('Жалғастыру',()=>go(6));else setMain(`${n+1}-оқуды бастау`,start);};
+ function start(){P.t0=performance.now();$('#pz').innerHTML=`<div class="clock" id="clk">0 с</div>`+textHTML();const iv=setInterval(()=>{const c=$('#clk');if(c)c.textContent=Math.floor((performance.now()-P.t0)/1000)+' с'},250);timers.push(iv);
+  setMain('Оқып болдым',()=>{clearInterval(iv);const t=Math.max(3,Math.round((performance.now()-P.t0)/1000)),prev=st.practice.at(-1);st.practice.push(t);stars(2+(prev&&t<prev?1:0));if(st.practice.length===3){stars(3,'home');snd('win')}render();if(prev&&t<prev)say(`Жылдамырақ! Алдыңғыдан ${prev-t} секунд озып кеттің.`)});}
+ render();}
+/* 6 */
+function quiz(){let qi=0;show();
+ function show(){const Q=QUIZ[qi];let tries=0;stage.innerHTML=`<span class="qnum">${qi+1}/4 сұрақ</span><h2>${Q.q}</h2><div class="opts">${Q.o.map((o,i)=>`<button class="opt" data-i="${i}"><i>${'АӘБ'[i]}</i>${o}</button>`).join('')}</div><div id="qh"></div>`+buddy('Ойланып, бір жауапты таңда.')+`<button class="link" id="tt">Мәтінді ашу</button><div id="qt" hidden><h2 style="margin-bottom:10px">Ақбота мен күшік</h2>${textHTML()}</div>`;
+  const qt=$('#qt'),tt=$('#tt');
+  const openText=hl=>{qt.hidden=false;tt.textContent='Мәтінді жабу';if(hl)qt.querySelectorAll('.w').forEach(w=>{if(Q.ev.includes(W[+w.dataset.i].si))w.classList.add('ev')});later(()=>(qt.querySelector('.w.ev')||qt).scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'}),80)};
+  tt.addEventListener('click',()=>{if(qt.hidden)openText(false);else{qt.hidden=true;tt.textContent='Мәтінді ашу'}});
+  setMain(qi<3?'Келесі сұрақ':'Мазмұндауға өту',null,false);
+  const ev=`«${Q.ev.map(i=>S[i]).join(' ')}»`;
+  stage.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i;
+   if(i===Q.a){b.classList.add('ok');stage.querySelectorAll('.opt').forEach(x=>x.disabled=true);snd('ok');st.quiz[qi]=tries===0;stars(tries===0?3:1);say(PRAISE[qi],'wow');if(!qt.hidden)openText(true);$('#qh').innerHTML=`<div class="hint"><small>Мәтінде былай жазылған:</small>${ev}</div>`;setMain(qi<3?'Келесі сұрақ':'Мазмұндауға өту',()=>{qi++;qi<4?show():go(7)});return}
+   tries++;b.classList.add('no');b.disabled=true;snd('no');
+   if(tries===1){say('Мәтінге тағы бір қара. Жауап сары түспен белгіленген сөйлемде.','sad');openText(true)}
+   else{const r=stage.querySelector(`.opt[data-i="${Q.a}"]`);r.classList.add('ok');stage.querySelectorAll('.opt').forEach(x=>x.disabled=true);st.quiz[qi]=false;say('Дұрыс жауап – осы. Келесіде өзің табасың!');setMain(qi<3?'Келесі сұрақ':'Мазмұндауға өту',()=>{qi++;qi<4?show():go(7)})}}));}}
+/* 7 */
+function retell(){const order=[2,0,1];let next=0;
+ stage.innerHTML=buddy('Суреттерді әңгімедегі ретпен түрт. Не бірінші болды?')+`<div class="cards3">${order.map(k=>`<button class="sc" data-k="${k}" aria-label="${SCN[k].c}">${scene(SCN[k].k)}<span class="n"></span></button>`).join('')}</div>`;
+ setMain('Суреттерді ретте',null,false);
+ stage.querySelectorAll('.sc').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('ok'))return;const k=+b.dataset.k;
+  if(k===next){b.classList.add('ok');b.querySelector('.n').textContent=++next;snd('ok');if(next===3){stars(3,'order');say('Дұрыс ретпен қойдың!','wow');setMain('Әрі қарай',tell)}}
+  else{b.classList.remove('no');void b.offsetWidth;b.classList.add('no');snd('no');say(next?'Сосын не болды? Ойланып көр.':'Әңгіме қалай басталды? Ойланып көр.','sad')}}));
+ function tell(){stage.innerHTML=buddy('Енді суреттерге қарап, әңгімені өз сөзіңмен айтып бер. Үлкен кісі тыңдасын.')+`<div class="cards3">${SCN.map((s,i)=>`<div><div class="sc ok">${scene(s.k)}<span class="n">${i+1}</span></div><p class="cap">${['Басында…','Сосын…','Соңында…'][i]}</p></div>`).join('')}</div>`;setMain('Айтып болдым',check);}
+ function check(){const on=new Set();stage.innerHTML=adult('бала нені айтты? Айтқанын белгілеңіз.')+`<div class="checks">${CHECK.map((c,i)=>`<button class="check" data-i="${i}"><i></i>${c}</button>`).join('')}</div>`;
+  stage.querySelectorAll('.check').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i;on.has(i)?on.delete(i):on.add(i);b.classList.toggle('on');snd('tap')}));
+  setMain('Дайын',()=>{st.retell=on.size;stars(on.size,'retell');go(8)});}}
+/* 9 */
+function finish(){const q=st.quiz.filter(Boolean).length,d=st.hot.wcpm-st.cold.wcpm;
+ const B=[{n:'Алғашқы сабақ',on:true,i:'<path d="M9 30 V6 M9 7 h17 l-4 6 l4 6 H9" stroke="#7a5600" stroke-width="3.4" fill="#fff" stroke-linejoin="round" stroke-linecap="round"/>'},{n:'Жылдамдық',on:d>0,i:'<path d="M20 3 L8 20 h9 l-3 13 L27 15 h-9z" fill="#fff" stroke="#7a5600" stroke-width="2.6" stroke-linejoin="round"/>'},{n:'Зерек',on:q>=3,i:'<circle cx="17" cy="17" r="13" fill="#fff" stroke="#7a5600" stroke-width="3"/><circle cx="17" cy="17" r="7" fill="none" stroke="#7a5600" stroke-width="3"/><circle cx="17" cy="17" r="2.5" fill="#7a5600"/>'},{n:'Әңгімеші',on:st.retell>=4,i:'<path d="M5 7 h24 a3 3 0 0 1 3 3 v12 a3 3 0 0 1 -3 3 H14 l-7 6 v-6 H5 a3 3 0 0 1 -3 -3 V10 a3 3 0 0 1 3 -3z" fill="#fff" stroke="#7a5600" stroke-width="2.6" stroke-linejoin="round"/>'}];
+ const prevBest=best&&best.hot;try{localStorage.setItem('oqy-l1',JSON.stringify({hot:Math.max(st.hot.wcpm,prevBest||0),stars:Math.max(st.stars,best&&best.stars||0)}))}catch(e){}
+ stage.innerHTML=`<div class="hero"><div class="pup">${pup('wow')}</div><h1>Жарайсың${st.name?', '+esc(st.name):''}!</h1><p class="sub">1-сабақ аяқталды. Сен ${st.stars} жұлдыз жинадың.</p></div>
+ <div class="card"><div class="badges">${B.map(b=>`<div class="badge${b.on?'':' off'}"><div class="m"><svg viewBox="0 0 34 34">${b.i}</svg></div>${b.n}</div>`).join('')}</div></div>
+ <div class="card sticker"><div class="s">${pup('happy')}</div><div><h2>Жаңа стикер: Ақтөс</h2><p class="sub">Стикер жинағы: 1/40. Әр сабақ жаңа стикер береді.</p></div></div>
+ <div class="card"><p style="margin:0;font-weight:800">${st.pred===0?'Болжамың дәл шықты: қыз бен күшік дос болды!':'Сен «'+PRED[st.pred??1]+'» деп болжадың. Ал шынында қыз бен күшік дос болды!'}</p></div>
+ <div class="card"><h2 style="font-size:20px;margin-bottom:6px">Ата-анаға есеп</h2><table class="report"><tr><td>Суық оқу</td><td>${st.cold.wcpm} сөз/мин</td></tr><tr><td>Ыстық оқу</td><td>${st.hot.wcpm} сөз/мин</td></tr><tr><td>Дәлдік (ыстық оқу)</td><td>${st.hot.acc}%</td></tr><tr><td>Деңгей мақсаты</td><td>${GOAL} сөз/мин</td></tr><tr><td>Сұраққа бірінші реттен жауап</td><td>${q}/4</td></tr><tr><td>Мазмұндау белгілері</td><td>${st.retell}/5</td></tr>${prevBest?`<tr><td>Бұрынғы рекорд</td><td>${prevBest} сөз/мин</td></tr>`:''}</table></div>
+ <div class="card lock"><div class="k"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--soft)" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div><div><b>2-сабақ: «Түйе»</b><p class="sub" style="font-size:15px">Жақында ашылады.</p></div></div><a class="link" href="../">Барлық сабақтар</a>`;
+ snd('win');later(confetti,200);setMain('Сабақты қайта өту',()=>{fresh();$('#stars').textContent=0;go(0)});}
+
+/* confetti */
+function confetti(){if(reduce)return;const c=$('#fx'),x=c.getContext('2d'),dpr=devicePixelRatio||1;c.width=innerWidth*dpr;c.height=innerHeight*dpr;x.scale(dpr,dpr);const cols=['#ffc22e','#ff6a48','#3ea6f5','#23a862','#ff9c9c'];let p=Array.from({length:110},()=>({x:innerWidth/2+(Math.random()-.5)*120,y:innerHeight*.35,vx:(Math.random()-.5)*11,vy:-Math.random()*11-4,r:Math.random()*6+4,a:Math.random()*6,c:cols[Math.floor(Math.random()*5)]}));let f=0;
+ const fr=()=>{x.clearRect(0,0,innerWidth,innerHeight);p.forEach(q=>{q.vy+=.32;q.x+=q.vx;q.y+=q.vy;q.a+=.2;x.save();x.translate(q.x,q.y);x.rotate(q.a);x.fillStyle=q.c;x.fillRect(-q.r/2,-q.r/3,q.r,q.r/1.6);x.restore()});if(++f<150)requestAnimationFrame(fr);else x.clearRect(0,0,innerWidth,innerHeight)};fr();}
+go(0);
+}
+</script>
+</body>
+</html>

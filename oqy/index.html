@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="kk" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google" content="notranslate">
+<title>Оқы. Түсін. Айт. — 2–4-сыныпқа арналған оқу тренажері | aitil</title>
+<meta name="description" content="Бастауыш сынып оқушыларына арналған қазақша оқу тренажері: оқу жылдамдығы, мәтінді түсіну және мазмұндау. Күніне бір мәтін, 15 минут. Автор: Қазбек Сағидолда.">
+<link rel="canonical" href="https://aitil.kz/oqy/">
+<meta property="og:title" content="Оқы. Түсін. Айт. — оқу тренажері">
+<meta property="og:description" content="2–4-сынып оқушыларына: жылдам оқу, түсіну, мазмұндау. Ойын түріндегі сабақтар.">
+<meta property="og:image" content="https://aitil.kz/img/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem("tilkz-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>
+:root{
+  /* Layout idea: course header, then a vertical path of lesson cards; one primary action per card */
+  color-scheme:light;
+  --bg:#F5F6F8;--surface:#FFFFFF;--ink:#16233A;--ink-2:#3D4859;--muted:#5B6577;
+  --line:#E3E7ED;--accent:#1F56A8;--accent-ink:#FFFFFF;--accent-soft:#EAF1FB;--ok:#0F7A55;--ok-soft:#E6F4EE;--gold:#E9A800;--gold-soft:#FFF4D1;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--bg:#0E1626;--surface:#162135;--ink:#EEF2F8;--ink-2:#C5CEDC;--muted:#9AA6B8;
+  --line:#26324A;--accent:#5B92E5;--accent-ink:#0E1626;--accent-soft:#1D2D4A;--ok:#4CC593;--ok-soft:#173A2E;--gold:#F2C14E;--gold-soft:#3A3115;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--bg:#0E1626;--surface:#162135;--ink:#EEF2F8;--ink-2:#C5CEDC;--muted:#9AA6B8;
+  --line:#26324A;--accent:#5B92E5;--accent-ink:#0E1626;--accent-soft:#1D2D4A;--ok:#4CC593;--ok-soft:#173A2E;--gold:#F2C14E;--gold-soft:#3A3115;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Onest,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom,0px)}
+:focus-visible{outline:3px solid #FFC93C;outline-offset:3px;border-radius:8px}
+[hidden]{display:none!important}
+.top{max-width:720px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top,0px)) 20px 0;display:flex;align-items:center}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--accent)}
+main{max-width:720px;margin:0 auto;padding:24px 20px 60px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-wrap:balance}
+.lead{font-size:18px;line-height:1.5;color:var(--ink-2);margin:0 0 18px;max-width:56ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px;padding:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-weight:700;font-size:15px}
+.level{font-size:15px;font-weight:800;color:var(--muted);margin:0 0 10px}
+.path{display:grid;gap:14px;list-style:none;margin:0;padding:0}
+.lesson{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;display:grid;grid-template-columns:56px 1fr;gap:16px;align-items:start}
+.num{width:56px;height:56px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:22px}
+.lesson h2{margin:0 0 4px;font-size:21px;line-height:1.25}
+.lesson p{margin:0 0 12px;color:var(--ink-2);line-height:1.5;font-size:16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.tags span{background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:14px;font-weight:600}
+.acts{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:16px;text-decoration:none;color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.done{display:inline-flex;align-items:center;gap:6px;background:var(--ok-soft);color:var(--ok);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:800;margin-left:6px;vertical-align:middle}
+.lesson.soon{opacity:.6}
+.lesson.soon .num{background:var(--bg);color:var(--muted)}
+.note{margin-top:22px;background:var(--gold-soft);border-radius:18px;padding:16px 18px;font-size:16px;line-height:1.5;color:var(--ink)}
+.note b{display:block;margin-bottom:2px}
+.teacher{margin-top:28px;font-size:15px;color:var(--muted);line-height:1.5}
+.teacher a{color:var(--accent);font-weight:600}
+@media (max-width:480px){.lesson{grid-template-columns:1fr}.num{width:44px;height:44px;font-size:18px;border-radius:12px}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header class="top"><a class="logo" href="../"><span>ai</span>til</a></header>
+<main>
+  <p class="eyebrow">2–4-сынып оқушыларына</p>
+  <h1>Оқы. Түсін. Айт.</h1>
+  <p class="lead">Оқу жылдамдығын, мәтінді түсінуді және мазмұндауды бірге дамытатын тренажер. Күніне бір мәтін, 15 минут.</p>
+  <ul class="facts"><li>12 деңгей</li><li>120 мәтін</li><li>Ойын түрінде</li><li>Ата-анаға есеп</li></ul>
+  <p class="level">1-деңгей · 2-сынып басы</p>
+  <ol class="path">
+    <li class="lesson">
+      <div class="num" aria-hidden="true">1</div>
+      <div>
+        <h2>Ақбота мен күшік<span class="done" id="done1" hidden></span></h2>
+        <p>Көркем мәтін, 43 сөз. Кілт сөздер, бір минуттық оқу, 4 сұрақ, суретпен мазмұндау.</p>
+        <div class="tags"><span>мақсат: 40 сөз/мин</span><span>8 қадам</span><span>15 минут</span></div>
+        <div class="acts"><a class="btn primary" href="1/" id="go1">Сабақты бастау</a></div>
+      </div>
+    </li>
+    <li class="lesson soon" aria-disabled="true">
+      <div class="num" aria-hidden="true">2</div>
+      <div>
+        <h2>Түйе</h2>
+        <p>Танымдық мәтін, 44 сөз. Жақында ашылады.</p>
+      </div>
+    </li>
+    <li class="lesson soon" aria-disabled="true">
+      <div class="num" aria-hidden="true">3</div>
+      <div>
+        <h2>Келесі сабақтар</h2>
+        <p>Мәтіндер біртіндеп ұзарып, сұрақтар күрделене береді.</p>
+      </div>
+    </li>
+  </ol>
+  <div class="note"><b>Ата-анаға</b>Кей қадамда үлкен кісі көмектеседі: бала дауыстап оқығанда тыңдап, ол жеткен сөзді экраннан белгілейді. Сабақ соңында оқу жылдамдығы, сұрақтар мен мазмұндау бойынша есеп шығады.</div>
+  <p class="teacher">Тренажер авторы: Қазбек Сағидолда, қазақ тілі мен әдебиеті мұғалімі. Сұрақтар: <a href="https://wa.me/77082141226" target="_blank" rel="noopener">WhatsApp</a> (+7 708 214 12 26)</p>
+</main>
+<script>
+try{
+  const s=JSON.parse(localStorage.getItem("oqy-l1")||"null");
+  if(s&&s.hot){const d=document.getElementById("done1");d.hidden=false;d.textContent="✓ рекорд: "+s.hot+" сөз/мин";document.getElementById("go1").textContent="Қайта өту";}
+}catch(e){}
+</script>
+</body>
+</html>

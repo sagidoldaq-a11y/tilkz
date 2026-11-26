@@ -107,4 +107,11 @@ for hw in kz0_hw:
              .replace("/*__T_DESC__*/", html.escape(hw["meta"]["desc"])))
     (d / "index.html").write_text(ht, encoding="utf-8")
     shutil.copyfile(here / f"kz0-slides{n}.html", d / "slides" / "index.html")
+# 6) «Оқы. Түсін. Айт.» – 2–4-сыныпқа арналған оқу тренажері: web/oqy.html (курс беті) + web/oqy-N.html (сабақтар)
+(root / "oqy").mkdir(exist_ok=True)
+shutil.copyfile(here / "oqy.html", root / "oqy" / "index.html")
+for f in sorted(here.glob("oqy-*.html")):
+    d = root / "oqy" / f.stem.split("-")[1]
+    d.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(f, d / "index.html")
 print("ok", root / "index.html", out / "index.html", tout / "index.html", gout / "index.html")
