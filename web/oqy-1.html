@@ -170,7 +170,7 @@ h2{font-size:24px;line-height:1.15;margin:0;font-weight:900}
     <div class="road"><svg id="road" aria-hidden="true"></svg></div>
   </header>
   <main id="scroll"><div class="wrap" id="stage"></div></main>
-  <footer class="bottom"><button class="main" id="main">Бастадық!</button></footer>
+  <footer class="bottom"><button class="main" id="main">Бастайық!</button></footer>
 </div>
 <canvas id="fx"></canvas>
 <script>
@@ -254,7 +254,7 @@ function go(n){clearAll();st.step=n;drawRoad();scroller.scrollTop=0;[welcome,wor
 /* 0 */
 function welcome(){stage.innerHTML=`<div class="hero"><div class="pup">${pup('happy')}</div><h1>Сәлем! Мен Ақтөспін.</h1><p class="sub">Бүгін бірге «Ақбота мен күшік» әңгімесін оқимыз.</p><div class="facts"><span class="fact">8 қадам</span><span class="fact">15 минуттай</span><span class="fact">Жұлдыз жинайсың</span></div><label class="field" for="name"><span>Атың кім?</span><input id="name" maxlength="20" autocomplete="off" placeholder="Атыңды жаз"></label><a class="link" href="../">Барлық сабақтар</a></div>`;
  const inp=$('#name');inp.value=st.name;inp.addEventListener('keydown',e=>{if(e.key==='Enter')mainBtn.click()});
- setMain('Бастадық!',()=>{st.name=inp.value.trim();go(1)});}
+ setMain('Бастайық!',()=>{st.name=inp.value.trim();go(1)});}
 /* 1 */
 function words(){stage.innerHTML=buddy(`${st.name?esc(st.name)+', а':'А'}лдымен жаңа сөздермен танысайық. Карточканы түрт!`)+`<div class="grid2">${KEYS.map((k,i)=>`<button class="flip${st.flipped.has(i)?' open':''}" data-i="${i}" aria-label="${k.w}"><div class="in"><div class="face front"><b>${k.w}</b><small>түрт</small></div><div class="face back">${scene(k.p)}<p><b>${k.w}</b>${k.m}</p></div></div></button>`).join('')}</div>`;
  const upd=()=>{const left=4-st.flipped.size;setMain(left?`Тағы ${left} карточка`:'Жалғастыру',()=>go(2),!left)};
