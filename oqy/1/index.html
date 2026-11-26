@@ -252,7 +252,7 @@ const roadObs=new ResizeObserver(drawRoad);roadObs.observe($('#road'));
 function go(n){clearAll();st.step=n;drawRoad();scroller.scrollTop=0;[welcome,words,predict,()=>reading('cold'),model,practice,quiz,retell,()=>reading('hot'),finish][n]();}
 
 /* 0 */
-function welcome(){stage.innerHTML=`<div class="hero"><div class="pup">${pup('happy')}</div><h1>Сәлем! Мен – Ақтөс.</h1><p class="sub">Бүгін бірге «Ақбота мен күшік» әңгімесін оқимыз.</p><div class="facts"><span class="fact">8 қадам</span><span class="fact">15 минуттай</span><span class="fact">Жұлдыз жинайсың</span></div><label class="field" for="name"><span>Атың кім?</span><input id="name" maxlength="20" autocomplete="off" placeholder="Атыңды жаз"></label><a class="link" href="../">Барлық сабақтар</a></div>`;
+function welcome(){stage.innerHTML=`<div class="hero"><div class="pup">${pup('happy')}</div><h1>Сәлем! Мен Ақтөспін.</h1><p class="sub">Бүгін бірге «Ақбота мен күшік» әңгімесін оқимыз.</p><div class="facts"><span class="fact">8 қадам</span><span class="fact">15 минуттай</span><span class="fact">Жұлдыз жинайсың</span></div><label class="field" for="name"><span>Атың кім?</span><input id="name" maxlength="20" autocomplete="off" placeholder="Атыңды жаз"></label><a class="link" href="../">Барлық сабақтар</a></div>`;
  const inp=$('#name');inp.value=st.name;inp.addEventListener('keydown',e=>{if(e.key==='Enter')mainBtn.click()});
  setMain('Бастадық!',()=>{st.name=inp.value.trim();go(1)});}
 /* 1 */
