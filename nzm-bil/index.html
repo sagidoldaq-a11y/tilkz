@@ -129,8 +129,8 @@ b.kw{font-weight:800}
 .stem{font-size:16px;font-weight:600;margin:0 0 12px;text-wrap:pretty;white-space:pre-line}
 .stem .neg{font-weight:800;letter-spacing:.3px;text-decoration:underline;text-underline-offset:3px}
 .opts{display:flex;flex-direction:column;gap:8px}
-.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer}
-.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer;position:relative}
+.opt input{position:absolute;left:0;top:0;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}
 .opt .l{flex:0 0 26px;height:26px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:13px}
 .opt .t{padding-top:2px;min-width:0}
 .opt:hover{border-color:var(--accent)}
