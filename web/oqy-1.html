@@ -52,8 +52,9 @@ main{overflow-y:auto;padding:18px max(16px,env(safe-area-inset-left,0px)) 24px}
 .pup.jump{animation:jump .6s ease}
 @keyframes jump{30%{transform:translateY(-12px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}
 .bubble{margin:0;background:var(--paper);border:2px solid var(--line);border-radius:20px 20px 20px 6px;padding:12px 16px;font-weight:800;font-size:18px;line-height:1.35}
-.adult{display:flex;gap:10px;align-items:flex-start;background:var(--warn);border-radius:14px;padding:10px 14px;font-size:15px;color:var(--ink)}
-.adult b{white-space:nowrap}
+.adult{display:grid;gap:6px;background:var(--warn);border:2px solid light-dark(#f2d49b,#6b5320);border-radius:16px;padding:14px 18px;font-size:17px;line-height:1.45;color:var(--ink)}
+.adult b{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:light-dark(#8a5300,#ffd27a)}
+.adult b svg{flex:none;width:26px;height:26px}
 h1{font-size:clamp(30px,6vw,44px);line-height:1.05;letter-spacing:-.02em;margin:0;font-weight:900;text-wrap:balance}
 h2{font-size:24px;line-height:1.15;margin:0;font-weight:900}
 .sub{color:var(--soft);margin:0}
@@ -238,7 +239,7 @@ function stars(n,key){if(n<=0)return;if(key){if(st.awarded[key])return;st.awarde
 function bounce(){const p=document.querySelector('.buddy .pup');if(p){p.classList.remove('jump');void p.offsetWidth;p.classList.add('jump')}}
 const buddy=(t,m='happy')=>`<div class="buddy"><div class="pup">${pup(m)}</div><p class="bubble" id="say">${t}</p></div>`;
 function say(t,m){const b=$('#say');if(b){b.innerHTML=t;const p=b.previousElementSibling;if(m)p.innerHTML=pup(m)}bounce();}
-const adult=t=>`<div class="adult"><b>Үлкен кісіге:</b><span>${t}</span></div>`;
+const adult=t=>`<div class="adult" role="note"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"/><path d="M5 20.5c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>Үлкен кісіге</b><span>${t.charAt(0).toUpperCase()+t.slice(1)}</span></div>`;
 const textHTML=(cls='')=>`<div class="txt ${cls}" id="txt">${W.map((w,i)=>`<span class="w" data-i="${i}">${w.t}</span>`).join(' ')}</div>`;
 function drawRoad(){const svg=$('#road'),w=svg.clientWidth||600,h=56,a=46,b=w-46,step=st.step;
  const xs=STEPS.map((_,i)=>a+(b-a)*i/7),ys=STEPS.map((_,i)=>h/2+(i%2?7:-7));
