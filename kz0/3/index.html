@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="ru" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google" content="notranslate">
+<title>Урок 3. Моя школа — домашнее задание | Қазақша. Старт</title>
+<meta name="description" content="Домашнее задание к уроку «Моя школа»: повторение слов, множественное число, притяжательные и личные окончания вместе — оқушыларыңызбыз.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>try{var t=localStorage.getItem("tilkz-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>
+:root{
+  /* Layout idea: one task per screen, big tap targets, score pill always visible at top */
+  color-scheme:light;
+  --bg:#F5F6F8;--surface:#FFFFFF;--ink:#16233A;--ink-2:#3D4859;--muted:#5B6577;
+  --line:#E3E7ED;--accent:#1F56A8;--accent-ink:#FFFFFF;--accent-soft:#EAF1FB;
+  --ok:#0F7A55;--ok-soft:#E6F4EE;--bad:#B3261E;--bad-soft:#FBEAE8;--gold:#E9A800;--gold-soft:#FFF4D1;
+  --f:Onest,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--bg:#0E1626;--surface:#162135;--ink:#EEF2F8;--ink-2:#C5CEDC;--muted:#9AA6B8;
+  --line:#26324A;--accent:#5B92E5;--accent-ink:#0E1626;--accent-soft:#1D2D4A;
+  --ok:#4CC593;--ok-soft:#173A2E;--bad:#F2877F;--bad-soft:#3A1F1E;--gold:#F2C14E;--gold-soft:#3A3115;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--bg:#0E1626;--surface:#162135;--ink:#EEF2F8;--ink-2:#C5CEDC;--muted:#9AA6B8;
+  --line:#26324A;--accent:#5B92E5;--accent-ink:#0E1626;--accent-soft:#1D2D4A;
+  --ok:#4CC593;--ok-soft:#173A2E;--bad:#F2877F;--bad-soft:#3A1F1E;--gold:#F2C14E;--gold-soft:#3A3115;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #FFC93C;outline-offset:3px;border-radius:8px}
+[hidden]{display:none!important}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding-top:env(safe-area-inset-top,0px)}
+.top .in{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px 16px}
+.back{text-decoration:none;color:var(--muted);font-weight:600;font-size:15px;padding:8px 4px}
+.prog{flex:1;height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ok);border-radius:99px;transition:width .3s}
+.score{display:flex;align-items:center;gap:6px;background:var(--gold-soft);color:var(--ink);font-weight:800;border-radius:99px;padding:6px 12px;font-variant-numeric:tabular-nums;font-size:15px}
+.score .st{color:var(--gold)}
+main{max-width:640px;margin:0 auto;padding:8px 16px 140px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:30px;line-height:1.15;margin:8px 0 10px;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:24px;line-height:1.2;margin:6px 0 4px;text-wrap:balance}
+p{line-height:1.5;margin:0 0 12px}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 22px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:17px;text-decoration:none;color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+input[type=text]{width:100%;min-height:52px;border:1.5px solid var(--line);border-radius:14px;padding:0 16px;font:inherit;font-size:18px;background:var(--surface);color:var(--ink)}
+textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;font:inherit;font-size:17px;background:var(--surface);color:var(--ink);line-height:1.5}
+.rounds{display:grid;gap:8px;margin:14px 0}
+.rounds div{display:flex;align-items:center;gap:12px;font-weight:600}
+.rounds b{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:14px;flex:none}
+.rule{display:flex;gap:10px;background:var(--gold-soft);border-radius:14px;padding:12px 14px;font-size:15px;line-height:1.45}
+
+/* task */
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0 2px}
+.qcount{font-size:14px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.pic{font-size:88px;line-height:1;text-align:center;margin:12px 0 6px}
+.prompt{font-size:26px;font-weight:700;text-align:center;margin:8px 0 4px;line-height:1.3}
+.hint{font-size:15px;color:var(--muted);text-align:center;margin-bottom:14px}
+.opts{display:grid;gap:10px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opt{min-height:58px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-size:19px;font-weight:700;padding:10px 14px;text-align:left;line-height:1.3}
+.opts.two .opt{text-align:center}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.slots{min-height:64px;border:2px dashed var(--line);border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:14px}
+.slots.ok{border-color:var(--ok);border-style:solid;background:var(--ok-soft)}
+.slots.bad{border-color:var(--bad);border-style:solid;background:var(--bad-soft)}
+.tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tile{min-height:50px;min-width:50px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:21px;font-weight:700}
+.tile.used{visibility:hidden}
+.slots .tile{background:var(--accent-soft);border-color:transparent}
+.slots .ph{color:var(--muted);font-size:15px}
+
+/* feedback sheet */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));transform:translateY(110%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
+.sheet.show{transform:none;visibility:visible;transition:transform .22s ease}
+.sheet .in{max-width:640px;margin:0 auto;border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -10px 40px rgba(0,0,0,.15)}
+.sheet.ok .in{background:var(--ok-soft);border:1.5px solid var(--ok)}
+.sheet.bad .in{background:var(--bad-soft);border:1.5px solid var(--bad)}
+.sheet h3{margin:0;font-size:20px}
+.sheet.ok h3{color:var(--ok)}.sheet.bad h3{color:var(--bad)}
+.sheet p{margin:0;font-size:16px}
+.pts{font-weight:800;color:var(--gold)}
+.actionbar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 30%)}
+.actionbar .in{max-width:640px;margin:0 auto}
+
+/* round intro + result */
+.big{font-size:72px;text-align:center;line-height:1;margin:10px 0}
+.center{text-align:center}
+.stars{display:flex;justify-content:center;gap:6px;font-size:44px;margin:6px 0}
+.stars span{filter:grayscale(1);opacity:.3}
+.stars span.on{filter:none;opacity:1}
+.tally{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tally div{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
+.tally b{display:block;font-size:26px;font-variant-numeric:tabular-nums}
+.tally span{font-size:13px;color:var(--muted)}
+.mistakes{display:grid;gap:8px}
+.mistakes div{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:12px;padding:10px 12px;font-size:15px;line-height:1.4}
+.mistakes b{color:var(--ok)}
+.streak{display:inline-block;background:var(--gold-soft);color:var(--ink);border-radius:99px;padding:2px 10px;font-size:13px;font-weight:800}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:9}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--line);border-radius:14px;padding:4px;margin-bottom:14px}
+.tabs button{border:0;background:transparent;min-height:44px;border-radius:11px;font-weight:700;font-size:16px;color:var(--muted)}
+.tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+.af{display:flex;flex-direction:column;gap:12px;text-align:left}
+.af label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:15px}
+.af input,.af select{width:100%;min-height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:17px;background:var(--surface);color:var(--ink)}
+.af .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.af .hint{font-weight:400;font-size:13px;color:var(--muted);line-height:1.4;text-align:left;margin:0}
+.af .err{color:var(--bad);font-weight:600;font-size:15px;margin:0;min-height:0}
+.af .err:empty{display:none}
+.who{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;color:var(--muted);margin:2px 0 12px}
+.who button{background:none;border:0;color:var(--accent);font-weight:700;padding:6px 0}
+.saved{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ok-soft);color:var(--ok);border-radius:14px;padding:10px 14px;font-weight:700;font-size:15px;text-align:center}
+.saved.wait{background:var(--accent-soft);color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="back" href="../" aria-label="К курсу">← Курс</a>
+  <div class="prog" aria-hidden="true"><i id="bar"></i></div>
+  <div class="score" aria-live="polite"><span class="st">★</span><span id="pts">0</span></div>
+</div></header>
+<main id="app"></main>
+<div class="sheet" id="sheet" role="status" aria-live="polite"><div class="in">
+  <h3 id="sh-title"></h3>
+  <p id="sh-text"></p>
+  <button class="btn primary block" id="sh-next" type="button">Дальше</button>
+</div></div>
+<canvas class="confetti" id="confetti" hidden></canvas>
+
+<script>
+(function(){
+"use strict";
+const WA="77082141226";
+
+const SB_CFG={"url": "https://yqfepngubehrupkitklr.supabase.co", "key": "sb_publishable_R_DvPrvev24GFHUtyGwhRw_r5CopZYH"}, LOGIN_DOMAIN="oqushy.tilkz.app";
+let sb=null, USER=null, PROFILE=null;
+/* ---------- content: content/kz0-hwN.json ---------- */
+const HW={"bank_id": "kz0-hw3", "course": "kz0", "lesson": 3, "title": "3-сабақ. Менің мектебім: үй тапсырмасы", "meta": {"n": 3, "ru": "Моя школа", "title": "Урок 3. Моя школа — домашнее задание | Қазақша. Старт", "desc": "Домашнее задание к уроку «Моя школа»: повторение слов, множественное число, притяжательные и личные окончания вместе — оқушыларыңызбыз.", "gloss": {"мысық": "кошка", "алма": "яблоко", "әже": "бабушка", "аға": "старший брат", "іні": "младший брат", "дос": "друг", "көрші": "сосед", "сыныптас": "одноклассник", "кітап": "книга", "қалам": "ручка", "дәптер": "тетрадь", "сөмке": "портфель", "сынып": "класс", "мұғалім": "учитель", "тақта": "доска", "оқулық": "учебник", "күнделік": "дневник", "үзіліс": "перемена"}, "about": {"title": "Бонус: твой текст «Моя школа»", "label": "Текст ученика", "frame": "Менің мектебім … . Мен … сыныптың оқушысымын. Біздің сыныбымызда … оқушы бар. Біздің мұғаліміміздің аты — … . Менің сыныптастарым … .", "placeholder": "Менің мектебім …"}, "win": "Ты уже собираешь целый «поезд» окончаний: оқушыларыңызбыз! Это уровень настоящего автора."}, "skills": {"K1": "Сөздік: суреттен сөзді тану", "K5": "Сөйлем құрау (сөз тәртібі)", "K8": "Көптік жалғау қашан жалғанбайды", "K9": "Тәуелдік жалғау (жекеше, көпше)", "K10": "Көптік жалғаудан кейін тәуелдік", "K12": "Жіктік жалғау: жақ бойынша", "K13": "Тәуелдік + жіктік (досымын)", "K15": "Қатені табу (редакциялау)"}, "rounds": [{"id": "r1", "title": "Сөз қоржыны: повторение", "icon": "🧺", "skill": "K1", "hint": "Вспомни слово из прошлых уроков", "intro": "Слова из уроков 0, 1 и 2. Посмотри на картинку и выбери казахское слово.", "type": "pick", "items": [{"pic": "🐱", "ru": "кошка", "a": "мысық", "o": ["маймыл", "мысық", "кірпі"], "id": "kz0-hw3-r1-1"}, {"pic": "🍎", "ru": "яблоко", "a": "алма", "o": ["алма", "ара", "ағаш"], "id": "kz0-hw3-r1-2"}, {"pic": "👵", "ru": "бабушка", "a": "әже", "o": ["әпке", "ана", "әже"], "id": "kz0-hw3-r1-3"}, {"pic": "🧑", "ru": "старший брат", "a": "аға", "o": ["аға", "іні", "ата"], "id": "kz0-hw3-r1-4"}, {"pic": "👦", "ru": "младший брат", "a": "іні", "o": ["әке", "іні", "аға"], "id": "kz0-hw3-r1-5"}, {"pic": "🤝", "ru": "друг", "a": "дос", "o": ["туыс", "дос", "қонақ"], "id": "kz0-hw3-r1-6"}, {"pic": "🏘️", "ru": "сосед", "a": "көрші", "o": ["көрші", "құрдас", "немере"], "id": "kz0-hw3-r1-7"}, {"pic": "🏫", "ru": "одноклассник", "a": "сыныптас", "o": ["оқушы", "ағайын", "сыныптас"], "id": "kz0-hw3-r1-8"}]}, {"id": "r2", "title": "Новые слова: школа", "icon": "🏫", "skill": "K1", "hint": "Как это по-казахски?", "intro": "10 новых слов про школу.", "type": "pick", "items": [{"pic": "📕", "ru": "книга", "a": "кітап", "o": ["кітап", "қалам", "тақта"], "id": "kz0-hw3-r2-1"}, {"pic": "✏️", "ru": "ручка, карандаш", "a": "қалам", "o": ["сөмке", "қалам", "дәптер"], "id": "kz0-hw3-r2-2"}, {"pic": "📓", "ru": "тетрадь", "a": "дәптер", "o": ["дәптер", "күнделік", "оқулық"], "id": "kz0-hw3-r2-3"}, {"pic": "🎒", "ru": "портфель", "a": "сөмке", "o": ["сынып", "тақта", "сөмке"], "id": "kz0-hw3-r2-4"}, {"pic": "🏫", "ru": "класс", "a": "сынып", "o": ["сынып", "мектеп", "үзіліс"], "id": "kz0-hw3-r2-5"}, {"pic": "👩‍🏫", "ru": "учитель", "a": "мұғалім", "o": ["оқушы", "мұғалім", "сыныптас"], "id": "kz0-hw3-r2-6"}, {"pic": "🟩", "ru": "доска", "a": "тақта", "o": ["тақта", "кітап", "қалам"], "id": "kz0-hw3-r2-7"}, {"pic": "📚", "ru": "учебник", "a": "оқулық", "o": ["күнделік", "оқулық", "дәптер"], "id": "kz0-hw3-r2-8"}, {"pic": "📔", "ru": "дневник", "a": "күнделік", "o": ["күнделік", "сөмке", "оқулық"], "id": "kz0-hw3-r2-9"}, {"pic": "🔔", "ru": "перемена", "a": "үзіліс", "o": ["сабақ", "үзіліс", "сынып"], "id": "kz0-hw3-r2-10"}]}, {"id": "r3", "title": "Поезд: много + чей", "icon": "🚂", "skill": "K10", "hint": "", "prompt_ru": true, "intro": "Вагоны всегда в одном порядке: слово → -лар → -ым. Сендердің и сіздердің — сначала -лар!", "rule": "сөз + көптік + тәуелдік: кітап + тар + ым = кітаптарым", "type": "pick", "items": [{"p": "мои книги", "a": "кітаптарым", "o": ["кітабымдар", "кітаптарым", "кітаптерім"], "id": "kz0-hw3-r3-1"}, {"p": "наш учитель", "a": "мұғаліміміз", "o": ["мұғаліміміз", "мұғалімміз", "мұғалімімдер"], "id": "kz0-hw3-r3-2"}, {"p": "твои тетради", "a": "дәптерлерің", "o": ["дәптерің", "дәптерлерім", "дәптерлерің"], "id": "kz0-hw3-r3-3"}, {"p": "ваш портфель (вежливо)", "a": "сөмкеңіз", "o": ["сөмкеңіз", "сөмкесіз", "сөмкеңіздер"], "id": "kz0-hw3-r3-4"}, {"p": "его учебники", "a": "оқулықтары", "o": ["оқулығы", "оқулықтары", "оқулықтарсы"], "id": "kz0-hw3-r3-5"}, {"p": "ваш учебник (вас много)", "a": "оқулықтарың", "o": ["оқулығың", "оқулықтарыңдар", "оқулықтарың"], "id": "kz0-hw3-r3-6"}, {"p": "мои старшие братья", "a": "ағаларым", "o": ["ағаларым", "ағамлар", "ағалерім"], "skill": "K9", "id": "kz0-hw3-r3-7"}, {"p": "наши соседи", "a": "көршілеріміз", "o": ["көршілеріміз", "көршіміздер", "көршілерміз"], "skill": "K9", "id": "kz0-hw3-r3-8"}]}, {"id": "r4", "title": "Кто? Все три окончания", "icon": "🙋", "skill": "K13", "hint": "", "prompt_ru": true, "intro": "Теперь целый поезд: слово + -лар + чей + кто. Біз сіздің оқушы-лар-ыңыз-быз — мы ваши ученики.", "rule": "оқушы + лар + ыңыз + быз = оқушыларыңызбыз", "type": "pick", "items": [{"p": "Я ученик.", "a": "Мен оқушымын.", "o": ["Мен оқушы.", "Мен оқушымын.", "Мен оқушысың."], "skill": "K12", "id": "kz0-hw3-r4-1"}, {"p": "Мы ваши ученики. (вежливо)", "a": "Біз сіздің оқушыларыңызбыз.", "o": ["Біз сіздің оқушыңызбыз.", "Біз сіздің оқушыларыңызбыз.", "Біз сіздің оқушыларымыз."], "id": "kz0-hw3-r4-2"}, {"p": "Вы наш учитель. (вежливо)", "a": "Сіз біздің мұғалімімізсіз.", "o": ["Сіз біздің мұғалімімізсіз.", "Сіз біздің мұғалімсіз.", "Сіз біздің мұғаліміміз."], "id": "kz0-hw3-r4-3"}, {"p": "Ты мой одноклассник.", "a": "Сен менің сыныптасымсың.", "o": ["Сен менің сыныптассың.", "Сен менің сыныптасымсың.", "Сен менің сыныптасыңсың."], "id": "kz0-hw3-r4-4"}, {"p": "Они наши друзья.", "a": "Олар біздің достарымыз.", "o": ["Олар біздің достарымызсыз.", "Олар біздің достарыңыз.", "Олар біздің достарымыз."], "id": "kz0-hw3-r4-5"}, {"p": "Я твой друг.", "a": "Мен сенің досыңмын.", "o": ["Мен сенің досыңмын.", "Мен сенің досымын.", "Мен сенің досыңсың."], "id": "kz0-hw3-r4-6"}]}, {"id": "r5", "title": "Детектив: найди ошибку", "icon": "🔍", "skill": "K15", "hint": "В предложении есть ошибка. Выбери правильный вариант.", "intro": "Каждое предложение с ошибкой. Найди правильный вариант — как настоящий редактор!", "type": "pick", "items": [{"p": "Менің екі кітаптарым бар.", "a": "Менің екі кітабым бар.", "o": ["Менің екі кітабым бар.", "Менің екі кітапым бар.", "Менің екі кітаптарым бар."], "skill": "K8", "id": "kz0-hw3-r5-1"}, {"p": "Мен бесінші сыныптың оқушы.", "a": "Мен бесінші сыныптың оқушысымын.", "o": ["Мен бесінші сыныптың оқушымын.", "Мен бесінші сыныптың оқушысымын.", "Мен бесінші сыныптың оқушысы."], "skill": "K13", "id": "kz0-hw3-r5-2"}, {"p": "Сендердің мұғалімің кім?", "a": "Сендердің мұғалімдерің кім?", "o": ["Сендердің мұғалімдерің кім?", "Сендердің мұғалімің кім?", "Сендердің мұғаліміңдер кім?"], "skill": "K9", "id": "kz0-hw3-r5-3"}, {"p": "Ол менің досымсың.", "a": "Ол менің досым.", "o": ["Ол менің досыммын.", "Ол менің досым.", "Ол менің досымыз."], "skill": "K12", "id": "kz0-hw3-r5-4"}, {"p": "Сөмкемде көп дәптерлер бар.", "a": "Сөмкемде көп дәптер бар.", "o": ["Сөмкемде көп дәптер бар.", "Сөмкемде көп дәптерім бар.", "Сөмкемде көп дәптерлерім бар."], "skill": "K8", "id": "kz0-hw3-r5-5"}]}, {"id": "r6", "title": "Собери предложение", "icon": "🏗️", "skill": "K5", "hint": "", "intro": "Нажимай на слова по порядку. Последнее — строка из стихотворения Ыбырая Алтынсарина!", "type": "words", "items": [{"p": "Мы ваши ученики.", "a": ["Біз", "сіздің", "оқушыларыңызбыз."], "id": "kz0-hw3-r6-1"}, {"p": "В моём портфеле три книги.", "a": ["Менің", "сөмкемде", "үш", "кітап", "бар."], "id": "kz0-hw3-r6-2"}, {"p": "Ты мой одноклассник.", "a": ["Сен", "менің", "сыныптасымсың."], "id": "kz0-hw3-r6-3"}, {"p": "Идите, дети, давайте учиться! (Алтынсарин)", "a": ["Кел,", "балалар,", "оқылық!"], "id": "kz0-hw3-r6-4"}]}]}, M=HW.meta, PIC_RU=M.gloss||{};
+let KEY=`${HW.bank_id}-v1:guest`;
+const ROUNDS=HW.rounds;
+const TOTAL=ROUNDS.reduce((n,r)=>n+r.items.length,0);
+
+/* ---------- state ---------- */
+let S=fresh();
+function fresh(){return {name:"",ri:0,qi:0,pts:0,first:0,streak:0,best:0,phase:"start",log:[],retry:[],inRetry:false,about:"",bestScore:null,attempt:null,dirty:{},finDirty:false,finDone:false};}
+function loadState(){ S=fresh(); try{const raw=localStorage.getItem(KEY); if(raw){S=Object.assign(fresh(),JSON.parse(raw));}}catch(e){} }
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); let pr={}; try{pr=JSON.parse(localStorage.getItem("kz0-progress")||"{}")||{};}catch(e){} pr["hw"+M.n]=Math.max(pr["hw"+M.n]||0,S.bestScore||0,S.phase==="result"?S.pts:0); localStorage.setItem("kz0-progress",JSON.stringify(pr));}catch(e){}}
+
+const app=document.getElementById("app"), ptsEl=document.getElementById("pts"), bar=document.getElementById("bar");
+const sheet=document.getElementById("sheet"), shT=document.getElementById("sh-title"), shX=document.getElementById("sh-text"), shN=document.getElementById("sh-next");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function done(){return S.log.length;}
+function paintTop(){ptsEl.textContent=S.pts; bar.style.width=Math.round(100*Math.min(done(),TOTAL)/TOTAL)+"%";}
+
+/* ---------- screens ---------- */
+function render(){
+  paintTop(); hideSheet();
+  if(!USER) return authScreen();
+  if(S.phase==="start") return startScreen();
+  if(S.phase==="intro") return introScreen();
+  if(S.phase==="task") return taskScreen();
+  if(S.phase==="retryIntro") return retryIntro();
+  if(S.phase==="about") return aboutScreen();
+  if(S.phase==="result") return resultScreen();
+}
+function startScreen(){
+  app.innerHTML=`<p class="eyebrow">Урок ${M.n} · Домашнее задание</p>
+  <h1>${esc(M.ru)}: игра на очки</h1>
+  <p class="muted">${TOTAL} ${ruN(TOTAL,"задание","задания","заданий")} по уроку «${esc(M.ru)}». За каждый правильный ответ — очки, за серию без ошибок — бонус.</p>
+  <div class="who"><span>Ты вошёл(ла) как <b>${esc(S.name)}</b></span><button type="button" id="out">Выйти</button></div>
+  <div class="card stack">
+    <div class="rounds">${ROUNDS.map((r,i)=>`<div><b>${i+1}</b>${esc(r.title)}</div>`).join("")}<div><b>★</b>Бонус: ${esc(M.about.title.toLowerCase())}</div></div>
+    <div class="rule"><span aria-hidden="true">💡</span><span>С первой попытки: <b>+10</b>. Со второй: <b>+5</b>. Три верных ответа подряд: <b>+5</b> бонус. Ошибки мы повторим в конце.</span></div>
+    <button class="btn primary block" id="go" type="button">${S.log.length?"Продолжить":"Начать"}</button>
+  </div>`;
+  document.getElementById("go").onclick=()=>{ S.phase=S.log.length?"task":"intro"; save(); render(); };
+  document.getElementById("out").onclick=signOut;
+}
+function introScreen(){
+  const r=ROUNDS[S.ri];
+  app.innerHTML=`<p class="eyebrow">Раунд ${S.ri+1} из ${ROUNDS.length}</p>
+  <div class="big" aria-hidden="true">${r.icon}</div>
+  <h1 class="center">${esc(r.title)}</h1>
+  <p class="center muted">${esc(r.intro)}</p>
+  ${r.rule?`<div class="rule" style="margin-bottom:14px"><span aria-hidden="true">📌</span><span lang="kk">${esc(r.rule)}</span></div>`:""}
+  <div class="actionbar"><div class="in"><button class="btn primary block" id="go" type="button">Поехали</button></div></div>`;
+  document.getElementById("go").onclick=()=>{S.phase="task"; S.qi=0; save(); render();};
+}
+function current(){
+  if(S.inRetry){const k=S.retry[S.qi]; const [ri,qi]=k.split(":").map(Number); return {r:ROUNDS[ri],it:ROUNDS[ri].items[qi],ri,qi,key:k};}
+  const r=ROUNDS[S.ri]; return {r,it:r.items[S.qi],ri:S.ri,qi:S.qi,key:S.ri+":"+S.qi};
+}
+let tries=0, wrongs=[];
+function taskScreen(){
+  tries=0; wrongs=[];
+  const {r,it}=current();
+  const n=S.inRetry?`Повтор ${S.qi+1} / ${S.retry.length}`:`${S.qi+1} / ${r.items.length}`;
+  const head=`<div class="qhead"><span class="eyebrow">${S.inRetry?"Работа над ошибками":esc(r.title)}</span><span class="qcount">${n}${S.streak>=2?` · <span class="streak">серия ${S.streak} 🔥</span>`:""}</span></div>`;
+  if(r.type==="pick") return pickTask(head,r,it);
+  if(r.type==="letters") return lettersTask(head,it);
+  if(r.type==="words") return wordsTask(head,it);
+}
+function pickTask(head,r,it){
+  const opts=shuffle(it.o);
+  app.innerHTML=`${head}
+   ${it.pic?`<div class="pic" aria-hidden="true">${it.pic}</div>`:""}
+   ${it.p?`<div class="prompt" ${(it.prompt_ru||r.prompt_ru)?"":'lang="kk"'}>${esc(it.p)}</div>`:""}
+   ${it.ru?`<div class="hint">${esc(it.ru)}</div>`:`<div class="hint">${esc(r.hint||"")}</div>`}
+   <div class="opts ${it.two?"two":""}" lang="kk">${opts.map(o=>`<button class="opt" type="button" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const ok=b.dataset.o===it.a;
+    if(ok){ b.classList.add("right"); app.querySelectorAll(".opt").forEach(x=>x.disabled=true); answer(true,it); }
+    else{ b.classList.add("wrong"); b.disabled=true; tries++; wrongs.push(b.dataset.o);
+      if(tries>=2 || it.o.length<=2){ app.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(x.dataset.o===it.a)x.classList.add("right");}); answer(false,it,b.dataset.o); }
+      else softWrong(); }
+  });
+}
+function lettersTask(head,it){
+  const letters=shuffle([...it.a]); let built=[];
+  app.innerHTML=`${head}<div class="pic" aria-hidden="true">${it.pic}</div><div class="hint">${esc(PIC_RU[it.a]||"")}: собери слово по-казахски</div>
+   <div class="slots" id="slots" lang="kk"><span class="ph">Нажимай на буквы</span></div>
+   <div class="tiles" id="tiles" lang="kk">${letters.map((l,i)=>`<button class="tile" type="button" data-i="${i}">${esc(l)}</button>`).join("")}</div>
+   <div class="actionbar"><div class="in" style="display:flex;gap:10px"><button class="btn" id="clr" type="button">Стереть</button><button class="btn primary" style="flex:1" id="chk" type="button" disabled>Проверить</button></div></div>`;
+  wireBuild(letters,built,it.a.length,()=>built.map(i=>letters[i]).join(""),it.a,it,"");
+}
+function wordsTask(head,it){
+  const words=shuffle(it.a); let built=[];
+  app.innerHTML=`${head}<div class="prompt">${esc(it.p)}</div><div class="hint">Собери это предложение по-казахски</div>
+   <div class="slots" id="slots" lang="kk"><span class="ph">Нажимай на слова</span></div>
+   <div class="tiles" id="tiles" lang="kk">${words.map((w,i)=>`<button class="tile" type="button" data-i="${i}">${esc(w)}</button>`).join("")}</div>
+   <div class="actionbar"><div class="in" style="display:flex;gap:10px"><button class="btn" id="clr" type="button">Стереть</button><button class="btn primary" style="flex:1" id="chk" type="button" disabled>Проверить</button></div></div>`;
+  wireBuild(words,built,it.a.length,()=>built.map(i=>words[i]).join(" "),it.a.join(" "),it," ");
+}
+function wireBuild(src,built,need,getStr,target,it,sep){
+  const slots=document.getElementById("slots"), tiles=document.getElementById("tiles"), chk=document.getElementById("chk"), clr=document.getElementById("clr");
+  function paint(){
+    slots.className="slots";
+    slots.innerHTML=built.length?built.map((i,k)=>`<button class="tile" type="button" data-k="${k}">${esc(src[i])}</button>`).join(""):`<span class="ph">${sep?"Нажимай на слова":"Нажимай на буквы"}</span>`;
+    tiles.querySelectorAll(".tile").forEach(t=>t.classList.toggle("used",built.includes(+t.dataset.i)));
+    chk.disabled=built.length!==need;
+    slots.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{built.splice(+t.dataset.k,1); paint();});
+  }
+  tiles.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{const i=+t.dataset.i; if(built.includes(i))return; built.push(i); paint();});
+  clr.onclick=()=>{built.length=0; paint();};
+  chk.onclick=()=>{
+    const ok=getStr()===target;
+    if(ok){ slots.classList.add("ok"); lock(); answer(true,it); }
+    else{ tries++; wrongs.push(getStr()); slots.classList.add("bad");
+      if(tries>=2){ lock(); answer(false,it,getStr(),target); }
+      else { softWrong(()=>{built.length=0; paint();}); } }
+  };
+  function lock(){ tiles.querySelectorAll(".tile").forEach(t=>t.disabled=true); slots.querySelectorAll(".tile").forEach(t=>t.disabled=true); chk.disabled=true; clr.disabled=true; }
+  paint();
+}
+
+/* ---------- scoring ---------- */
+const PRAISE=["Дұрыс!","Жарайсың!","Керемет!","Тамаша!","Өте жақсы!","Міне, солай!"];
+function softWrong(after){
+  showSheet("bad","Почти!","Попробуй ещё раз — у тебя есть вторая попытка.","Ещё раз",()=>{hideSheet(); if(after)after();});
+}
+function answer(ok,it,given,target){
+  const {key}=current();
+  const firstTime=!S.log.some(l=>l.k===key);
+  let gain=0, bonus=0;
+  if(ok){
+    gain = tries===0?10:5;
+    if(S.inRetry) gain = 3;
+    S.streak = tries===0 ? S.streak+1 : 0;
+    if(S.streak>0 && S.streak%3===0){bonus=5;}
+    S.best=Math.max(S.best,S.streak);
+  } else S.streak=0;
+  S.pts+=gain+bonus;
+  if(firstTime){ S.log.push({k:key,first:ok&&tries===0,ok});
+    const {r}=current(); S.dirty[it.id]={item_id:it.id, skill:it.skill||r.skill, level:1, tries:wrongs.slice(), status:ok?"ok":"revealed", first_correct:ok&&tries===0}; }
+  if(firstTime && ok && tries===0) S.first++;
+  if(!S.inRetry && !(ok&&tries===0) && !S.retry.includes(key)) S.retry.push(key);
+  save(); paintTop(); flush();
+  const ans=target||it.a, ru=it.pic&&PIC_RU[it.a]?` — ${PIC_RU[it.a]}`:"";
+  if(ok){
+    showSheet("ok",pick(PRAISE)+(bonus?" 🔥":""),`<span class="pts">+${gain}</span>${bonus?` и <span class="pts">+${bonus}</span> за серию из ${S.streak}!`:""} <span lang="kk">${esc(Array.isArray(ans)?ans.join(" "):ans)}</span>${esc(ru)}`,"Дальше",next);
+  } else {
+    showSheet("bad","Ничего страшного!",`Правильно: <b lang="kk">${esc(Array.isArray(ans)?ans.join(" "):ans)}</b>${esc(ru)}.${S.inRetry?" Запомни этот ответ!":" Это задание вернётся в конце, и ты его победишь."}`,"Дальше",next);
+  }
+}
+function next(){
+  hideSheet();
+  if(S.inRetry){
+    S.qi++;
+    if(S.qi>=S.retry.length){S.inRetry=false; S.phase="about";}
+    save(); return render();
+  }
+  S.qi++;
+  if(S.qi>=ROUNDS[S.ri].items.length){
+    S.ri++; S.qi=0;
+    if(S.ri>=ROUNDS.length){ S.phase=S.retry.length?"retryIntro":"about"; }
+    else S.phase="intro";
+  }
+  save(); render();
+}
+function retryIntro(){
+  app.innerHTML=`<div class="big" aria-hidden="true">🔁</div><h1 class="center">Работа над ошибками</h1>
+  <p class="center muted">Вернёмся к ${S.retry.length} ${ruN(S.retry.length,"заданию","заданиям","заданиям")}, где была ошибка. Каждое исправление: <b>+3</b>. Так слова запоминаются лучше всего.</p>
+  <div class="actionbar"><div class="in"><button class="btn primary block" id="go" type="button">Исправить ошибки</button></div></div>`;
+  document.getElementById("go").onclick=()=>{S.inRetry=true; S.qi=0; S.phase="task"; save(); render();};
+}
+function aboutScreen(){
+  app.innerHTML=`<p class="eyebrow">Бонус · +20</p><div class="big" aria-hidden="true">✍️</div>
+  <h1 class="center">${esc(M.about.title)}</h1>
+  <p class="center muted">Напиши 3 предложения по-казахски. Используй образцы.</p>
+  <div class="rule" style="margin-bottom:12px"><span aria-hidden="true">📌</span><span lang="kk">${esc(M.about.frame)}</span></div>
+  <textarea id="ab" lang="kk" placeholder="${esc(M.about.placeholder)}">${esc(S.about)}</textarea>
+  <p class="muted" style="margin-top:10px;font-size:15px">Учитель проверит твои предложения. А ещё запиши их голосом и отправь аудио учителю в WhatsApp.</p>
+  <div class="actionbar"><div class="in" style="display:flex;gap:10px"><button class="btn" id="skip" type="button">Пропустить</button><button class="btn primary" style="flex:1" id="go" type="button" disabled>Готово</button></div></div>`;
+  const ab=document.getElementById("ab"), go=document.getElementById("go");
+  const cnt=()=>ab.value.split(/[.!?]+/).map(s=>s.trim()).filter(s=>s.split(/\s+/).length>=2).length;
+  const upd=()=>{S.about=ab.value; go.disabled=cnt()<1; save();}; upd(); ab.oninput=upd;
+  go.onclick=()=>{ if(!S.aboutDone){ const n=Math.min(3,cnt()); S.pts+=n>=3?20:n*5; S.aboutDone=true; } S.phase="result"; save(); render(); };
+  document.getElementById("skip").onclick=()=>{S.phase="result"; save(); render();};
+}
+function ruN(n,a,b,c){const m=n%10,h=n%100;return (m===1&&h!==11)?a:(m>=2&&m<=4&&(h<12||h>14))?b:c;}
+function resultScreen(){
+  const pct=Math.round(100*S.first/TOTAL);
+  const stars=pct>=90?3:pct>=70?2:pct>=50?1:0;
+  let emoji,title,msg;
+  const nm=S.name?esc(S.name):"";
+  if(pct>=90){emoji="🏆";title=`Керемет${nm?", "+nm:""}! Тамаша!`;
+    msg=`Это потрясающий результат: ${S.first} из ${TOTAL} с первой попытки! ${M.win} Так учатся настоящие чемпионы. Учитель будет очень гордиться тобой!`;}
+  else if(pct>=70){emoji="🌟";title=`Жарайсың${nm?", "+nm:""}!`;
+    msg=`Очень сильно: ${S.first} из ${TOTAL} с первой попытки! Ты уже уверенно знаешь слова урока и умеешь строить фразы. Ещё чуть-чуть, и будет максимум!`;}
+  else if(pct>=50){emoji="💪";title=`Жақсы бастама${nm?", "+nm:""}!`;
+    msg=`Хорошее начало: ${S.first} из ${TOTAL}. Ты прошёл(ла) всё задание до конца и исправил(а) ошибки. Это и есть учёба! Попробуй ещё раз завтра, и результат вырастет.`;}
+  else {emoji="🌱";title=`Рахмет за старание${nm?", "+nm:""}!`;
+    msg=`Казахский язык для тебя новый, и ошибаться сейчас нормально: так растёт мозг. Ты дошёл(ла) до конца и исправил(а) ошибки, это главное. Пройди задание ещё раз завтра: увидишь, насколько станет легче!`;}
+  S.bestScore=Math.max(S.bestScore||0,S.pts); if(!S.finDone){S.finDirty=true; S.finDone=true;} save(); flush().then(paintSaved);
+  const miss=S.retry.map(k=>{const [ri,qi]=k.split(":").map(Number); const it=ROUNDS[ri].items[qi]; const a=Array.isArray(it.a)?it.a.join(" "):it.a; const q=it.p?it.p.replace(/ → \?$/,""):(PIC_RU[it.a]||it.pic); return `<div>${esc(q)} → <b lang="kk">${esc(a)}</b></div>`;}).join("");
+  const report=`Домашнее задание · Урок ${M.n} «${M.ru}»\nУченик: ${S.name||"—"}\nС первой попытки: ${S.first}/${TOTAL} (${pct}%)\nОчки: ${S.pts}\nЛучшая серия: ${S.best}\nОшибки: ${S.retry.length}\n${M.about.label}: ${S.about.trim()||"—"}`;
+  app.innerHTML=`<div class="big" aria-hidden="true">${emoji}</div>
+  <h1 class="center" lang="kk">${title}</h1>
+  <div class="stars" aria-label="${stars} из 3 звёзд">${[0,1,2].map(i=>`<span class="${i<stars?"on":""}">⭐</span>`).join("")}</div>
+  <p class="center">${msg}</p>
+  <div class="tally"><div><b>${S.pts}</b><span>очков</span></div><div><b>${S.first}/${TOTAL}</b><span>с 1-й попытки</span></div><div><b>${S.best}</b><span>лучшая серия</span></div></div>
+  ${miss?`<h2>Запомни</h2><div class="mistakes">${miss}</div>`:""}
+  <div class="stack" style="margin-top:18px">
+    <div class="saved wait" id="saved">Сохраняем результат…</div>
+    <a class="btn primary block" id="send" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(report)}">Отправить голосовое учителю</a>
+    <p class="muted center" style="font-size:14px;margin:0">Прочитай вслух свои предложения и отправь аудио в WhatsApp: +7 708 214 12 26</p>
+    <button class="btn block" id="again" type="button">Пройти ещё раз</button>
+    <a class="btn block" href="slides/">Повторить презентацию урока</a>
+  </div>`;
+  document.getElementById("again").onclick=()=>{const nm=S.name, bs=Math.max(S.bestScore||0,S.pts); S=fresh(); S.name=nm; S.bestScore=bs; S.phase="intro"; save(); render(); window.scrollTo({top:0});};
+  if(stars>=2) confetti();
+}
+
+/* ---------- sheet ---------- */
+let sheetCb=null;
+function showSheet(kind,title,html,btn,cb){sheet.className="sheet show "+kind; shT.textContent=title; shX.innerHTML=html; shN.textContent=btn; sheetCb=cb; setTimeout(()=>shN.focus(),50);}
+function hideSheet(){sheet.className="sheet";}
+shN.onclick=()=>{const cb=sheetCb; sheetCb=null; if(cb)cb();};
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&sheet.classList.contains("show")&&document.activeElement!==shN){e.preventDefault();shN.click();}});
+
+/* ---------- confetti ---------- */
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c=document.getElementById("confetti"), x=c.getContext("2d"); c.hidden=false;
+  c.width=innerWidth; c.height=innerHeight;
+  const cols=["#1F56A8","#E9A800","#0F7A55","#E0603F","#5B92E5"];
+  const ps=Array.from({length:120},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,vx:(Math.random()-.5)*2,vy:2+Math.random()*3,r:4+Math.random()*5,a:Math.random()*6,c:pick(cols)}));
+  let t=0;(function f(){x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);x.restore();});
+    if(++t<220)requestAnimationFrame(f); else c.hidden=true;})();
+}
+
+/* ---------- аккаунт aitil: вход, регистрация, сохранение результатов ---------- */
+const normPhone=v=>{let d=(v||"").replace(/\D/g,""); if(d.length===11&&d[0]==="8")d="7"+d.slice(1); if(d.length===10)d="7"+d; return /^7\d{10}$/.test(d)?d:null;};
+const loginEmail=v=>{v=v.trim().toLowerCase(); if(v.includes("@"))return v; if(!/[a-z]/.test(v)){const ph=normPhone(v); if(ph)v=ph;} return v+"@"+LOGIN_DOMAIN;};
+let authMode="reg", authBusy=false;
+function authScreen(){
+  const reg=authMode==="reg";
+  const grades=`<option value="" selected disabled>— класс —</option>`+[4,5,6,7,8,9,10,11].map(n=>`<option value="${n}">${n} класс</option>`).join("");
+  app.innerHTML=`<p class="eyebrow">Қазақша. Старт · Урок ${M.n}</p>
+  <h1>${reg?"Зарегистрируйся, чтобы начать":"Войди, чтобы продолжить"}</h1>
+  <p class="muted">${reg?"Так учитель увидит твои очки и ошибки, а прогресс сохранится на любом устройстве.":"Номер WhatsApp и пароль, которые ты указал(а) при регистрации."}</p>
+  <div class="card">
+    <div class="tabs" role="group"><button type="button" data-am="reg" aria-pressed="${reg}">Регистрация</button><button type="button" data-am="login" aria-pressed="${!reg}">Вход</button></div>
+    ${reg?`<form class="af" id="regForm" novalidate>
+      <div class="row2"><label>Имя<input name="first_name" maxlength="60" autocomplete="given-name" required></label><label>Фамилия<input name="last_name" maxlength="60" autocomplete="family-name" required></label></div>
+      <label>Класс<select name="grade" required>${grades}</select></label>
+      <label>Твой номер WhatsApp<input name="phone" type="tel" inputmode="tel" autocomplete="username" value="+7 " required><span class="hint">Если своего номера нет, укажи номер родителей. Этот номер — твой логин.</span></label>
+      <label>Номер WhatsApp родителей<input name="parent_phone" type="tel" inputmode="tel" autocomplete="off" value="+7 " required></label>
+      <label>Придумай пароль<input name="password" type="password" autocomplete="new-password" required><span class="hint">Не меньше 6 символов. Запиши его, чтобы не забыть.</span></label>
+      <span class="hint">Регистрируясь, ты и родители соглашаетесь с <a href="../../privacy/" target="_blank" rel="noopener">политикой конфиденциальности</a>.</span>
+      <p class="err" role="alert"></p>
+      <button class="btn primary block" type="submit">Зарегистрироваться</button></form>`
+    :`<form class="af" id="loginForm" novalidate>
+      <label>Номер WhatsApp или логин<input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" value="+7 " required></label>
+      <label>Пароль<input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="err" role="alert"></p>
+      <button class="btn primary block" type="submit">Войти</button></form>`}
+  </div>`;
+  app.querySelectorAll("[data-am]").forEach(b=>b.onclick=()=>{authMode=b.dataset.am; render();});
+  app.querySelectorAll("input[type=tel],input[name=login]").forEach(el=>el.addEventListener("input",()=>fmtPhone(el)));
+  app.querySelector("form").addEventListener("submit",onAuthSubmit);
+}
+function fmtPhone(el){
+  const v=el.value; if(/[a-zA-Z]/.test(v)){el.value=v.replace(/^\+7\s*/,""); return;}
+  let d=v.replace(/^\+7\s*/,"").replace(/\D/g,""); if(d.length>10)d=d.slice(d.length-10);
+  el.value=!d?"+7 ":"+7 "+d.slice(0,3)+(d.length>3?" "+d.slice(3,6):"")+(d.length>6?" "+d.slice(6,8):"")+(d.length>8?" "+d.slice(8,10):"");
+}
+async function onAuthSubmit(e){
+  e.preventDefault(); if(authBusy||!sb) return;
+  const form=e.target, f=Object.fromEntries(new FormData(form)); for(const k in f) f[k]=String(f[k]).trim();
+  const btn=form.querySelector("button[type=submit]"), err=form.querySelector(".err"), label=btn.textContent;
+  const fail=m=>{authBusy=false; err.textContent=m; btn.disabled=false; btn.textContent=label;};
+  authBusy=true; err.textContent=""; btn.disabled=true; btn.textContent="Загрузка…";
+  const NET="Нет связи. Проверь интернет и попробуй ещё раз.";
+  try{
+    if(form.id==="loginForm"){
+      if(!f.login||!f.password) return fail("Заполни номер и пароль.");
+      const {data,error}=await sb.auth.signInWithPassword({email:loginEmail(f.login),password:f.password});
+      if(error) return fail(/fetch|network/i.test(error.message)?NET:"Неверный номер или пароль.");
+      authBusy=false; return enterAs(data.user);
+    }
+    if(!f.first_name||!f.last_name||!f.grade||!f.password) return fail("Заполни все поля.");
+    const ph=normPhone(f.phone), pph=normPhone(f.parent_phone);
+    if(!ph) return fail("Проверь свой номер. Пример: +7 701 123 45 67");
+    if(!pph) return fail("Проверь номер родителей. Пример: +7 701 123 45 67");
+    if(f.password.length<6) return fail("Пароль должен быть не короче 6 символов.");
+    const l=await sb.rpc("login_available",{p_login:ph}); if(l.error) return fail(NET);
+    if(!l.data) return fail("С этим номером уже есть аккаунт. Открой вкладку «Вход».");
+    const {data,error}=await sb.auth.signUp({email:loginEmail(ph),password:f.password,
+      options:{data:{role:"student",mode:"open",phone:ph,parent_phone:pph,first_name:f.first_name,last_name:f.last_name,grade:f.grade,consent:"true"}}});
+    if(error) return fail(/fetch|network/i.test(error.message)?NET:/registered|exists/i.test(error.message)?"С этим номером уже есть аккаунт. Открой вкладку «Вход».":"Не получилось зарегистрироваться. Проверь данные и попробуй ещё раз.");
+    if(!data.session) return fail("Регистрация не завершена. Напиши учителю.");
+    authBusy=false; return enterAs(data.user);
+  }catch(x){ console.warn(x); fail(NET); }
+}
+async function enterAs(user){
+  let prof=null; try{ const r=await sb.from("students").select("first_name,last_name").eq("user_id",user.id).maybeSingle(); prof=r.data||null; }catch(e){}
+  USER=user; PROFILE=prof; KEY=`${HW.bank_id}-v1:`+user.id; loadState();
+  S.name=(PROFILE&&PROFILE.first_name)||S.name||"";
+  if(S.phase==="start"&&S.log.length) S.phase="start";
+  save(); render(); window.scrollTo({top:0}); flush();
+}
+async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
+
+/* ответы уходят в общую базу aitil (attempts / answers) — учитель видит их в кабинете */
+let flushing=null, again=false;
+function flush(){
+  if(!USER||!sb) return Promise.resolve(false);
+  if(flushing){ again=true; return flushing; }
+  flushing=(async()=>{
+    let ok=true;
+    do{ again=false;
+      const rows=Object.values(S.dirty||{});
+      if(!rows.length && !S.finDirty) break;
+      if(!S.attempt){
+        const {data,error}=await sb.from("attempts").insert({bank_id:HW.bank_id,mode:"practice"}).select("id").single();
+        if(error){ console.warn(error); ok=false; break; }
+        S.attempt=data.id; save();
+      }
+      if(rows.length){
+        const now=new Date().toISOString();
+        const {error}=await sb.from("answers").upsert(rows.map(r=>({...r,attempt_id:S.attempt,bank_id:HW.bank_id,updated_at:now})));
+        if(error){ console.warn(error); ok=false; break; }
+        rows.forEach(r=>{ if(S.dirty[r.item_id]===r) delete S.dirty[r.item_id]; }); save();
+      }
+      if(S.finDirty){
+        const {error}=await sb.from("attempts").update({finished_at:new Date().toISOString(),first_correct:S.first,total:TOTAL}).eq("id",S.attempt);
+        if(error){ console.warn(error); ok=false; break; }
+        S.finDirty=false; save();
+      }
+    } while(again);
+    return ok && !Object.keys(S.dirty||{}).length && !S.finDirty;
+  })().catch(e=>{console.warn(e); return false;}).finally(()=>{flushing=null;});
+  return flushing;
+}
+function paintSaved(ok){
+  const el=document.getElementById("saved"); if(!el) return;
+  if(ok){ el.className="saved"; el.textContent="✓ Результат сохранён. Учитель его видит."; }
+  else { el.className="saved wait"; el.textContent="Результат сохранится, когда появится интернет."; }
+}
+addEventListener("online",()=>flush().then(paintSaved));
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") flush(); });
+
+async function boot(){
+  if(SB_CFG && window.supabase){
+    sb=window.supabase.createClient(SB_CFG.url,SB_CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"tilkz-auth"}});
+    try{ const {data:{session}}=await sb.auth.getSession(); if(session) return enterAs(session.user); }catch(e){ console.warn(e); }
+    let had=false; try{ had=!!localStorage.getItem("tilkz-auth"); }catch(e){}
+    authMode=had?"login":"reg";
+  } else {
+    app.innerHTML=`<p class="muted">Не удалось загрузить платформу. Обнови страницу.</p>`; return;
+  }
+  render();
+}
+app.innerHTML=`<p class="muted center" style="margin-top:40px">Загрузка…</p>`;
+boot();
+
+})();
+</script>
+</body>
+</html>

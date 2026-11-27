@@ -103,8 +103,20 @@ h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-w
         </div>
       </div>
     </li>
-    <li class="lesson soon" aria-disabled="true">
+    <li class="lesson">
       <div class="num" aria-hidden="true">3</div>
+      <div>
+        <h2>Моя школа <span lang="kk">· Менің мектебім</span><span class="done" id="done3" hidden>✓ <span id="score3"></span></span></h2>
+        <p>Повторяем все три окончания вместе: кітаптарым, мұғаліміміз, оқушыларыңызбыз. Пишем свой текст — как настоящий автор.</p>
+        <div class="tags" lang="kk"><span>кітап · дәптер · мұғалім</span><span>жалғаулар пойызы</span><span>қайталау</span></div>
+        <div class="acts">
+          <a class="btn primary" href="3/">Домашнее задание</a>
+          <a class="btn" href="3/slides/">Презентация урока</a>
+        </div>
+      </div>
+    </li>
+    <li class="lesson soon" aria-disabled="true">
+      <div class="num" aria-hidden="true">4</div>
       <div>
         <h2>Следующий урок</h2>
         <p>Появится здесь после занятия.</p>
@@ -116,7 +128,7 @@ h1{font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:8px 0 10px;text-w
 <script>
 try{
   const s=JSON.parse(localStorage.getItem("kz0-progress")||"null");
-  [0,1,2].forEach(n=>{ const best=s?(s["hw"+n]||0):0;
+  [0,1,2,3].forEach(n=>{ const best=s?(s["hw"+n]||0):0;
     if(best>0){document.getElementById("done"+n).hidden=false;document.getElementById("score"+n).textContent="лучший результат: "+best;} });
 }catch(e){}
 </script>

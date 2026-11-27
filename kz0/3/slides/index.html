@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="kk" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Урок 3. Моя школа — презентация | Қазақша. Старт</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: 16:9 stage scaled to window; every rule slide = left: rule card, right: live examples; teacher drawer on the right */
+  --bg:#E9F2FA;--paper:#FFFFFF;--ink:#15304A;--muted:#5B7189;--blue:#1A86C7;--gold:#F0B12B;--mint:#23A47C;--coral:#E0603F;--line:#CFE0EE;
+  --back:#1A86C7;--front:#C2477A;
+  --display:"Rubik","Segoe UI",system-ui,sans-serif;--body:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#0F2236;font-family:var(--body);color:var(--ink);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+#viewport{position:fixed;inset:0 0 56px 0}
+#stage{width:1280px;height:720px;position:absolute;left:50%;top:50%;transform-origin:center center;background:var(--bg);border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.slide{position:absolute;inset:0;padding:44px 60px 40px;display:none;flex-direction:column;gap:18px}
+.slide.active{display:flex}
+.slide .notes{display:none}
+.tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;font-size:15px;color:var(--blue);text-transform:uppercase;letter-spacing:.06em}
+.tag .dot{width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.slide h2{font-size:42px;line-height:1.1}
+.sub{font-size:21px;color:var(--muted);margin:0}
+.row{display:flex;gap:22px}
+.grow{flex:1;min-width:0}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:18px 22px}
+.frame{background:#FFF7E3;border:2px dashed var(--gold);border-radius:14px;padding:12px 16px;font-size:21px;line-height:1.45}
+.frame b{color:var(--coral)}
+.btn{background:var(--paper);border:2px solid var(--blue);color:var(--blue);border-radius:999px;padding:8px 18px;font-weight:800;font-size:17px}
+.btn:hover{background:var(--blue);color:#fff}
+.btn.solid{background:var(--blue);color:#fff}
+.hidden{display:none !important}
+.lvl{display:inline-block;border-radius:999px;padding:3px 12px;font-size:14px;font-weight:800;color:#fff;font-family:var(--display);letter-spacing:.03em}
+.l1{background:var(--mint)}.l2{background:var(--gold);color:var(--ink)}.l3{background:var(--coral)}
+.bk{color:var(--back);font-weight:800}.fr{color:var(--front);font-weight:800}
+.suf{background:#FFF0C2;border-radius:6px;padding:0 4px;font-weight:800;color:var(--coral)}
+.suf2{background:#DDF3EA;border-radius:6px;padding:0 4px;font-weight:800;color:var(--mint)}
+
+/* title */
+.title-wrap{flex:1;display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:center}
+.title-wrap h1{font-size:80px;line-height:1;margin-top:12px}
+.title-wrap h1 span{color:var(--blue)}
+.plan{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.plan span{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:17px}
+.photo{width:100%;border-radius:22px;border:3px solid var(--ink);display:block;object-fit:cover}
+
+/* warmup */
+.flipgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.flip{background:var(--blue);color:#fff;border:none;border-radius:16px;min-height:120px;padding:14px;font-family:var(--display);font-weight:600;font-size:24px;display:grid;place-items:center;text-align:center}
+.flip .a{display:none;font-size:20px;color:var(--mint);margin-top:6px}
+.flip.open{background:var(--paper);color:var(--ink);border:3px solid var(--blue)}
+.flip.open .a{display:block}
+
+/* words */
+.wgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.wcard{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.wcard .e{font-size:54px;line-height:1.1}
+.wcard .k{font-family:var(--display);font-size:26px;font-weight:700}
+.wcard .r{font-size:16px;color:var(--muted);min-height:22px;visibility:hidden}
+.wcard.show .r{visibility:visible}
+.wcard .lvl{font-size:12px;padding:2px 10px}
+
+/* phrases */
+.ph{display:flex;flex-direction:column;gap:12px}
+.ph button{display:flex;align-items:center;gap:16px;background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:14px 18px;text-align:left}
+.ph .n{width:40px;height:40px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:700;flex:none}
+.ph .k{font-family:var(--display);font-size:29px;font-weight:600}
+.ph .r{margin-left:auto;font-size:19px;color:var(--muted);visibility:hidden}
+.ph button.show .r{visibility:visible}
+
+/* rule tables */
+.rt{border-collapse:separate;border-spacing:0;font-size:22px;width:100%;background:var(--paper);border-radius:16px;overflow:hidden;border:2px solid var(--line)}
+.rt th,.rt td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.rt th{background:#F1F6FB;font-family:var(--display);font-size:18px;color:var(--muted);font-weight:600}
+.rt tr:last-child td{border-bottom:none}
+.rt td.c{font-weight:800}
+.rt .ex{font-size:19px;color:var(--muted)}
+.vowels{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vbox{border-radius:18px;padding:16px 20px;color:#fff}
+.vbox.b{background:var(--back)}.vbox.f{background:var(--front)}
+.vbox h3{font-size:24px;margin-bottom:6px}
+.vbox .v{font-family:var(--display);font-size:40px;font-weight:700;letter-spacing:.12em}
+.vbox p{margin:6px 0 0;font-size:20px}
+.no{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.no .card{display:flex;flex-direction:column;gap:6px}
+.no .big{font-family:var(--display);font-size:32px;font-weight:700}
+.no .big s{color:var(--coral);text-decoration-thickness:3px}
+.no .ru{font-size:18px;color:var(--muted)}
+
+/* plural quiz */
+.pq{flex:1;display:flex;flex-direction:column;align-items:center;gap:20px;justify-content:center}
+.pq .w{font-family:var(--display);font-size:84px;font-weight:700}
+.pq .w .s{color:var(--coral)}
+.pq .ru{font-size:22px;color:var(--muted);margin-top:-12px}
+.sufs{display:grid;grid-template-columns:repeat(3,150px);gap:12px}
+.sufs button{background:var(--paper);border:3px solid var(--line);border-radius:16px;padding:12px;font-family:var(--display);font-size:30px;font-weight:700}
+.sufs button.right{border-color:var(--mint);background:#E4F6EF}
+.sufs button.wrong{border-color:var(--coral);background:#FDEBE5}
+.dots{display:flex;gap:8px}
+.dots i{width:18px;height:18px;border-radius:50%;background:var(--line);display:block}
+.dots i.r{background:var(--mint)}.dots i.w{background:var(--coral)}.dots i.c{box-shadow:0 0 0 3px var(--ink)}
+.why{font-size:19px;color:var(--muted);min-height:28px;text-align:center}
+
+/* possessive table */
+.pt{border-collapse:separate;border-spacing:0;font-size:21px;width:100%;background:var(--paper);border-radius:16px;overflow:hidden;border:2px solid var(--line)}
+.pt th,.pt td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left}
+.pt th{background:#F1F6FB;font-family:var(--display);font-size:17px;color:var(--muted);font-weight:600}
+.pt td.p{font-weight:700;color:var(--muted)}
+.pt td.f{font-family:var(--display);font-size:23px;font-weight:600}
+.pt tr.sep td{border-top:3px solid var(--ink)}
+.pt tr.hl td{background:#FFF7E3}
+
+/* builder */
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.pick button{background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:7px 14px;font-weight:800;font-size:19px}
+.pick button.on{border-color:var(--blue);background:#DDEFFB}
+.plab{font-weight:800;font-size:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.out{font-family:var(--display);font-size:52px;font-weight:600;background:var(--ink);color:#fff;border-radius:18px;padding:20px 28px;line-height:1.2}
+.out .pr{color:#A9C4DC;font-size:34px}
+.out .r{color:#fff}.out .pl{color:var(--gold)}.out .po{color:#7FE0BE}
+.out small{display:block;font-family:var(--body);font-size:21px;color:#A9C4DC;font-weight:600;margin-top:8px}
+
+/* formula */
+.formula{display:flex;align-items:center;gap:14px;font-family:var(--display);font-size:40px;font-weight:700;flex-wrap:wrap}
+.formula span.b{background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:8px 18px}
+.formula span.pl{border-color:var(--gold);background:#FFF3D4}
+.formula span.po{border-color:var(--mint);background:#E4F6EF}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vs .card{font-size:30px;font-family:var(--display);font-weight:600}
+.ok{color:var(--mint)}.bad{color:var(--coral)}
+
+/* speaking */
+.q ol{margin:0;padding-left:26px;display:flex;flex-direction:column;gap:10px;font-size:22px;font-weight:700}
+
+/* reflection */
+.faces{display:flex;gap:16px}
+.face{background:var(--paper);border:3px solid var(--line);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;font-size:17px;width:170px;text-align:center}
+.face .e{font-size:50px}
+.face.on{border-color:var(--gold);background:#FFF3D4}
+.hw{background:var(--ink);color:#fff;border-radius:20px;padding:22px 26px;font-size:21px;line-height:1.5}
+.hw h3{font-size:27px;color:var(--gold);margin-bottom:8px}
+.hw ol{margin:0;padding-left:24px}
+.hw b{color:#FFE08A}
+
+/* bar + drawer */
+#bar{position:fixed;left:0;right:0;bottom:0;height:56px;background:#0F2236;color:#DCE8F3;display:flex;align-items:center;gap:12px;padding:0 16px;font-size:15px}
+#bar button,#bar a{background:#1E3A57;border:1px solid #2E5378;color:#fff;border-radius:10px;padding:7px 14px;font-weight:700;text-decoration:none}
+#bar button:hover{background:#2A4E73}
+#bar .sp{flex:1}
+#prog{position:absolute;left:0;top:0;height:3px;background:var(--gold);transition:width .3s}
+#stitle{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:38vw}
+#clock{font-variant-numeric:tabular-nums;font-weight:800;color:#fff}
+#clock.late{color:#FFB199}
+.kbd{opacity:.6;font-size:13px}
+#drawer{position:fixed;top:0;right:0;bottom:56px;width:min(440px,92vw);background:#F7FAFD;color:var(--ink);box-shadow:-10px 0 40px rgba(0,0,0,.35);transform:translateX(105%);transition:transform .25s;display:flex;flex-direction:column;z-index:20}
+#drawer.open{transform:none}
+#drawer header{padding:14px 20px;border-bottom:2px solid var(--line);font-family:var(--display);font-weight:700;display:flex;justify-content:space-between;align-items:center}
+#drawer header button{background:none;border:none;font-size:22px;color:var(--muted)}
+.dbody{flex:1;overflow:auto;padding:16px 20px 30px;font-size:15.5px;line-height:1.5}
+.dbody h4{font-family:var(--display);font-size:17px;margin:16px 0 6px}
+.dbody h4:first-child{margin-top:0}
+.dbody ul{padding-left:20px;margin:6px 0}
+.dbody .say{background:#FFF7E3;border-left:4px solid var(--gold);padding:8px 12px;border-radius:6px;margin:8px 0}
+.dbody .watch{background:#EAF4FB;border-left:4px solid var(--blue);padding:8px 12px;border-radius:6px;margin:8px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+.jk{background:#DCEBFF;border-radius:6px;padding:0 4px;font-weight:800;color:#1A5FB4}
+.jkt{color:#1A5FB4}
+.goal{background:var(--paper);border:3px solid var(--ink);border-radius:24px;padding:26px 30px;display:flex;flex-direction:column;gap:12px}
+.goal .gl{margin:0;font-weight:800;color:var(--muted);font-size:18px;text-transform:uppercase;letter-spacing:.05em}
+.goal .gs{margin:0;font-family:var(--display);font-size:36px;font-weight:600;line-height:1.25}
+.goal .gr{margin:0;font-size:19px;color:var(--muted)}
+.pt.jt td.f{font-size:24px}
+.chain{display:flex;flex-direction:column;gap:18px}
+.formula .fx{font-family:var(--body);font-size:22px;font-weight:700;color:var(--muted);margin-left:8px}
+.formula span.jkb{border-color:#1A5FB4;background:#DCEBFF}
+.legend{display:flex;gap:22px;align-items:center;font-weight:700;font-size:17px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:18px;border-radius:5px;margin-right:6px;vertical-align:-3px;border:2px solid}
+.legend i.pl{background:#FFF3D4;border-color:var(--gold)}.legend i.po{background:#E4F6EF;border-color:var(--mint)}.legend i.jkb{background:#DCEBFF;border-color:#1A5FB4}
+.quote{background:var(--ink);color:#fff;border-radius:20px;padding:24px 30px}
+.quote p{margin:0;font-family:var(--display);font-size:40px;font-weight:600;line-height:1.2}
+.quote .jk{background:#2D6FC4;color:#fff}
+.quote>span{display:block;margin-top:8px;color:var(--gold);font-weight:800;font-size:19px}
+.prov{display:flex;flex-direction:column;gap:10px}
+.prov button{display:flex;align-items:center;gap:16px;background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:12px 18px;text-align:left}
+.prov .k{font-family:var(--display);font-size:24px;font-weight:600}
+.prov .r{margin-left:auto;font-size:18px;color:var(--muted);visibility:hidden;text-align:right}
+.prov button.show .r{visibility:visible}
+.sufs.six{grid-template-columns:repeat(3,170px)}
+.out .jkc{color:#8EC5FF}
+.basket{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.bcard{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:10px 14px;display:grid;grid-template-columns:56px 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;min-height:96px}
+.bcard .e{grid-row:1/3;font-size:44px;line-height:1}
+.bcard .k{font-family:var(--display);font-size:24px;font-weight:700;visibility:hidden}
+.bcard .t{font-size:18px;color:var(--muted);font-weight:700}
+.bcard .a{display:none;font-family:var(--display);font-size:22px;font-weight:600;color:var(--mint)}
+.bcard.s1 .k{visibility:visible}
+.bcard.s2 .t{display:none}.bcard.s2 .a{display:block}
+.bcard.s2{border-color:var(--mint);background:#F2FBF7}
+.train{display:flex;gap:10px;align-items:stretch}
+.wagon{flex:1;border-radius:18px;border:3px solid var(--ink);background:var(--paper);padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-height:120px;position:relative}
+.wagon:not(:last-child)::after{content:"";position:absolute;right:-13px;top:50%;width:16px;height:6px;background:var(--ink)}
+.wagon .wl{font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.wagon .wv{font-family:var(--display);font-size:40px;font-weight:700;min-height:48px}
+.wagon.w0{background:#EAF2FA}.wagon.w1{border-color:var(--gold);background:#FFF3D4}.wagon.w2{border-color:var(--mint);background:#E4F6EF}.wagon.w3{border-color:#1A5FB4;background:#DCEBFF}
+.wagon.off{opacity:.35}
+.wagon.empty .wv{color:var(--muted);font-size:24px}
+.tout{font-family:var(--display);font-size:50px;font-weight:600;background:var(--ink);color:#fff;border-radius:18px;padding:16px 26px;min-height:92px}
+.tout .pl{color:var(--gold)}.tout .po{color:#7FE0BE}.tout .jkc{color:#8EC5FF}
+.tru{font-size:22px;color:var(--muted);font-weight:700}
+.errs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ecard{background:var(--paper);border:2px solid var(--coral);border-radius:16px;padding:12px 16px;text-align:left;display:flex;flex-direction:column;gap:4px;min-height:96px}
+.ecard .w{font-family:var(--display);font-size:25px;font-weight:600;color:var(--coral)}
+.ecard .c,.ecard .x{display:none}
+.ecard.open{border-color:var(--mint)}
+.ecard.open .w{text-decoration:line-through;font-size:19px;color:var(--muted)}
+.ecard.open .c{display:block;font-family:var(--display);font-size:25px;font-weight:600;color:var(--mint)}
+.ecard.open .x{display:block;font-size:16px;color:var(--muted);font-weight:700}
+.mt{font-size:28px;line-height:1.65}
+.mt i{font-style:normal}
+.mt.on i.l{background:#FFF0C2;color:#B07A00;border-radius:4px;padding:0 1px;font-weight:800}
+.mt.on i.p{background:#DDF3EA;color:var(--mint);border-radius:4px;padding:0 1px;font-weight:800}
+.mt.on i.j{background:#DCEBFF;color:#1A5FB4;border-radius:4px;padding:0 1px;font-weight:800}
+.legend.col{flex-direction:column;align-items:flex-start;gap:8px}
+.quote .qs{background:#5A4A12;color:#FFE08A}
+.topic{display:flex;align-items:center;gap:14px;background:var(--paper);border:3px solid var(--line);border-radius:16px;padding:12px 16px;font-family:var(--display);font-size:23px;font-weight:600;text-align:left}
+.topic .e{font-size:34px}
+.topic.on{border-color:var(--blue);background:#DDEFFB}
+.timer{display:flex;align-items:center;gap:14px;margin-top:6px}
+.timer span{font-family:var(--display);font-size:44px;font-weight:700;font-variant-numeric:tabular-nums}
+.timer span.done{color:var(--coral)}
+.check{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check button{display:flex;gap:10px;align-items:center;background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:8px 12px;text-align:left;font-weight:700;font-size:16px}
+.check button.on{border-color:var(--mint);background:#E4F6EF}
+.check .b{font-size:22px}
+.chair{font-size:150px;line-height:1;width:300px;text-align:center}
+.star{display:flex;gap:14px;align-items:center;background:var(--paper);border:2px solid var(--gold);border-radius:16px;padding:14px 18px;font-size:24px;font-weight:700}
+.star span{font-size:30px}
+.star.wish{border-color:var(--blue)}
+#drawer,#clock,#clockBtn,#bar .kbd{display:none!important}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+<!-- 1 -->
+<section class="slide" data-time="2" data-title="Сәлемдесу">
+  <div class="title-wrap">
+    <div>
+      <div class="tag"><span class="dot"></span>Қазақша. Старт · 3-сабақ</div>
+      <h1>Менің <span>мектебім</span></h1>
+      <p class="sub" style="margin-top:14px">Моя школа · Бүгін сен — автор!</p>
+      <div class="plan"><span>Сөз қоржыны</span><span>10 жаңа сөз</span><span>Жалғаулар пойызы</span><span>Қатені тап</span><span>Өз мәтінімді жазамын</span></div>
+    </div>
+    <div class="goal">
+      <p class="gl">Сабақтың соңында:</p>
+      <p class="gs">Мен өз мектебім туралы <b style="color:var(--blue)">5 сөйлем</b> жазып, оқып беремін.</p>
+      <p class="gs" style="font-size:30px">Біз сіздің оқушы<span class="suf">лар</span><span class="suf2">ыңыз</span><span class="jk">быз</span>!</p>
+      <p class="gr">Мы ваши ученики!</p>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>Сабақтың идеясы (Нэнси Этвелл тәсілі)</h4>
+    <p>Бұл — қайталау сабағы, бірақ «жаттығу» емес, <b>шеберхана</b>: қысқа мини-сабақ (ереже 10 минуттан аспайды), содан кейін оқушы өзі жазады, өзі оқиды, тақырыбын өзі таңдайды. Мұғалім жанында отырып кеңес береді (conferring). Сабақтың соңында оқушы — «автор», өз мәтінін оқып береді.</p>
+    <div class="say">«Бүгін сен қазақша өз мәтініңді жазасың. Соңында оны маған оқып бересің. Сен — автор!»</div>
+    <h4>Неге «Мектеп» тақырыбы?</h4>
+    <ul><li>Баланың күнделікті өмірі: заттары, сыныбы, мұғалімі — бәрі таныс, сондықтан жазуға материал көп.</li>
+    <li>Үш жалғау да табиғи қолданылады: кітап<b>тар</b>ым, біздің мұғалім<b>іміз</b>, мен оқушы<b>мын</b>.</li></ul>
+    <h4>Үй тапсырмаларына шолу</h4>
+    <p>Мұғалім кабинетінен 1 және 2-сабақтың нәтижесін алдын ала қараңыз.</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-time="4" data-title="Сөз қоржыны: қайталау">
+  <div class="tag"><span class="dot"></span>Қайталау · 0, 1, 2-сабақтар</div>
+  <h2>Сөз қоржыны: атын айт та, жалғау қос!</h2>
+  <p class="sub">Карточканы бас. Сөзді айт, сосын тапсырманы орында.</p>
+  <div class="basket" id="basket">
+    <button class="bcard"><span class="e">🐱</span><span class="k">мысық</span><span class="t">көп → ?</span><span class="a">мысықтар</span></button>
+    <button class="bcard"><span class="e">🍎</span><span class="k">алма</span><span class="t">екі → ?</span><span class="a">екі алма</span></button>
+    <button class="bcard"><span class="e">📖</span><span class="k">кітап</span><span class="t">менің → ?</span><span class="a">кітабым</span></button>
+    <button class="bcard"><span class="e">👵</span><span class="k">әже</span><span class="t">біздің → ?</span><span class="a">әжеміз</span></button>
+    <button class="bcard"><span class="e">🧑</span><span class="k">аға</span><span class="t">менің + көп → ?</span><span class="a">ағаларым</span></button>
+    <button class="bcard"><span class="e">👦</span><span class="k">іні</span><span class="t">оның → ?</span><span class="a">інісі</span></button>
+    <button class="bcard"><span class="e">🤝</span><span class="k">дос</span><span class="t">Мен оның … ?</span><span class="a">досымын</span></button>
+    <button class="bcard"><span class="e">🏘️</span><span class="k">көрші</span><span class="t">Біз … (көп)</span><span class="a">көршіміз</span></button>
+    <button class="bcard"><span class="e">🏫</span><span class="k">сыныптас</span><span class="t">Сен менің … ?</span><span class="a">сыныптасымсың</span></button>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (4 мин)</h4>
+    <p>Аралықпен қайталау: 0, 1, 2-сабақтардың сөздері мен жалғаулары. Бірінші басу — сөз шығады; екінші басу — тапсырманың жауабы ашылады.</p>
+    <ul><li>Алдымен оқушы суретке қарап сөзді өзі айтсын, сосын басыңыз.</li>
+    <li>«екі алма» — көптік жалғанбайтынын еске салу (1-сабақ).</li>
+    <li>Қай карточка қиын болса, белгілеп алыңыз: үй тапсырмасының 1-раунды да дәл осы сөздерден тұрады.</li></ul>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-time="4" data-title="10 жаңа сөз">
+  <div class="tag"><span class="dot"></span>Жаңа сөздер</div>
+  <h2>Менің мектебім: 10 сөз</h2>
+  <div class="wgrid" id="words">
+    <button class="wcard"><span class="lvl l1">жеңіл</span><span class="e">📕</span><span class="k">кітап</span><span class="r">книга</span></button>
+    <button class="wcard"><span class="lvl l1">жеңіл</span><span class="e">✏️</span><span class="k">қалам</span><span class="r">ручка, карандаш</span></button>
+    <button class="wcard"><span class="lvl l2">орта</span><span class="e">📓</span><span class="k">дәптер</span><span class="r">тетрадь</span></button>
+    <button class="wcard"><span class="lvl l2">орта</span><span class="e">🎒</span><span class="k">сөмке</span><span class="r">портфель, сумка</span></button>
+    <button class="wcard"><span class="lvl l2">орта</span><span class="e">🏫</span><span class="k">сынып</span><span class="r">класс</span></button>
+    <button class="wcard"><span class="lvl l2">орта</span><span class="e">👩‍🏫</span><span class="k">мұғалім</span><span class="r">учитель</span></button>
+    <button class="wcard"><span class="lvl l2">орта</span><span class="e">🟩</span><span class="k">тақта</span><span class="r">доска</span></button>
+    <button class="wcard"><span class="lvl l3">қиын</span><span class="e">📚</span><span class="k">оқулық</span><span class="r">учебник</span></button>
+    <button class="wcard"><span class="lvl l3">қиын</span><span class="e">📔</span><span class="k">күнделік</span><span class="r">дневник</span></button>
+    <button class="wcard"><span class="lvl l3">қиын</span><span class="e">🔔</span><span class="k">үзіліс</span><span class="r">перемена</span></button>
+  </div>
+  <div class="row" style="align-items:center">
+    <button class="btn" id="wAll">Барлық аудармасын көрсету</button>
+    <div class="frame grow" style="font-size:18px">Сақ бол: кітап → кіта<b>б</b>ым, сынып → сыны<b>б</b>ым, күнделік → күнделі<b>г</b>ім, оқулық → оқулы<b>ғ</b>ым.</div>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (4 мин)</h4>
+    <p>10 зат есім: 2 жеңіл (кітап, қалам), 5 орта (дәптер, сөмке, сынып, мұғалім, тақта), 3 қиын (оқулық, күнделік, үзіліс). Бәрі баланың күнде көретін заттары.</p>
+    <ul><li>Ойын: «Сөмкеңде не бар?» Оқушы өз сөмкесін камераға көрсетіп, заттарын қазақша атайды.</li>
+    <li>Ұяңдау (п→б, к→г, қ→ғ) тек осы сөздерде көрсетіледі. Ереже ретінде жаттатпаңыз, «естілуі» арқылы үйретіңіз.</li></ul>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-time="5" data-title="Мини-сабақ: жалғаулар пойызы">
+  <div class="tag"><span class="dot"></span>Мини-сабақ</div>
+  <h2>Жалғаулар пойызы: вагондардың реті өзгермейді!</h2>
+  <div class="train" id="train">
+    <div class="wagon w0"><span class="wl">сөз</span><span class="wv" id="tw0"></span></div>
+    <div class="wagon w1"><span class="wl">көптік</span><span class="wv" id="tw1"></span></div>
+    <div class="wagon w2"><span class="wl">тәуелдік</span><span class="wv" id="tw2"></span></div>
+    <div class="wagon w3"><span class="wl">жіктік</span><span class="wv" id="tw3"></span></div>
+  </div>
+  <div class="tout" id="tout"></div>
+  <div class="row" style="align-items:center">
+    <button class="btn solid" id="tNext">Келесі вагон →</button>
+    <button class="btn" id="tEx">Басқа мысал</button>
+    <span class="tru" id="tru"></span>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (5 мин)</h4>
+    <p>Үш жалғауды бір жүйеге келтіру. Метафора: пойыз. Локомотив — сөз, артынан вагондар әрдайым бір ретпен тіркеледі: көптік → тәуелдік → жіктік. Кейбір вагон бос болуы мүмкін, бірақ орны ауыспайды.</p>
+    <ul><li>«Келесі вагон» батырмасын басқан сайын бір жалғау қосылады. Әр қадамда оқушы мағынасын айтады: оқушылар — ученики, оқушыларыңыз — ваши ученики, оқушыларыңызбыз — мы ваши ученики.</li>
+    <li>«Басқа мысал» — үш түрлі пойыз: оқушы, мұғалім, кітап (кітапта жіктік вагоны бос).</li>
+    <li>Еске салу: сіздің/сендердің → алдымен көптік: оқушы<b>лар</b>ыңыз.</li></ul>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-time="4" data-title="Жаттығу: пойыз құрастыр">
+  <div class="tag"><span class="dot"></span>Жаттығу · 1</div>
+  <h2>Өз пойызыңды құрастыр</h2>
+  <div class="row grow">
+    <div style="width:540px;display:flex;flex-direction:column;gap:12px">
+      <div><div class="plab">Кім?</div><div class="pick" id="bS"></div></div>
+      <div><div class="plab">Кімнің?</div><div class="pick" id="bO"></div></div>
+      <div><div class="plab">Кім болып тұр?</div><div class="pick" id="bW"></div></div>
+      <button class="btn" id="bHide" style="align-self:flex-start">Жауапты жасыру: алдымен өзің айт</button>
+    </div>
+    <div class="grow" style="display:flex;flex-direction:column;justify-content:center">
+      <div class="out" id="bOut"></div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (4 мин)</h4>
+    <p>2-сабақтағы құрастырғыш, енді мектеп сөздерімен. Оқушы алдымен өзі айтады, сосын тексереді.</p>
+    <ul><li>Міндетті сөйлемдер: «Біз сіздің оқушыларыңызбыз», «Сіз біздің мұғалімімізсіз», «Сен менің сыныптасымсың».</li>
+    <li>Рөлдерді ауыстырыңыз: сіз сұрайсыз — «Мен кіммін?» — оқушы: «Сіз менің мұғалімімсіз».</li></ul>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-time="4" data-title="Қатені тап">
+  <div class="tag"><span class="dot"></span>Жаттығу · 2</div>
+  <h2>Детектив: қатені тап және түзет!</h2>
+  <div class="errs" id="errs">
+    <button class="ecard"><span class="w">Менің екі кітаптарым бар.</span><span class="c">Менің екі кітабым бар.</span><span class="x">Сан есімнен кейін көптік жалғанбайды.</span></button>
+    <button class="ecard"><span class="w">Мен бесінші сыныптың оқушы.</span><span class="c">Мен бесінші сыныптың оқушысымын.</span><span class="x">«Мен» → жіктік жалғау керек.</span></button>
+    <button class="ecard"><span class="w">Сендердің мұғалімің кім?</span><span class="c">Сендердің мұғалімдерің кім?</span><span class="x">Сендердің → көптік + тәуелдік.</span></button>
+    <button class="ecard"><span class="w">Ол менің досымсың.</span><span class="c">Ол менің досым.</span><span class="x">III жақта жіктік жалғау жоқ.</span></button>
+    <button class="ecard"><span class="w">Сөмкемде көп дәптерлер бар.</span><span class="c">Сөмкемде көп дәптер бар.</span><span class="x">«көп» сөзінен кейін көптік жоқ.</span></button>
+    <button class="ecard"><span class="w">Менің кітаплар қызық.</span><span class="c">Менің кітаптарым қызық.</span><span class="x">п-дан кейін -тар; менің → -ым.</span></button>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (4 мин)</h4>
+    <p>Этвеллдің «редакциялау» кезеңі: оқушы қатені өзі табады. Бұл — өз мәтінін тексеруге дайындық.</p>
+    <ul><li>Оқушы қате сөзді атап, қалай түзетуге болатынын айтады. Сосын карточканы басыңыз: дұрыс нұсқасы мен ережесі шығады.</li>
+    <li>Барлық 6 қате — орыс тілді оқушылардың ең жиі жіберетін қателері.</li></ul>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-time="5" data-title="Үлгі мәтін">
+  <div class="tag"><span class="dot"></span>Үлгі мәтін</div>
+  <div class="row grow">
+    <div class="grow" style="display:flex;flex-direction:column;gap:12px">
+      <h2 style="font-size:34px">Біздің сынып <span style="font-size:20px;color:var(--muted);font-weight:600">· авторы: Ерлан, 5-сынып</span></h2>
+      <div class="text mt" id="mtext">Менің атым Ерлан. Мен бесінші сыныптың оқушы<i class="p">сы</i><i class="j">мын</i>. Біздің сыны<i class="p">бымыз</i>да он бес оқушы бар. Менің сыныптас<i class="l">тар</i><i class="p">ым</i> өте көңілді. Біздің мұғалім<i class="p">іміз</i>дің аты — Айгүл Серікқызы. Менің сөмке<i class="p">м</i>де үш кітап пен бес дәптер бар. Үзілісте біз дос<i class="l">тар</i><i class="p">ым</i>мен ойнаймыз. Біз — бір сыныптың оқушы<i class="l">лар</i><i class="p">ы</i><i class="j">мыз</i>!</div>
+    </div>
+    <div style="width:330px;display:flex;flex-direction:column;gap:12px">
+      <button class="btn solid" id="mShow">Жалғауларды бояу</button>
+      <div class="legend col"><span><i class="pl"></i>көптік</span><span><i class="po"></i>тәуелдік</span><span><i class="jkb"></i>жіктік</span></div>
+      <div class="card" style="font-size:19px;line-height:1.5">
+        <p style="margin:0 0 8px">1. Ерлан нешінші сыныпта оқиды?</p>
+        <p style="margin:0 0 8px">2. Сыныпта неше оқушы бар?</p>
+        <p style="margin:0">3. Ерланның сөмкесінде не бар?</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (5 мин)</h4>
+    <p>Этвелл «mentor text» деп атайтын үлгі мәтін: құрдасының жазған мәтіні сияқты қарапайым әрі шынайы. Оқушы оны оқып, сосын өз мәтінін дәл осындай етіп жазады.</p>
+    <ul><li>Оқушы дауыстап оқиды. Сосын үш сұраққа жауап береді.</li>
+    <li>«Жалғауларды бояу» батырмасын баспас бұрын сұраңыз: «Мәтіннен көптік жалғауы бар сөзді тап». Сосын басып, тексеріңіз.</li>
+    <li>Назар: «он бес оқушы» (көптік жоқ), «сыныбымызда» (п → б), «оқушыларымыз» (үш жалғау!).</li></ul>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-time="2" data-title="Алтынсарин">
+  <div class="tag"><span class="dot"></span>Әдебиеттен</div>
+  <h2>Ыбырай Алтынсарин мектепке шақырады</h2>
+  <div class="quote"><p>Кел, бала<span class="suf qs">лар</span>, оқылық!<br>Оқығанды көңілге<br>Ықыласпен тоқылық!</p><span>— Ыбырай Алтынсарин, «Кел, балалар, оқылық»</span></div>
+  <div class="frame">Тапсырма: өлеңнен <b>көптік жалғауы</b> бар сөзді тап. «Оқылық» — давайте учиться (біз + оқу).</div>
+  <div class="notes">
+    <h4>Мақсаты (2 мин)</h4>
+    <p>Қазақ балаларына арналған алғашқы мектеп өлеңдерінің бірі. Тақырыпқа сай және сөздері қарапайым.</p>
+    <ul><li>Оқушы «балалар» сөзін табады: бала + лар (дауыстыдан кейін -лар).</li>
+    <li>«Оқылық» — бірге оқиық деген шақыру. Бүгін грамматикасын талдамаймыз, тек мағынасын айтыңыз.</li>
+    <li>Бонус: жатқа айтуға ұсыныңыз (үй тапсырмасында сөйлем құрау раундында бар).</li></ul>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-time="11" data-title="Жазу шеберханасы">
+  <div class="tag"><span class="dot"></span>Жазу шеберханасы</div>
+  <h2>Тақырыпты өзің таңда да, 5 сөйлем жаз</h2>
+  <div class="row grow">
+    <div style="width:430px;display:flex;flex-direction:column;gap:10px" id="topics">
+      <button class="topic on" data-t="0"><span class="e">🏫</span>Менің сыныбым</button>
+      <button class="topic" data-t="1"><span class="e">🤝</span>Менің ең жақсы досым</button>
+      <button class="topic" data-t="2"><span class="e">🎒</span>Менің сөмкемде не бар?</button>
+      <div class="timer"><span id="wt">07:00</span><button class="btn" id="wtBtn">Бастау</button></div>
+    </div>
+    <div class="grow" style="display:flex;flex-direction:column;gap:12px">
+      <div class="frame" id="tframe" style="font-size:20px;line-height:1.6"></div>
+      <div class="check" id="check">
+        <button><span class="b">☐</span>Көптік жалғауы бар сөз (-лар / -тар)</button>
+        <button><span class="b">☐</span>Тәуелдік жалғауы бар сөз (-ым / -ымыз)</button>
+        <button><span class="b">☐</span>Жіктік жалғауы бар сөз (-мын / -пын / -мыз)</button>
+        <button><span class="b">☐</span>Сан есімнен кейін көптік жоқ</button>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (11 мин) — сабақтың басты бөлігі</h4>
+    <p>Этвеллдің негізгі қағидасы: <b>таңдау</b>. Оқушы тақырыпты өзі таңдаса, жазуға ықыласы артады. 7 минут — жазу, қалғаны — мұғаліммен жеке кеңес (conferring).</p>
+    <ul><li>Оқушы тақырыпты басады, оң жақта сөйлем үлгілері шығады. Үлгіні көшірмей, өз өмірімен толтырады.</li>
+    <li>Таймерді іске қосыңыз. Жазып жатқанда араласпаңыз; оқушы сұраса ғана көмектесіңіз.</li>
+    <li>Жазып болған соң, оқушы тексеру парағын (чек-лист) өзі белгілейді: әр жалғауды мәтінінен тауып көрсетеді.</li>
+    <li>Кеңес беру: бір ғана нәрсеге назар аударыңыз. «Мына сөйлем өте жақсы. Мына сөзге қандай жалғау керек?»</li></ul>
+    <div class="watch">Оқушы чатқа немесе Google Docs-қа жаза алады. Мәтінді сақтап алыңыз: үй тапсырмасының бонус раундында ол мәтінін қайта жазып, платформаға жібереді.</div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-time="3" data-title="Автор орындығы">
+  <div class="tag"><span class="dot"></span>Автор орындығы</div>
+  <h2>Сен — автор! Мәтініңді оқып бер</h2>
+  <div class="row grow" style="align-items:center">
+    <div class="chair" aria-hidden="true">🪑✨</div>
+    <div class="grow" style="display:flex;flex-direction:column;gap:14px">
+      <div class="star"><span>⭐</span>Маған ұнаған сөйлем: «…»</div>
+      <div class="star"><span>⭐</span>Сен … жалғауын дұрыс қолдандың.</div>
+      <div class="star wish"><span>💡</span>Келесі жолы: …</div>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (3 мин)</h4>
+    <p>«Author's chair» — Этвеллдің маңызды кезеңі: оқушы өз мәтінін дауыстап оқиды, мұғалім оны автор ретінде тыңдайды.</p>
+    <ul><li>Кері байланыс: «екі жұлдыз және бір тілек». Екі нақты мақтау және бір ғана ұсыныс.</li>
+    <li>Мақтау нақты болсын: «"сыныптастарым" деп дұрыс жаздың — көптік пен тәуелдік бірге».</li>
+    <li>Түзетуді тек бір нәрсемен шектеңіз. Барлық қатені бірден түзетпеңіз.</li></ul>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-time="1" data-title="Қорытынды және үй тапсырмасы">
+  <div class="tag"><span class="dot"></span>Қорытынды</div>
+  <h2>Бүгін сен автор болдың!</h2>
+  <div class="row grow">
+    <div class="grow" style="display:flex;flex-direction:column;gap:14px">
+      <div class="faces" id="faces">
+        <button class="face"><span class="e">🤩</span>Жазу қызық болды!</button>
+        <button class="face"><span class="e">🙂</span>Жақсы, бірақ қиын жерлер болды</button>
+        <button class="face"><span class="e">😕</span>Жалғаулар әлі қиын</button>
+      </div>
+      <div class="frame">Пойыздың реті: <b>сөз → көптік → тәуелдік → жіктік</b>.<br>Біз сіздің оқушыларыңызбыз!</div>
+    </div>
+    <div class="hw" style="width:470px;align-self:flex-start">
+      <h3>Үй тапсырмасы</h3>
+      <ol>
+        <li>aitil.kz/kz0/3/ — <b>ойын-тапсырма</b> (6 раунд, қайталау бар).</li>
+        <li>Бүгінгі мәтініңді таза жазып, платформадағы бонус раундқа жібер.</li>
+        <li>Мәтініңді дауыстап оқып, аудиосын жібер.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="notes">
+    <h4>Мақсаты (1 мин)</h4>
+    <ul><li>Оқушы көңіл күйін таңдайды. «Жалғаулар әлі қиын» десе, келесі сабақтың басында «пойызды» қайталаңыз.</li>
+    <li>Үй тапсырмасы: aitil.kz/kz0/3/. Нәтиже мұғалім кабинетіне өзі түседі.</li></ul>
+  </div>
+</section>
+
+</div></div>
+
+<div id="bar">
+  <div id="prog"></div>
+  <button id="prev" aria-label="Алдыңғы слайд">◀</button>
+  <span id="counter" style="font-variant-numeric:tabular-nums;font-weight:700"></span>
+  <button id="next" aria-label="Келесі слайд">▶</button>
+  <span id="stitle"></span>
+  <span class="sp"></span>
+  <span class="kbd">жоспар: <span id="plan"></span></span>
+  <span id="clock">00:00</span><span class="kbd">/ 45:00</span>
+  <button id="clockBtn">Бастау</button>
+  <button id="fsBtn">Толық экран</button>
+  <a href="../../">← К курсу</a>
+</div>
+
+<aside id="drawer" aria-label="Мұғалім панелі">
+  <header><span>Мұғалімге нұсқаулық</span><button id="drawerClose" aria-label="Жабу">×</button></header>
+  <div class="dbody" id="notesBox"></div>
+</aside>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const stage=document.getElementById('stage');
+  let cur=0;
+  function fit(){const w=innerWidth-24,h=innerHeight-56-24;const s=Math.min(w/1280,h/720);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+  addEventListener('resize',fit);fit();
+
+  const starts=[];let acc=0;slides.forEach(s=>{starts.push(acc);acc+=+s.dataset.time;});
+  const mm=m=>String(Math.floor(m)).padStart(2,'0')+':00';
+  function show(i){
+    cur=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+    const sl=slides[cur];
+    document.getElementById('counter').textContent=(cur+1)+' / '+slides.length;
+    document.getElementById('stitle').textContent=sl.dataset.title+' · '+sl.dataset.time+' мин';
+    document.getElementById('plan').textContent=mm(starts[cur])+'–'+mm(starts[cur]+(+sl.dataset.time));
+    document.getElementById('prog').style.width=((cur+1)/slides.length*100)+'%';
+    const n=sl.querySelector('.notes');
+    document.getElementById('notesBox').innerHTML='<h4 style="margin-top:0">'+(cur+1)+'. '+sl.dataset.title+'</h4>'+(n?n.innerHTML:'');
+    try{history.replaceState(null,'','#s'+(cur+1));}catch(e){}
+  }
+  document.getElementById('prev').onclick=()=>show(cur-1);
+  document.getElementById('next').onclick=()=>show(cur+1);
+  const drawer=document.getElementById('drawer');
+  const toggleDrawer=()=>drawer.classList.toggle('open');
+  
+  document.getElementById('drawerClose').onclick=toggleDrawer;
+  document.addEventListener('keydown',e=>{
+    const t=e.target; if(t.isContentEditable||/TEXTAREA|INPUT/.test(t.tagName))return;
+    if(e.key==='ArrowRight'||e.key==='PageDown')show(cur+1);
+    else if(e.key==='ArrowLeft'||e.key==='PageUp')show(cur-1);
+    
+  });
+  const m=location.hash.match(/^#s(\d+)$/); show(m?+m[1]-1:0);
+
+  let t0=null,el=0,tick=null;const clock=document.getElementById('clock'),cb=document.getElementById('clockBtn');
+  function draw(){const s=Math.floor((el+(t0?Date.now()-t0:0))/1000);clock.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');clock.classList.toggle('late',s>(starts[cur]+(+slides[cur].dataset.time))*60);}
+  cb.onclick=()=>{if(t0){el+=Date.now()-t0;t0=null;clearInterval(tick);cb.textContent='Жалғастыру';}else{t0=Date.now();tick=setInterval(draw,500);cb.textContent='Пауза';}draw();};
+  document.getElementById('fsBtn').onclick=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen().catch(()=>{});}catch(e){}};
+
+    /* flip, words, phrases, proverbs, faces */
+  document.querySelectorAll('.flip').forEach(f=>f.onclick=()=>f.classList.toggle('open'));
+  document.querySelectorAll('#words .wcard').forEach(c=>c.onclick=()=>c.classList.toggle('show'));
+  document.getElementById('wAll').onclick=()=>{const all=[...document.querySelectorAll('#words .wcard')];const on=!all.every(c=>c.classList.contains('show'));all.forEach(c=>c.classList.toggle('show',on));};
+  
+  document.querySelectorAll('#faces .face').forEach(f=>f.onclick=()=>document.querySelectorAll('#faces .face').forEach(x=>x.classList.toggle('on',x===f)));
+
+
+  /* сөз қоржыны: 1-басу — сөз, 2-басу — жауап */
+  document.querySelectorAll('#basket .bcard').forEach(c=>c.onclick=()=>{ if(c.classList.contains('s2')){c.classList.remove('s1','s2');} else if(c.classList.contains('s1')) c.classList.add('s2'); else c.classList.add('s1'); });
+  /* қатені тап */
+  document.querySelectorAll('#errs .ecard').forEach(c=>c.onclick=()=>c.classList.toggle('open'));
+  /* үлгі мәтін */
+  const mt=document.getElementById('mtext'), ms=document.getElementById('mShow');
+  ms.onclick=()=>{mt.classList.toggle('on');ms.textContent=mt.classList.contains('on')?'Бояуды алу':'Жалғауларды бояу';};
+  /* жалғаулар пойызы */
+  const TR=[
+    {w:['оқушы','лар','ыңыз','быз'],ru:'Біз сіздің оқушыларыңызбыз. — Мы ваши ученики.'},
+    {w:['мұғалім','','іміз','сіз'],ru:'Сіз біздің мұғалімімізсіз. — Вы наш учитель.'},
+    {w:['кітап','тар','ым',''],ru:'менің кітаптарым — мои книги (жіктік вагоны бос)'},
+    {w:['сыныптас','тар','ымыз','сыңдар'],ru:'Сендер біздің сыныптастарымызсыңдар. — Вы наши одноклассники.'}];
+  let te=0,ts=0;
+  function drawT(){const ex=TR[te];
+    for(let i=0;i<4;i++){const el=document.getElementById('tw'+i), wg=el.parentElement;
+      const shown=i<=ts; wg.classList.toggle('off',!shown); wg.classList.toggle('empty',shown&&i>0&&!ex.w[i]);
+      el.textContent=shown?(ex.w[i]||'бос'):''; }
+    const cls=['r','pl','po','jkc'];
+    document.getElementById('tout').innerHTML=ex.w.slice(0,ts+1).map((p,i)=>p?`<span class="${cls[i]}">${p}</span>`:'').join('');
+    document.getElementById('tru').textContent=ts===3?ex.ru:'';
+    document.getElementById('tNext').textContent=ts<3?'Келесі вагон →':'Басынан';
+  }
+  document.getElementById('tNext').onclick=()=>{ts=ts<3?ts+1:0;drawT();};
+  document.getElementById('tEx').onclick=()=>{te=(te+1)%TR.length;ts=0;drawT();};
+  drawT();
+  /* жазу шеберханасы */
+  const FR=[
+    'Менің мектебім — № … мектеп.<br>Мен <b>…</b> сыныптың оқушы<b>сымын</b>.<br>Біздің сыныбымызда <b>…</b> оқушы бар.<br>Біздің мұғаліміміздің аты — <b>…</b>.<br>Менің сыныптас<b>тарым</b> … .',
+    'Менің ең жақсы досымның аты — <b>…</b>.<br>Ол … жаста. Біз сыныптас<b>пыз</b> / көрші<b>міз</b>.<br>Мен оның дос<b>ымын</b>.<br>Оған <b>…</b> ұнайды.<br>Біз үзілісте бірге … .',
+    'Менің сөмкем <b>…</b> (үлкен / кішкентай).<br>Сөмкемде <b>…</b> кітап бар (көптік жоқ!).<br>Менің дәптер<b>лерім</b> … .<br>Менің күнделі<b>гім</b> … .<br>Маған <b>…</b> оқулығы ұнайды.'];
+  const fr=document.getElementById('tframe');
+  document.querySelectorAll('#topics .topic').forEach(b=>b.onclick=()=>{document.querySelectorAll('#topics .topic').forEach(x=>x.classList.toggle('on',x===b));fr.innerHTML=FR[+b.dataset.t];});
+  fr.innerHTML=FR[0];
+  document.querySelectorAll('#check button').forEach(b=>b.onclick=()=>{b.classList.toggle('on');b.querySelector('.b').textContent=b.classList.contains('on')?'☑':'☐';});
+  let wleft=420,wint=null;const wt=document.getElementById('wt'),wb=document.getElementById('wtBtn');
+  const wdraw=()=>{wt.textContent=String(Math.floor(wleft/60)).padStart(2,'0')+':'+String(wleft%60).padStart(2,'0');wt.classList.toggle('done',wleft===0);};
+  wb.onclick=()=>{if(wint){clearInterval(wint);wint=null;wb.textContent='Жалғастыру';return;} if(wleft===0)wleft=420; wint=setInterval(()=>{wleft=Math.max(0,wleft-1);wdraw();if(!wleft){clearInterval(wint);wint=null;wb.textContent='Қайта бастау';}},1000);wb.textContent='Пауза';};
+  wdraw();
+
+  /* morphology: көптік, тәуелдік (сендердің/сіздердің = көптік + тәуелдік), жіктік */
+  const BACKV='аоұыуяю', FRONTV='әөүіеэи';
+  const isBack=w=>{for(let i=w.length-1;i>=0;i--){if(BACKV.includes(w[i]))return true;if(FRONTV.includes(w[i]))return false;}return true;};
+  const endsV=w=>'аәеиоөұүыіэюя'.includes(w[w.length-1]);
+  function plural(w){const c=w[w.length-1];const L=endsV(w)||'рйу'.includes(c)?'л':'лмнңзж'.includes(c)?'д':'т';return L+(isBack(w)?'ар':'ер');}
+  const POSS={men:['м','ым','ім'],sen:['ң','ың','ің'],siz:['ңыз','ыңыз','іңіз','ңіз'],ol:['сы','ы','і','сі'],biz:['мыз','ымыз','іміз','міз'],sender:['ң','ың','ің'],sizder:['ңыз','ыңыз','іңіз','ңіз'],olar:['сы','ы','і','сі']};
+  function poss(stem,p){const b=isBack(stem),v=endsV(stem),e=POSS[p];
+    if(v){ if(p==='men'||p==='sen'||p==='sender') return e[0]; return b?e[0]:(e[3]||e[0].replace('ы','і')); }
+    return b?e[1]:e[2]; }
+  function mut(stem,suf){ if(!endsV(stem)&&'аәеиоөұүыіэ'.includes(suf[0])){const c=stem[stem.length-1];const m={п:'б',к:'г',қ:'ғ'}[c];if(m)return stem.slice(0,-1)+m;}return stem;}
+  /* I жақ: дауысты, р, л, й, у, м, н → м; з, ж, ң → б; қатаң және б, в, г, д → п */
+  const jHead=w=>{const c=w[w.length-1];return (endsV(w)||'рлйумн'.includes(c))?'м':('зжң'.includes(c)?'б':'п');};
+  function jik(w,p){const b=isBack(w),k=jHead(w);
+    return {men:k+(b?'ын':'ін'),biz:k+(b?'ыз':'із'),sen:b?'сың':'сің',sender:b?'сыңдар':'сіңдер',siz:b?'сыз':'сіз',sizder:b?'сыздар':'сіздер',ol:'',olar:''}[p];}
+  const PLS={biz:1,sender:1,sizder:1,olar:1};
+
+  /* builder */
+  const BS=[['men','Мен'],['sen','Сен'],['siz','Сіз'],['ol','Ол'],['biz','Біз'],['sender','Сендер'],['sizder','Сіздер'],['olar','Олар']];
+  const BO=[['','—'],['men','менің'],['sen','сенің'],['siz','сіздің'],['ol','оның'],['biz','біздің'],['sender','сендердің'],['sizder','сіздердің'],['olar','олардың']];
+  const BW=['оқушы','мұғалім','сыныптас','дос','көрші','туыс'];
+  let bs='biz',bo='siz',bw='оқушы',hideAns=false;
+  function chips(id,list,get,set){const box=document.getElementById(id);box.innerHTML='';list.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;if(v===get())b.classList.add('on');b.onclick=()=>{set(v);chips(id,list,get,set);drawB();};box.appendChild(b);});}
+  function drawB(){
+    let pl='';
+    if((bo&&PLS[bs])||bo==='sender'||bo==='sizder') pl=plural(bw);
+    const stem=bw+pl; const ps=bo?poss(stem,bo):''; const root=mut(bw,pl?pl:(ps||'x'));
+    const form=root+pl+ps; const j=jik(form,bs);
+    const subj=BS.find(x=>x[0]===bs)[1], own=bo?BO.find(x=>x[0]===bo)[1]+' ':'';
+    const out=document.getElementById('bOut');
+    if(hideAns){out.innerHTML=`<span class="pr">${subj} ${own}</span><span class="r">${bw}</span> … ? <small>Алдымен өзің айт, сосын «Жауапты көрсету» бас.</small>`;return;}
+    const parts=[root,pl&&'<span class="pl">'+pl+'</span>',ps&&'<span class="po">'+ps+'</span>',j&&'<span class="jkc">'+j+'</span>'].filter(Boolean).join('');
+    const exp=[root,pl,ps,j].filter(Boolean).join(' + ');
+    out.innerHTML=`<span class="pr">${subj} ${own}</span><span class="r">${parts}</span>.<small>${exp}${!j?' · III жақта жіктік жалғау жоқ':''}</small>`;
+  }
+  chips('bS',BS,()=>bs,v=>bs=v);
+  chips('bO',BO,()=>bo,v=>bo=v);
+  chips('bW',BW.map(w=>[w,w]),()=>bw,v=>bw=v);
+  const bh=document.getElementById('bHide');bh.onclick=()=>{hideAns=!hideAns;bh.textContent=hideAns?'Жауапты көрсету':'Жауапты жасыру: алдымен өзің айт';drawB();};
+  drawB();
+})();
+</script>
+</body>
+</html>
